@@ -6,12 +6,12 @@ import { WhatsAppFloat } from "@/components/WhatsAppFloat";
 import Footer from "@/components/Footer";
 
 export const metadata: Metadata = {
-  title: "OCX",
-  description: "OCX Consultancy",
+  title: "Movico - Leading Marketing Agency in Riyadh, Saudi Arabia",
+  description: "Cinematic production and brand storytelling engineered for impact across the region. Video production, event management, branding, and digital marketing in Riyadh, KSA.",
   icons: {
-    icon: "/OCX white.svg",
-    shortcut: "/OCX white.svg",
-    apple: "/OCX white.svg",
+    icon: "/logo.webp",
+    shortcut: "/logo.webp",
+    apple: "/logo.webp",
   },
 };
 
