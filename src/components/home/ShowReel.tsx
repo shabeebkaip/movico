@@ -31,7 +31,7 @@ const ShowReel = () => {
             playsInline
             className="absolute inset-0 w-full h-full object-cover"
           >
-            <source src="/Movico-Showreel-2026 (1) (1).mp4" type="video/mp4" />
+            <source src="https://res.cloudinary.com/dm5c31z7w/video/upload/v1769938198/0201_loykmi.mp4" type="video/mp4" />
           </video>
 
           {/* Dark Overlay */}

@@ -22,6 +22,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <link
+          rel="preload"
+          href="https://res.cloudinary.com/dm5c31z7w/video/upload/v1769938198/0201_loykmi.mp4"
+          as="video"
+          type="video/mp4"
+        />
+      </head>
       <body>
         <Providers>
           <Header />

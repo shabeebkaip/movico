@@ -33,7 +33,10 @@ export function HeroSection() {
           loop
           muted
           playsInline
+          preload="auto"
+          poster="/hero-poster.jpg"
           className="w-full h-full object-cover"
+          style={{ willChange: 'transform' }}
         >
           <source src="https://res.cloudinary.com/dm5c31z7w/video/upload/v1769938198/0201_loykmi.mp4" type="video/mp4" />
         </video>
@@ -62,7 +65,7 @@ export function HeroSection() {
           <motion.span
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
+            transition={{ delay: 0.2, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
             className="uppercase tracking-[0.5em] text-xs text-white/60 font-medium"
           >
             Riyadh Based Production Studio
@@ -73,7 +76,7 @@ export function HeroSection() {
             initial={{ opacity: 0, y: 80 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{
-              delay: 0.4,
+              delay: 0.3,
               duration: 1,
               ease: [0.22, 1, 0.36, 1],
             }}
@@ -88,7 +91,7 @@ export function HeroSection() {
           <motion.p
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.9 }}
+            transition={{ delay: 0.5, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
             className="mt-10 text-lg md:text-xl text-white/70 max-w-xl leading-relaxed font-light"
           >
             From high-impact commercials to immersive brand films,
@@ -100,7 +103,7 @@ export function HeroSection() {
           <motion.div
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.2 }}
+            transition={{ delay: 0.7, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
             className="mt-14 flex flex-col sm:flex-row gap-6 items-start"
           >
             <Button
@@ -125,7 +128,7 @@ export function HeroSection() {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 1.6 }}
+            transition={{ delay: 0.9, duration: 0.8 }}
             className="mt-24 border-t border-white/10 pt-8 flex flex-wrap gap-10 text-xs text-white/50 uppercase tracking-widest"
           >
             <span>Established 2020</span>
