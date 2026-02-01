@@ -35,7 +35,7 @@ export function HeroSection() {
           playsInline
           className="w-full h-full object-cover"
         >
-          <source src="/Movico-Showreel-2026.mp4" type="video/mp4" />
+          <source src="https://res.cloudinary.com/dm5c31z7w/video/upload/v1769938198/0201_loykmi.mp4" type="video/mp4" />
         </video>
 
         {/* Base Dark Overlay */}
