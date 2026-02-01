@@ -31,7 +31,7 @@ const ShowReel = () => {
             playsInline
             className="absolute inset-0 w-full h-full object-cover"
           >
-            <source src="/Movico-Showreel-2026.mp4" type="video/mp4" />
+            <source src="/Movico-Showreel-2026 (1) (1).mp4" type="video/mp4" />
           </video>
 
           {/* Dark Overlay */}
@@ -93,7 +93,7 @@ const ShowReel = () => {
               autoPlay
               className="w-[90%] max-w-6xl rounded-xl shadow-deep"
             >
-              <source src="/Movico-Showreel-2026.mp4" type="video/mp4" />
+              <source src="/Movico-Showreel-2026 (1) (1).mp4" type="video/mp4" />
             </motion.video>
           </motion.div>
         )}
