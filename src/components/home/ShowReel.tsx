@@ -73,7 +73,7 @@ const ShowReel = () => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.4 }}
-            className="fixed inset-0 z-[999] bg-black flex items-center justify-center"
+            className="fixed inset-0 z-999 bg-black flex items-center justify-center"
           >
             {/* Close Button */}
             <button
