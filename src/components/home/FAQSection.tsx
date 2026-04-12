@@ -1,129 +1,108 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { Plus, Minus } from "lucide-react";
 import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Plus } from "lucide-react";
+import Link from "next/link";
 
 const faqs = [
   {
-    question: "What makes OCX different from other consultancies?",
+    question: "What types of productions does Movico specialise in?",
     answer:
-      "OCX brings Big 4 discipline across accounting & finance, taxation, digital marketing, financial modelling, and recruitment—all under one roof. No more vendor chaos.",
+      "We specialise in high-impact commercials, branded films, large-scale event productions, spatial and booth design, interior visualisation, and social/digital campaigns. Each project is built around cinematic quality and strategic intent.",
   },
   {
-    question: "Do you work with startups or only established businesses?",
+    question: "Where is Movico based and do you work internationally?",
     answer:
-      "We grow with you—from startups handling first tax filings and bookkeeping to enterprises scaling across the GCC. Our model flexes as your needs evolve.",
+      "We are headquartered in Riyadh, Saudi Arabia, and operate across the GCC and internationally. Our portfolio includes landmark productions for World Defense Show, Leap Conference, Neom, and Ford Al Jazirah.",
   },
   {
-    question: "How much time will this take from my team?",
+    question: "How do I start a production with Movico?",
     answer:
-      "Week 1: we gather data (2-3 hours from your side). After that, we handle 95% of the work with weekly updates.",
+      "Fill out our enquiry form or contact us directly. We schedule a discovery session to understand your objectives, audience, and timeline — then propose a tailored production plan with a transparent quote.",
   },
   {
-    question: "What are your pricing models?",
+    question: "How long does a typical production take?",
     answer:
-      "Flexible options: project-based fees, monthly retainers, or hourly consulting—tailored to your scope. We provide transparent quotes during consultation, no hidden costs.",
+      "Timelines vary by scope. A corporate film typically takes 4–8 weeks from brief to delivery. Full event productions are planned 8–16 weeks in advance. We always build in time for revisions and quality control.",
   },
   {
-    question: "Is my financial data secure with OCX?",
+    question: "What is your pricing structure?",
     answer:
-      "Yes. We use industry-standard security protocols and strict confidentiality agreements. Data protection is non-negotiable.",
+      "Every production is scoped individually. We offer transparent project-based quotes after a brief consultation. There are no hidden costs — what's quoted is what's invoiced.",
   },
   {
-    question: "How do I get started with OCX?",
+    question: "Can Movico handle both creative direction and full execution?",
     answer:
-      "Getting started is easy! Simply fill out our contact form or reach out via email. We offer a free initial consultation where we discuss your business needs and challenges. From there, we'll propose a tailored solution and timeline that fits your objectives and budget.",
+      "Yes. From concepting and scripting to on-set production, post-production, and final delivery — we handle the complete pipeline. You deal with one team, one point of contact, from start to finish.",
   },
 ];
 
 export function FAQSection() {
-  const [openIndex, setOpenIndex] = useState<number | null>(0);
-
-  const toggleFAQ = (index: number) => {
-    setOpenIndex(openIndex === index ? null : index);
-  };
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   return (
-    <section className="py-24 lg:py-32 bg-secondary/20 border-y border-border">
-      <div className="container mx-auto max-w-7xl px-6 lg:px-8">
-        <motion.div
+    <section className="w-11/12 xl:w-10/12 mx-auto grid grid-cols-1 md:grid-cols-2 pb-20 pt-16 gap-y-8 gap-x-16">
+      {/* Heading column */}
+      <div className="flex flex-col justify-center space-y-3">
+        <motion.h5
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
-          className="text-center mb-16"
+          className="text-4xl xl:text-6xl font-black uppercase text-center md:text-left"
         >
-          <h2 className="font-display text-3xl lg:text-4xl xl:text-5xl font-bold tracking-tighter text-foreground mb-4">
-            Frequently Asked{" "}
-            <span className="text-gradient-silver">Questions</span>
-          </h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Everything you need to know about working with OCX
-          </p>
-        </motion.div>
+          Frequently Asked{" "}
+          <span style={{ color: "#d98629" }}>Questions?</span>
+        </motion.h5>
+      </div>
 
-        <div className="max-w-5xl mx-auto space-y-4">
-          {faqs.map((faq, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-              className="rounded-2xl bg-card border border-border overflow-hidden hover:border-foreground/20 transition-all"
+      {/* Accordion column */}
+      <div>
+        {faqs.map((faq, index) => (
+          <motion.div
+            key={index}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: index * 0.07, duration: 0.6 }}
+          >
+            <button
+              onClick={() =>
+                setOpenIndex(openIndex === index ? null : index)
+              }
+              className="flex justify-between items-center w-full p-4 cursor-pointer transition duration-200 ease-in-out border-b border-gray-200 text-left"
             >
-              <button
-                onClick={() => toggleFAQ(index)}
-                className="w-full flex items-center justify-between p-6 text-left hover:bg-secondary/30 transition-colors"
-              >
-                <h3 className="font-display text-lg font-bold text-foreground pr-8">
-                  {faq.question}
-                </h3>
-                <div className="shrink-0 w-8 h-8 rounded-full bg-foreground/5 border border-foreground/10 flex items-center justify-center">
-                  {openIndex === index ? (
-                    <Minus className="w-4 h-4 text-foreground" />
-                  ) : (
-                    <Plus className="w-4 h-4 text-foreground" />
-                  )}
-                </div>
-              </button>
-
+              <span className="text-sm md:text-base text-black pr-6">
+                {faq.question}
+              </span>
               <motion.div
-                initial={false}
-                animate={{
-                  height: openIndex === index ? "auto" : 0,
-                  opacity: openIndex === index ? 1 : 0,
-                }}
-                transition={{ duration: 0.3, ease: "easeInOut" }}
-                className="overflow-hidden"
+                animate={{ rotate: openIndex === index ? 45 : 0 }}
+                transition={{ duration: 0.25 }}
+                className="shrink-0"
               >
-                <div className="px-6 pb-6">
-                  <p className="text-muted-foreground leading-relaxed">
+                <Plus className="w-4 h-4 text-black" />
+              </motion.div>
+            </button>
+
+            <AnimatePresence initial={false}>
+              {openIndex === index && (
+                <motion.div
+                  key="content"
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: "auto", opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={{ duration: 0.3, ease: "easeInOut" }}
+                  className="overflow-hidden"
+                >
+                  <p className="px-4 py-4 text-sm text-gray-500 leading-relaxed">
                     {faq.answer}
                   </p>
-                </div>
-              </motion.div>
-            </motion.div>
-          ))}
-        </div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8, delay: 0.6 }}
-          className="text-center mt-12"
-        >
-          <p className="text-muted-foreground mb-4">Still have questions?</p>
-          <a
-            href="/contact"
-            className="inline-flex items-center gap-2 text-foreground font-semibold hover:text-primary transition-colors"
-          >
-            Contact our team
-            <span className="text-primary">→</span>
-          </a>
-        </motion.div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </motion.div>
+        ))}
       </div>
     </section>
   );

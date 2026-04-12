@@ -1,144 +1,141 @@
 "use client";
 
-import { motion, useScroll, useTransform } from "framer-motion";
-import { ArrowRight, Play } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
+import { gsap } from "gsap";
+import Link from "next/link";
+import { ArrowDown } from "lucide-react";
+import AnimatedTextCycle from "@/components/ui/animated-text-cycle";
 
 export function HeroSection() {
-  const ref = useRef<HTMLElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const line1Ref = useRef<HTMLDivElement>(null);
+  const line2Ref = useRef<HTMLDivElement>(null);
+  const subRef = useRef<HTMLParagraphElement>(null);
+  const ctaRef = useRef<HTMLDivElement>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const labelRef = useRef<HTMLParagraphElement>(null);
 
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start start", "end start"],
-  });
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
 
-  // Cinematic motion
-  const y = useTransform(scrollYProgress, [0, 1], ["0%", "20%"]);
-  const opacity = useTransform(scrollYProgress, [0, 0.7], [1, 0]);
-  const scale = useTransform(scrollYProgress, [0, 1], [1.05, 1.15]); // slow push-in
+      tl.from(labelRef.current, { y: 20, opacity: 0, duration: 0.8 }, 0.3)
+        .from(line1Ref.current, { y: 110, opacity: 0, duration: 1.1 }, 0.5)
+        .from(line2Ref.current, { y: 110, opacity: 0, duration: 1.1 }, 0.65)
+        .from(subRef.current, { y: 30, opacity: 0, duration: 0.9 }, 0.85)
+        .from(ctaRef.current, { y: 20, opacity: 0, duration: 0.8 }, 0.95);
+
+      gsap.to(scrollRef.current, {
+        y: 12,
+        repeat: -1,
+        yoyo: true,
+        duration: 1.4,
+        ease: "power1.inOut",
+        delay: 2.5,
+      });
+    }, containerRef);
+
+    return () => ctx.revert();
+  }, []);
 
   return (
     <section
-      ref={ref}
-      className="relative min-h-screen flex items-center overflow-hidden bg-black pt-32"
+      ref={containerRef}
+      className="relative w-full min-h-screen overflow-hidden bg-black"
     >
-      {/* Video Background */}
-      <motion.div
-        style={{ y, scale }}
-        className="absolute inset-0 z-0"
+      {/* Full-screen background video */}
+      <video
+        autoPlay
+        loop
+        muted
+        playsInline
+        preload="auto"
+        className="absolute inset-0 w-full h-full object-cover scale-105"
       >
-        <video
-          autoPlay
-          loop
-          muted
-          playsInline
-          preload="auto"
-          poster="/hero-poster.jpg"
-          className="w-full h-full object-cover"
-          style={{ willChange: 'transform' }}
-        >
-          <source src="https://res.cloudinary.com/dm5c31z7w/video/upload/v1769938198/0201_loykmi.mp4" type="video/mp4" />
-        </video>
+        <source
+          src="https://res.cloudinary.com/dm5c31z7w/video/upload/v1769938198/0201_loykmi.mp4"
+          type="video/mp4"
+        />
+      </video>
 
-        {/* Base Dark Overlay */}
-        <div className="absolute inset-0 bg-black/60" />
+      {/* Multi-layer overlay */}
+      <div className="absolute inset-0 bg-linear-to-t from-black via-black/40 to-black/20" />
+      <div className="absolute inset-0 bg-linear-to-r from-black/60 via-transparent to-transparent" />
 
-        {/* Left Cinematic Gradient */}
-        <div className="absolute inset-0 bg-linear-to-r from-black via-black/70 to-transparent" />
-
-        {/* Vignette */}
-        <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_center,transparent_45%,rgba(0,0,0,0.85))]" />
-
-        {/* Subtle Film Grain */}
-        <div className="absolute inset-0 pointer-events-none opacity-20 mix-blend-overlay bg-[url('https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=1200&auto=format&fit=crop')]" />
-      </motion.div>
-
-      {/* Content */}
-      <motion.div
-        style={{ opacity }}
-        className="relative z-20 container mx-auto px-6"
-      >
-        <div className="max-w-5xl">
-
-          {/* Eyebrow */}
-          <motion.span
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-            className="uppercase tracking-[0.5em] text-xs text-white/60 font-medium"
+      {/* Content — bottom-left aligned like casualfilms */}
+      <div className="relative z-10 flex flex-col justify-end h-screen pb-14 md:pb-20 px-6 md:px-12 xl:px-20">
+        <div className="max-w-6xl">
+          <p
+            ref={labelRef}
+            className="text-white/50 uppercase tracking-[0.5em] text-[10px] md:text-xs mb-6"
           >
-            Riyadh Based Production Studio
-          </motion.span>
+            Riyadh · Saudi Arabia
+          </p>
 
-          {/* Cinematic Headline */}
-          <motion.h1
-            initial={{ opacity: 0, y: 80 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{
-              delay: 0.3,
-              duration: 1,
-              ease: [0.22, 1, 0.36, 1],
-            }}
-            className="mt-8 font-display text-6xl sm:text-7xl md:text-8xl lg:text-[9rem] font-bold leading-[0.85] tracking-[-0.02em] text-white"
-          >
-            Cinematic Production
-            <br />
-            <span className="text-primary">Built For Impact</span>
-          </motion.h1>
-
-          {/* Supporting Text */}
-          <motion.p
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-            className="mt-10 text-lg md:text-xl text-white/70 max-w-xl leading-relaxed font-light"
-          >
-            From high-impact commercials to immersive brand films,
-            we produce stories engineered for emotion, scale,
-            and unforgettable presence.
-          </motion.p>
-
-          {/* CTA Section */}
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.7, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-            className="mt-14 flex flex-col sm:flex-row gap-6 items-start"
-          >
-            <Button
-              size="xl"
-              className="group bg-primary text-white px-10 py-6 text-lg font-semibold tracking-wide"
+          {/* Overflow-hidden containers for upward reveal */}
+          <div className="overflow-hidden mb-2">
+            <div
+              ref={line1Ref}
+              className="font-display font-black text-white text-[clamp(2.5rem,8vw,7rem)] leading-[0.9] uppercase"
             >
-              <Play className="mr-3 w-5 h-5" />
-              Watch Showreel
-            </Button>
-
-            <Button
-              size="xl"
-              variant="ghost"
-              className="text-white/70 hover:text-white text-lg"
+              Cinematic Stories
+            </div>
+          </div>
+          <div className="overflow-hidden mb-10">
+            <div
+              ref={line2Ref}
+              className="font-display font-black text-primary text-[clamp(2.5rem,8vw,7rem)] leading-[0.9] uppercase"
             >
-              Start a Production
-              <ArrowRight className="ml-3 w-5 h-5 transition-transform group-hover:translate-x-1" />
-            </Button>
-          </motion.div>
+              <span>That Move </span>
+              <AnimatedTextCycle
+                words={["Brands", "People", "Markets", "Culture", "Audiences"]}
+                interval={3000}
+                className="text-[clamp(2.5rem,8vw,7rem)] leading-[0.9]"
+              />
+              <span>.</span>
+            </div>
+          </div>
 
-          {/* Studio Meta Strip */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.9, duration: 0.8 }}
-            className="mt-24 border-t border-white/10 pt-8 flex flex-wrap gap-10 text-xs text-white/50 uppercase tracking-widest"
-          >
-            <span>Established 2020</span>
-            <span>120+ Productions</span>
-            <span>50+ Brands</span>
-            <span>Riyadh, Saudi Arabia</span>
-          </motion.div>
+          <div className="flex flex-col md:flex-row md:items-end gap-6 md:gap-16">
+            <p
+              ref={subRef}
+              className="text-white/55 text-sm md:text-base max-w-xs md:max-w-sm leading-relaxed"
+            >
+              Premium video production built for impact — from concept to
+              final cut, we craft content audiences can&apos;t ignore.
+            </p>
 
+            <div ref={ctaRef} className="flex items-center gap-5">
+              <Link
+                href="#contact"
+                className="bg-primary text-white text-xs font-bold uppercase tracking-[0.2em] px-8 py-4 rounded-full hover:bg-white hover:text-black transition-all duration-300"
+              >
+                Start a Project
+              </Link>
+              <Link
+                href="#showreel"
+                className="text-white/60 text-xs uppercase tracking-[0.2em] hover:text-white transition-colors duration-300 flex items-center gap-2 group"
+              >
+                <span className="w-8 h-8 rounded-full border border-white/30 flex items-center justify-center group-hover:border-primary group-hover:bg-primary transition-all duration-300">
+                  ▶
+                </span>
+                Watch Reel
+              </Link>
+            </div>
+          </div>
         </div>
-      </motion.div>
+      </div>
+
+      {/* Scroll indicator */}
+      <div
+        ref={scrollRef}
+        className="absolute bottom-8 right-8 md:right-12 xl:right-20 flex flex-col items-center gap-3 opacity-50"
+      >
+        <div className="w-px h-16 bg-white/40" />
+        <ArrowDown size={16} className="text-white" />
+      </div>
     </section>
   );
 }
+
+export default HeroSection;

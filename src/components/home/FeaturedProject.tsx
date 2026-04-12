@@ -2,129 +2,77 @@
 
 import { motion } from "framer-motion";
 import Image from "next/image";
-import Link from "next/link";
-import { ArrowUpRight } from "lucide-react";
 
-const projects = [
+const gridImages = [
   {
-    title: "Alfanar — Neom Village",
-    description:
-      "Comprehensive branding and event execution for Saudi Arabia's groundbreaking Neom development showcase.",
-    image:
-      "https://movicoksa.com/wp-content/uploads/2024/10/6B2A6288-scaled.jpg",
-    href: "#",
+    src: "https://movicoksa.com/wp-content/uploads/2024/10/6B2A6288-scaled.jpg",
+    alt: "Alfanar — Neom Village",
   },
   {
-    title: "World Defense Show",
-    description:
-      "Strategic event production and spatial design for one of the world's premier defense exhibitions.",
-    image:
-      "https://movicoksa.com/wp-content/uploads/2024/10/SNIL2230-scaled.jpg",
-    href: "#",
+    src: "https://movicoksa.com/wp-content/uploads/2024/10/SNIL2230-scaled.jpg",
+    alt: "World Defense Show",
   },
   {
-    title: "Leap Conference",
-    description:
-      "Full-scale cinematic production and digital rollout for Saudi Arabia’s flagship technology event.",
-    image:
-      "https://movicoksa.com/wp-content/uploads/2024/10/DSC09438-scaled.jpg",
-    href: "#",
-  },
-  {
-    title: "Ford Al Jazirah Vehicles",
-    description:
-      "Integrated brand storytelling and social content strategy driving automotive excellence.",
-    image:
-      "https://movicoksa.com/wp-content/uploads/2024/10/DSC03137-copy-scaled.jpg",
-    href: "#",
+    src: "https://movicoksa.com/wp-content/uploads/2024/10/DSC09438-scaled.jpg",
+    alt: "Leap Conference",
   },
 ];
 
 export default function FeaturedProjects() {
   return (
-    <section id="work" className="relative py-40 bg-black overflow-hidden">
-
-      {/* Mesh Gradient Background */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(217,134,41,0.12),transparent_40%),radial-gradient(ellipse_at_bottom_right,rgba(251,146,60,0.08),transparent_40%)]" />
-      
-      {/* Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-b from-black/95 via-black/85 to-black/95 pointer-events-none" />
-
-      <div className="container mx-auto px-6 relative z-10">
-
-        {/* Section Header */}
-        <div className="max-w-4xl mb-24">
-          <span className="uppercase tracking-[0.5em] text-xs text-white/50">
-            Selected Work
-          </span>
-
-          <h2 className="mt-8 font-display text-5xl md:text-6xl lg:text-7xl leading-[0.95] text-white">
-            Stories That
-            <br />
-            <span className="text-primary">Define Culture</span>
-          </h2>
-
-          <p className="mt-8 text-lg text-white/60 max-w-2xl leading-relaxed">
-            We partner with ambitious brands to craft cinematic experiences
-            engineered for attention, emotion, and measurable impact.
-          </p>
-        </div>
-
-        {/* Cinematic Grid */}
-        <div className="grid lg:grid-cols-2 gap-12">
-
-          {projects.map((project, index) => (
+    <section id="work" className="bg-white py-6 xl:py-10">
+      <motion.div
+        initial={{ opacity: 0, y: 40 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+        className="w-11/12 xl:w-10/12 mx-auto flex flex-col gap-1 xl:gap-5"
+      >
+        {/* 3-column image grid */}
+        <div className="grid grid-cols-3 gap-1 xl:gap-5">
+          {gridImages.map((img, i) => (
             <motion.div
-              key={project.title}
-              initial={{ opacity: 0, y: 80 }}
+              key={img.alt}
+              initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{
-                duration: 1,
-                delay: index * 0.1,
-                ease: [0.22, 1, 0.36, 1],
-              }}
+              transition={{ delay: i * 0.1, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+              className="aspect-square relative rounded-xl xl:rounded-3xl overflow-hidden border-2 xl:border-8 border-gray-100 group"
             >
-              <Link href={project.href} className="group block relative overflow-hidden rounded-3xl">
-
-                {/* Image */}
-                <div className="relative h-[500px] lg:h-[600px] w-full">
-                  <Image
-                    src={project.image}
-                    alt={project.title}
-                    fill
-                    className="object-cover transition-transform duration-[1200ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-110"
-                  />
-
-                  {/* Dark cinematic overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
-                </div>
-
-                {/* Content Overlay */}
-                <div className="absolute bottom-0 left-0 p-10 space-y-4 max-w-xl">
-
-                  <h3 className="text-3xl md:text-4xl font-semibold text-white group-hover:text-primary transition-colors duration-500">
-                    {project.title}
-                  </h3>
-
-                  <p className="text-white/60 leading-relaxed">
-                    {project.description}
-                  </p>
-
-                  <div className="flex items-center gap-2 text-sm uppercase tracking-widest text-white/50 group-hover:text-primary transition-colors duration-300">
-                    <span>View Case Study</span>
-                    <ArrowUpRight className="w-4 h-4 transition-transform duration-300 group-hover:-translate-y-1 group-hover:translate-x-1" />
-                  </div>
-
-                </div>
-
-              </Link>
+              <Image
+                src={img.src}
+                alt={img.alt}
+                fill
+                className="object-cover transition-transform duration-700 group-hover:scale-105"
+                sizes="(max-width: 768px) 100vw, 33vw"
+              />
+              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-500" />
             </motion.div>
           ))}
-
         </div>
 
-      </div>
+        {/* Wide video strip */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.3, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+          className="w-full aspect-[4/2] relative rounded-xl xl:rounded-3xl overflow-hidden border-2 xl:border-8 border-gray-100"
+        >
+          <video
+            className="w-full h-full object-cover"
+            autoPlay
+            playsInline
+            loop
+            muted
+          >
+            <source
+              src="https://res.cloudinary.com/dm5c31z7w/video/upload/v1776032909/ESPORTS_2025_MOVICO_1_1_aetzgu.mp4"
+              type="video/mp4"
+            />
+          </video>
+        </motion.div>
+      </motion.div>
     </section>
   );
 }
