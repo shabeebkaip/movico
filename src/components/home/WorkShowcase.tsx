@@ -6,12 +6,21 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Image from "next/image";
 import Link from "next/link";
 
-const projects = [
+type Project = {
+  id: number;
+  client: string;
+  category: string;
+  year: string;
+  span?: "full";
+} & ({ video: string; image?: never } | { image: string; video?: never });
+
+const projects: Project[] = [
   {
     id: 1,
     client: "Esports 2025",
     category: "Esports Film",
     year: "2025",
+    span: "full",
     video: "https://res.cloudinary.com/dm5c31z7w/video/upload/v1776032909/ESPORTS_2025_MOVICO_1_1_aetzgu.mp4",
   },
   {
@@ -42,165 +51,135 @@ const projects = [
     year: "2023",
     image: "https://movicoksa.com/wp-content/uploads/2024/10/6B2A6288-scaled.jpg",
   },
+  {
+    id: 6,
+    client: "Movico Reels",
+    category: "Brand Showreel",
+    year: "2024",
+    span: "full",
+    video: "https://res.cloudinary.com/dm5c31z7w/video/upload/v1776034756/MOVICO_REElS_NEW_2024_V4_1_ov2p00.mp4",
+  },
 ];
 
 export default function WorkShowcase() {
   const sectionRef = useRef<HTMLElement>(null);
-  const trackRef = useRef<HTMLDivElement>(null);
   const headingRef = useRef<HTMLDivElement>(null);
+  const gridRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     gsap.registerPlugin(ScrollTrigger);
 
-    // Small delay so layout is fully settled before GSAP measures
-    const timer = setTimeout(() => {
-      const ctx = gsap.context(() => {
-        const track = trackRef.current;
-        const section = sectionRef.current;
-        if (!track || !section) return;
+    const ctx = gsap.context(() => {
+      gsap.from(headingRef.current, {
+        y: 50,
+        opacity: 0,
+        duration: 1,
+        ease: "power3.out",
+        scrollTrigger: {
+          trigger: headingRef.current,
+          start: "top 85%",
+        },
+      });
 
-        // Total horizontal distance to travel
-        // section.offsetWidth = visible width (excludes scroll bars)
-        const getDistance = () =>
-          track.scrollWidth - section.offsetWidth;
-
-        gsap.to(track, {
-          x: () => -getDistance(),
-          ease: "none",
-          scrollTrigger: {
-            trigger: section,
-            pin: true,          // freeze section in viewport
-            anticipatePin: 1,   // prevents jump on pin
-            scrub: 1,           // tie to scroll position
-            start: "top top",
-            end: () => `+=${getDistance()}`,
-            invalidateOnRefresh: true,
-          },
-        });
-
-        gsap.from(headingRef.current, {
-          y: 50,
+      const cells = gridRef.current?.querySelectorAll(".work-cell");
+      if (cells) {
+        gsap.from(cells, {
           opacity: 0,
-          duration: 1,
+          y: 40,
+          stagger: 0.1,
+          duration: 0.9,
           ease: "power3.out",
           scrollTrigger: {
-            trigger: headingRef.current,
-            start: "top 85%",
+            trigger: gridRef.current,
+            start: "top 80%",
           },
         });
+      }
+    }, sectionRef);
 
-        const cards = track.querySelectorAll(".project-card");
-        gsap.from(cards, {
-          opacity: 0,
-          y: 30,
-          stagger: 0.08,
-          duration: 0.8,
-          ease: "power3.out",
-          scrollTrigger: {
-            trigger: section,
-            start: "top 90%",
-          },
-        });
-
-        ScrollTrigger.refresh();
-      }, sectionRef);
-
-      return () => ctx.revert();
-    }, 100);
-
-    return () => clearTimeout(timer);
+    return () => ctx.revert();
   }, []);
 
   return (
-    /*
-     * IMPORTANT: No overflow-hidden on the section itself.
-     * GSAP pin works by making this element position:fixed — if overflow:hidden
-     * is on the section it breaks the pin. Overflow clipping lives on the
-     * inner wrapper instead.
-     */
-    <section
-      ref={sectionRef}
-      id="work"
-      className="bg-white"
-      style={{ height: "100vh" }}
-    >
-      {/* Inner wrapper — overflow hidden here clips the moving track */}
-      <div className="h-full flex flex-col justify-center overflow-hidden">
-        {/* Heading */}
-        <div
-          ref={headingRef}
-          className="px-6 md:px-12 xl:px-20 mb-8 flex items-end justify-between flex-shrink-0"
+    <section ref={sectionRef} id="work" className="bg-black">
+      {/* Heading */}
+      <div
+        ref={headingRef}
+        className="px-6 md:px-12 xl:px-20 pt-12 md:pt-20 xl:pt-28 pb-6 md:pb-10 flex items-end justify-between"
+      >
+        <div>
+          <span className="uppercase tracking-[0.5em] text-[10px] text-white/40 block mb-3">
+            Selected Work
+          </span>
+          <h2 className="font-display text-4xl md:text-7xl xl:text-8xl uppercase text-white leading-none">
+            Our Work
+          </h2>
+        </div>
+        <Link
+          href="/work"
+          className="hidden md:flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-white/40 hover:text-primary transition-colors duration-300"
         >
-          <div>
-            <span className="uppercase tracking-[0.5em] text-[10px] text-black/40 block mb-3">
-              Selected Work
-            </span>
-            <h2 className="font-display text-5xl md:text-7xl xl:text-8xl uppercase text-black leading-none">
-              Our Work
-            </h2>
-          </div>
-          <Link
-            href="/work"
-            className="hidden md:flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-black/50 hover:text-black transition-colors duration-300"
+          View All <span>→</span>
+        </Link>
+      </div>
+
+      {/* Full-bleed 2-column grid */}
+      <div ref={gridRef} className="grid grid-cols-2 gap-[2px]">
+        {projects.map((project) => (
+          <div
+            key={project.id}
+            className={`work-cell group relative overflow-hidden cursor-pointer${
+              project.span === "full" ? " col-span-2 aspect-[16/7]" : " aspect-[4/3]"
+            }`}
           >
-            View All <span>→</span>
-          </Link>
-        </div>
+            {/* Media */}
+            {project.video ? (
+              <video
+                src={project.video}
+                autoPlay
+                loop
+                muted
+                playsInline
+                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+              />
+            ) : (
+              <Image
+                src={project.image!}
+                alt={project.client}
+                fill
+                className="object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+                sizes={
+                  project.span === "full"
+                    ? "100vw"
+                    : "(max-width: 768px) 50vw, 50vw"
+                }
+              />
+            )}
 
-        {/* Horizontal track — moves left via GSAP */}
-        <div
-          ref={trackRef}
-          className="flex gap-5 px-6 md:px-12 xl:px-20 will-change-transform flex-shrink-0"
-        >
-          {projects.map((project) => (
-            <div
-              key={project.id}
-              className="project-card flex-none w-[72vw] md:w-[40vw] xl:w-[28vw] group cursor-pointer"
-            >
-              <div className="relative aspect-[4/3] rounded-2xl overflow-hidden">
-                {"video" in project ? (
-                  <video
-                    src={project.video}
-                    autoPlay
-                    loop
-                    muted
-                    playsInline
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                  />
-                ) : (
-                  <Image
-                    src={project.image!}
-                    alt={project.client}
-                    fill
-                    className="object-cover transition-transform duration-700 group-hover:scale-105"
-                    sizes="(max-width: 768px) 72vw, (max-width: 1280px) 40vw, 28vw"
-                  />
-                )}
-                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/25 transition-colors duration-500" />
-                <div className="absolute inset-0 flex items-end p-5 translate-y-3 opacity-0 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-400">
-                  <span className="text-white text-xs uppercase tracking-[0.2em] font-semibold">
-                    View Project →
-                  </span>
-                </div>
-              </div>
+            {/* Gradient overlay */}
+            <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/10 to-transparent" />
 
-              <div className="mt-4 flex items-start justify-between">
-                <div>
-                  <p className="font-display text-black text-xl uppercase leading-none">
-                    {project.client}
-                  </p>
-                  <p className="text-black/40 text-xs uppercase tracking-widest mt-1">
-                    {project.category}
-                  </p>
-                </div>
-                <span className="text-black/30 text-xs">{project.year}</span>
+            {/* Label — always visible */}
+            <div className="absolute bottom-0 left-0 right-0 p-3 md:p-6 xl:p-8 flex items-end justify-between">
+              <div>
+                <p className="font-display text-white text-xl md:text-2xl xl:text-3xl uppercase leading-none">
+                  {project.client}
+                </p>
+                <p className="text-white/50 text-[10px] uppercase tracking-[0.3em] mt-2">
+                  {project.category}
+                </p>
               </div>
+              <span className="text-white/30 text-xs tabular-nums">{project.year}</span>
             </div>
-          ))}
 
-          {/* Trailing spacer so last card lands fully visible */}
-          <div className="flex-none w-20 md:w-24 xl:w-32" />
-        </div>
+            {/* Hover CTA */}
+            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-400">
+              <span className="text-white text-xs uppercase tracking-[0.3em] border border-white/40 px-6 py-3 backdrop-blur-sm bg-black/20">
+                View Project →
+              </span>
+            </div>
+          </div>
+        ))}
       </div>
     </section>
   );

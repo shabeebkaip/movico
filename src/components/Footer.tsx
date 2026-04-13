@@ -9,12 +9,12 @@ const Footer = () => {
 
       {/* Large Background Watermark */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-        <h2 className="text-[12rem] md:text-[18rem] font-display font-bold text-white/2 select-none">
+        <h2 className="text-[5rem] md:text-[12rem] xl:text-[18rem] font-display font-bold text-white/2 select-none whitespace-nowrap">
           MOVICO
         </h2>
       </div>
 
-      <div className="relative z-10 container mx-auto px-6 pt-32 pb-20">
+      <div className="relative z-10 container mx-auto px-6 pt-16 md:pt-32 pb-12 md:pb-20">
 
         {/* Top Grid */}
         <div className="grid md:grid-cols-12 gap-16 border-b border-white/10 pb-20">
@@ -34,7 +34,7 @@ const Footer = () => {
               for impact across the region.
             </p>
 
-            <div className="flex gap-8 text-sm text-white/50 uppercase tracking-widest">
+            <div className="flex flex-wrap gap-6 text-sm text-white/50 uppercase tracking-widest">
               <a href="#" className="hover:text-primary transition-colors">
                 Instagram
               </a>
@@ -55,10 +55,10 @@ const Footer = () => {
 
             <div className="space-y-5 text-white/70 text-base flex flex-col">
               <Link href="/">Home</Link>
-              <Link href="#about">Studio</Link>
-              <Link href="#services">Services</Link>
-              <Link href="#work">Work</Link>
-              <Link href="#contact">Contact</Link>
+              <Link href="/#about">Studio</Link>
+              <Link href="/services">Services</Link>
+              <Link href="/#work">Work</Link>
+              <Link href="/contact">Contact</Link>
             </div>
           </div>
 
@@ -69,10 +69,10 @@ const Footer = () => {
             </h4>
 
             <div className="space-y-5 text-white/70 text-base flex flex-col">
-              <Link href="#services">Video Production</Link>
-              <Link href="#services">Event Production</Link>
-              <Link href="#services">Brand Identity</Link>
-              <Link href="#services">Spatial Design</Link>
+              <Link href="/services/video-production">Video Production</Link>
+              <Link href="/services/event-production">Event Production</Link>
+              <Link href="/services/brand-identity">Brand Identity</Link>
+              <Link href="/services/spatial-booth">Spatial & Booth</Link>
             </div>
           </div>
 

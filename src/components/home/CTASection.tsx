@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { MagneticText } from "@/components/ui/morphing-cursor";
 
 const CTASection = () => {
   const sectionRef = useRef<HTMLElement>(null);
@@ -62,17 +63,28 @@ const CTASection = () => {
 
       <div className="relative z-10 w-11/12 xl:w-10/12 mx-auto">
         {/* Heading */}
-        <div className="text-center mb-16 xl:mb-20">
+        <div className="text-center mb-10 md:mb-16 xl:mb-20">
           <span className="uppercase tracking-[0.5em] text-[10px] text-white/40 block mb-6">
             Get In Touch
           </span>
           <h2
             ref={headingRef}
-            className="font-display font-black text-5xl md:text-7xl xl:text-[8rem] uppercase leading-[0.9] text-white"
+            className="font-display font-black text-4xl md:text-7xl xl:text-[8rem] uppercase leading-[0.9] flex flex-col items-center gap-0 overflow-hidden"
           >
-            Let&apos;s Create
-            <br />
-            <span className="text-primary">Something.</span>
+            <MagneticText
+              text="Let's Create"
+              hoverText="Let's Create"
+              className="text-white"
+              circleClassName="bg-white"
+              innerTextClassName="text-black"
+            />
+            <MagneticText
+              text="Something."
+              hoverText="Together."
+              className="text-primary"
+              circleClassName="bg-primary"
+              innerTextClassName="text-white"
+            />
           </h2>
         </div>
 

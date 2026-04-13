@@ -5,14 +5,13 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, ArrowRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
 
 const navLinks = [
-  { name: "Work", href: "#work" },
-  { name: "Studio", href: "#about" },
-  { name: "Services", href: "#services" },
-  { name: "Showreel", href: "#showreel" },
-  { name: "Contact", href: "#contact" },
+  { name: "Work", href: "/#work" },
+  { name: "Studio", href: "/#about" },
+  { name: "Services", href: "/services" },
+  { name: "Showreel", href: "/#showreel" },
+  { name: "Contact", href: "/contact" },
 ];
 
 export function Header() {
@@ -88,10 +87,13 @@ export function Header() {
 
           {/* CTA */}
           <div className="hidden md:block">
-            <Button className="btn-primary px-6 py-2 text-xs uppercase tracking-[0.25em]">
+            <Link
+              href="/start"
+              className="inline-flex items-center gap-2 bg-primary text-white text-xs font-bold uppercase tracking-[0.25em] px-6 py-2.5 rounded-full hover:bg-white hover:text-black transition-all duration-300"
+            >
               Start a Project
-              <ArrowRight className="ml-2 w-3.5 h-3.5" />
-            </Button>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
           </div>
 
           {/* Mobile Toggle */}
@@ -112,7 +114,7 @@ export function Header() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.4 }}
-            className="fixed inset-0 bg-black z-40 flex flex-col justify-center items-center gap-12"
+            className="fixed inset-0 bg-black z-40 flex flex-col justify-center items-center gap-8 md:gap-12"
           >
             {navLinks.map((link, index) => (
               <motion.div
@@ -135,12 +137,13 @@ export function Header() {
               </motion.div>
             ))}
 
-            <Button
+            <Link
+              href="/start"
               onClick={() => setIsMobileOpen(false)}
-              className="btn-primary mt-6 px-10 py-4 text-xs uppercase tracking-[0.25em]"
+              className="mt-6 inline-flex items-center gap-2 bg-primary text-white text-xs font-bold uppercase tracking-[0.25em] px-10 py-4 rounded-full hover:bg-white hover:text-black transition-all duration-300"
             >
               Start a Project
-            </Button>
+            </Link>
           </motion.div>
         )}
       </AnimatePresence>

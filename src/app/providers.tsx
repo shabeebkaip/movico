@@ -5,6 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { PropsWithChildren, useState } from "react";
+import SmoothScroll from "@/components/SmoothScroll";
 
 export default function Providers({ children }: PropsWithChildren) {
   const [queryClient] = useState(() => new QueryClient());
@@ -14,7 +15,7 @@ export default function Providers({ children }: PropsWithChildren) {
       <TooltipProvider>
         <Toaster />
         <Sonner />
-        {children}
+        <SmoothScroll>{children}</SmoothScroll>
       </TooltipProvider>
     </QueryClientProvider>
   );

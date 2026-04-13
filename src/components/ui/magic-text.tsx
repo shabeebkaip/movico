@@ -6,26 +6,28 @@ import { useRef } from "react";
 
 export interface MagicTextProps {
   text: string;
+  className?: string;
 }
 
 interface WordProps {
   children: string;
   progress: ReturnType<typeof useScroll>["scrollYProgress"];
   range: number[];
+  className?: string;
 }
 
-const Word: React.FC<WordProps> = ({ children, progress, range }) => {
+const Word: React.FC<WordProps> = ({ children, progress, range, className = "" }) => {
   const opacity = useTransform(progress, range, [0, 1]);
 
   return (
-    <span className="relative mt-[12px] mr-1 text-3xl font-semibold">
+    <span className={`relative mt-[12px] mr-1 text-3xl ${className}`}>
       <span className="absolute opacity-20">{children}</span>
       <motion.span style={{ opacity }}>{children}</motion.span>
     </span>
   );
 };
 
-export const MagicText: React.FC<MagicTextProps> = ({ text }) => {
+export const MagicText: React.FC<MagicTextProps> = ({ text, className = "font-light" }) => {
   const container = useRef(null);
 
   const { scrollYProgress } = useScroll({
@@ -42,7 +44,7 @@ export const MagicText: React.FC<MagicTextProps> = ({ text }) => {
         const end = start + 1 / words.length;
 
         return (
-          <Word key={i} progress={scrollYProgress} range={[start, end]}>
+          <Word key={i} progress={scrollYProgress} range={[start, end]} className={className}>
             {word}
           </Word>
         );

@@ -63,7 +63,7 @@ export function HeroSection() {
       <div className="absolute inset-0 bg-linear-to-r from-black/60 via-transparent to-transparent" />
 
       {/* Content — bottom-left aligned like casualfilms */}
-      <div className="relative z-10 flex flex-col justify-end h-screen pb-14 md:pb-20 px-6 md:px-12 xl:px-20">
+      <div className="relative z-10 flex flex-col justify-end h-screen pb-10 md:pb-20 px-6 md:px-12 xl:px-20">
         <div className="max-w-6xl">
           <p
             ref={labelRef}
@@ -73,10 +73,10 @@ export function HeroSection() {
           </p>
 
           {/* Overflow-hidden containers for upward reveal */}
-          <div className="overflow-hidden mb-2">
+          <div className="overflow-hidden mb-1">
             <div
               ref={line1Ref}
-              className="font-display font-black text-white text-[clamp(2.5rem,8vw,7rem)] leading-[0.9] uppercase"
+              className="font-display font-black text-white text-[clamp(2.2rem,8vw,7rem)] leading-[0.9] uppercase"
             >
               Cinematic Stories
             </div>
@@ -84,15 +84,17 @@ export function HeroSection() {
           <div className="overflow-hidden mb-10">
             <div
               ref={line2Ref}
-              className="font-display font-black text-primary text-[clamp(2.5rem,8vw,7rem)] leading-[0.9] uppercase"
+              className="font-display font-black text-primary text-[clamp(2.2rem,8vw,7rem)] leading-[0.85] uppercase"
             >
-              <span>That Move </span>
-              <AnimatedTextCycle
-                words={["Brands", "People", "Markets", "Culture", "Audiences"]}
-                interval={3000}
-                className="text-[clamp(2.5rem,8vw,7rem)] leading-[0.9]"
-              />
-              <span>.</span>
+              <div>That Move</div>
+              <div className="flex items-baseline gap-0">
+                <AnimatedTextCycle
+                  words={["Brands", "People", "Markets", "Culture", "Audiences"]}
+                  interval={3000}
+                  className="text-[clamp(2.2rem,8vw,7rem)] leading-[0.85]"
+                />
+                <span>.</span>
+              </div>
             </div>
           </div>
 
@@ -108,7 +110,7 @@ export function HeroSection() {
             <div ref={ctaRef} className="flex items-center gap-5">
               <Link
                 href="#contact"
-                className="bg-primary text-white text-xs font-bold uppercase tracking-[0.2em] px-8 py-4 rounded-full hover:bg-white hover:text-black transition-all duration-300"
+                className="bg-primary text-white text-xs font-bold uppercase tracking-[0.2em] px-6 py-3.5 md:px-8 md:py-4 rounded-full hover:bg-white hover:text-black transition-all duration-300"
               >
                 Start a Project
               </Link>
@@ -129,7 +131,7 @@ export function HeroSection() {
       {/* Scroll indicator */}
       <div
         ref={scrollRef}
-        className="absolute bottom-8 right-8 md:right-12 xl:right-20 flex flex-col items-center gap-3 opacity-50"
+        className="hidden md:flex absolute bottom-8 right-8 md:right-12 xl:right-20 flex-col items-center gap-3 opacity-50"
       >
         <div className="w-px h-16 bg-white/40" />
         <ArrowDown size={16} className="text-white" />

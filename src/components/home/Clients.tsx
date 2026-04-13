@@ -13,7 +13,7 @@ const clients = [
   { src: "https://www.tvh.com/sites/tvh/files/styles/max_650x650/public/2024-07/Philips%20-%20logo%20%28removeBG%29.png?itok=T6RE9LBg", alt: "Philips" },
   { src: "https://www.alfanar.com/assets/images/saudi-arabia-alfanar-logo.png", alt: "Alfanar" },
   { src: "https://www.elm.sa/Style%20Library/ar-sa/assets_new/images/homeNow/elmlogoWhite.svg", alt: "Elm" },
-  { src: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/Ford_logo_flat.svg/3840px-Ford_logo_flat.svg.png", alt: "Ford" },
+  { src: "/clients/ford.png", alt: "Ford", noInvert: true },
   { src: "https://beyond-vision.com/wp-content/uploads/2024/02/Leap-Logo-2Leap-White-Logo-1024x273.png", alt: "Leap" },
 ];
 
@@ -73,7 +73,7 @@ const ClientsSection = () => {
                 alt={client.alt}
                 width={140}
                 height={64}
-                className="h-12 w-auto object-contain brightness-0 invert opacity-60 group-hover:opacity-100 group-hover:scale-105 transition-all duration-400"
+                className={`h-12 w-auto object-contain opacity-60 group-hover:opacity-100 group-hover:scale-105 transition-all duration-400 ${"noInvert" in client && client.noInvert ? "" : "brightness-0 invert"}`}
               />
             </div>
             <span className="text-white/20 group-hover:text-white/50 text-[10px] uppercase tracking-[0.3em] transition-colors duration-300">

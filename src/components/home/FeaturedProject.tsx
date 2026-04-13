@@ -29,7 +29,7 @@ export default function FeaturedProjects() {
         className="w-11/12 xl:w-10/12 mx-auto flex flex-col gap-1 xl:gap-5"
       >
         {/* 3-column image grid */}
-        <div className="grid grid-cols-3 gap-1 xl:gap-5">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 xl:gap-5">
           {gridImages.map((img, i) => (
             <motion.div
               key={img.alt}
@@ -37,7 +37,7 @@ export default function FeaturedProjects() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.1, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-              className="aspect-square relative rounded-xl xl:rounded-3xl overflow-hidden border-2 xl:border-8 border-gray-100 group"
+              className="aspect-[4/3] md:aspect-square relative rounded-xl xl:rounded-3xl overflow-hidden border-2 xl:border-8 border-gray-100 group"
             >
               <Image
                 src={img.src}

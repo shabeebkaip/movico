@@ -75,7 +75,7 @@ export function ValueSection() {
     <section
       ref={sectionRef}
       id="about"
-      className="relative py-32 lg:py-48 overflow-hidden bg-background"
+      className="relative py-16 md:py-32 lg:py-48 overflow-hidden bg-background"
     >
       {/* Radial Gradient Background */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(217,134,41,0.08),transparent_50%),radial-gradient(circle_at_70%_80%,rgba(251,146,60,0.06),transparent_50%)]" />
@@ -92,7 +92,7 @@ export function ValueSection() {
         className="container mx-auto px-6 relative z-10"
       >
         {/* Two Column Layout */}
-        <div className="grid lg:grid-cols-2 gap-16 lg:gap-24 items-center">
+        <div className="grid lg:grid-cols-2 gap-10 lg:gap-24 items-center">
           
           {/* Left: Text Content */}
           <div className="space-y-8">
@@ -124,7 +124,7 @@ export function ValueSection() {
             </div>
 
             {/* Stats */}
-            <div className="grid grid-cols-3 gap-8 pt-8">
+            <div className="grid grid-cols-3 gap-4 md:gap-8 pt-8">
               <div>
                 <motion.div 
                   className="text-4xl lg:text-5xl font-display font-bold text-gradient-orange mb-2"

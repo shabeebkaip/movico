@@ -106,7 +106,7 @@ const Testimonials = () => {
               "linear-gradient(to bottom, transparent, black 15%, black 85%, transparent)",
             WebkitMaskImage:
               "linear-gradient(to bottom, transparent, black 15%, black 85%, transparent)",
-            maxHeight: "680px",
+            maxHeight: "min(680px, 60vh)",
           }}
         >
           <TestimonialsColumn testimonials={firstColumn} duration={18} />
