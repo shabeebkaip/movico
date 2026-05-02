@@ -2,8 +2,9 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowLeft, ArrowRight, CheckCircle, Play } from "lucide-react";
+import { ArrowRight, CheckCircle, Play } from "lucide-react";
 import { SERVICES, getServiceBySlug } from "@/lib/services-data";
+import { Breadcrumb } from "@/components/Breadcrumb";
 
 export function generateStaticParams() {
   return SERVICES.map((s) => ({ slug: s.slug }));
@@ -53,13 +54,12 @@ export default async function ServiceDetailPage({
         )}
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(217,134,41,0.1),transparent_55%)]" />
         <div className="relative w-11/12 xl:w-10/12 mx-auto">
-          {/* Breadcrumb */}
-          <Link
-            href="/services"
-            className="inline-flex items-center gap-2 text-white/30 text-xs uppercase tracking-[0.25em] hover:text-primary transition-colors duration-300 mb-10"
-          >
-            <ArrowLeft size={12} /> All Services
-          </Link>
+          <Breadcrumb
+            items={[
+              { label: "Services", href: "/services" },
+              { label: service.title },
+            ]}
+          />
 
           <div className="flex flex-col xl:flex-row xl:items-end xl:justify-between gap-8">
             <div>

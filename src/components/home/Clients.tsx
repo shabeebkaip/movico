@@ -3,18 +3,25 @@
 import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import Image from "next/image";
+import { ClientLogo } from "./ClientLogo";
 
 gsap.registerPlugin(ScrollTrigger);
 
-const clients = [
-  { src: "/clients/Nokia.svg", alt: "Nokia" },
-  { src: "https://www.aramco.com/-/jssmedia/project/aramcocom/aramco-logo--white.png", alt: "Saudi Aramco" },
-  { src: "https://www.tvh.com/sites/tvh/files/styles/max_650x650/public/2024-07/Philips%20-%20logo%20%28removeBG%29.png?itok=T6RE9LBg", alt: "Philips" },
-  { src: "https://www.alfanar.com/assets/images/saudi-arabia-alfanar-logo.png", alt: "Alfanar" },
-  { src: "https://www.elm.sa/Style%20Library/ar-sa/assets_new/images/homeNow/elmlogoWhite.svg", alt: "Elm" },
-  { src: "/clients/ford.png", alt: "Ford", noInvert: true },
-  { src: "https://beyond-vision.com/wp-content/uploads/2024/02/Leap-Logo-2Leap-White-Logo-1024x273.png", alt: "Leap" },
+// whiteBg: true  → logo has a white/light background; use multiply blend to erase it
+// whiteBg: false → logo already has transparent or dark bg; show as-is
+const clients: { src: string; alt: string; whiteBg?: boolean }[] = [
+  { src: "/clients/Nokia.svg",                                          alt: "Nokia"        },
+  { src: "/clients/aramco.jpg",                                         alt: "Saudi Aramco",  whiteBg: true },
+  { src: "/clients/philips.png",                                        alt: "Philips",       whiteBg: true },
+  { src: "/clients/alfanar.png",                                        alt: "Alfanar"        },
+  { src: "/clients/elm.jpg",                                            alt: "Elm",           whiteBg: true },
+  { src: "/clients/ford.png",                                           alt: "Ford"           },
+  { src: "/clients/leap.jpg",                                           alt: "Leap",          whiteBg: true },
+  { src: "/clients/Saudi_GACA_Logo.svg.png",                            alt: "GACA"           },
+  { src: "/clients/UAPM-3.png",                                         alt: "UAPM"           },
+  { src: "/clients/sabic-saudi-arabia-logo-plastic-company-saudi.jpg",  alt: "SABIC",         whiteBg: true },
+  { src: "/clients/saudi-entertainment-and-amusement-expo-logo-1.jpg",  alt: "SEA Expo",      whiteBg: true },
+  { src: "/clients/84c9628ccd4ee.png",                                  alt: "CJ Logistics"   },
 ];
 
 const ClientsSection = () => {
@@ -68,12 +75,11 @@ const ClientsSection = () => {
             className="client-card group bg-black hover:bg-white/5 transition-colors duration-500 flex flex-col items-center justify-center gap-4 py-10 px-8 cursor-default"
           >
             <div className="relative w-full flex items-center justify-center h-16">
-              <Image
+              <ClientLogo
                 src={client.src}
                 alt={client.alt}
-                width={140}
-                height={64}
-                className={`h-12 w-auto object-contain opacity-60 group-hover:opacity-100 group-hover:scale-105 transition-all duration-400 ${"noInvert" in client && client.noInvert ? "" : "brightness-0 invert"}`}
+                removeWhiteBg={client.whiteBg}
+                className="h-12 w-auto object-contain opacity-60 group-hover:opacity-100 group-hover:scale-105 transition-all duration-400"
               />
             </div>
             <span className="text-white/20 group-hover:text-white/50 text-[10px] uppercase tracking-[0.3em] transition-colors duration-300">
@@ -81,12 +87,6 @@ const ClientsSection = () => {
             </span>
           </div>
         ))}
-
-        {/* Stat filler cell */}
-        <div className="client-card bg-primary/10 hover:bg-primary/20 transition-colors duration-500 flex flex-col items-center justify-center gap-2 py-10 px-8">
-          <span className="font-display font-black text-5xl xl:text-6xl text-primary leading-none">7+</span>
-          <span className="text-white/40 text-[10px] uppercase tracking-[0.3em] text-center">Enterprise Clients</span>
-        </div>
       </div>
     </section>
   );

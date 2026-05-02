@@ -2,8 +2,9 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { PROJECTS, getProjectBySlug } from "@/lib/projects-data";
+import { Breadcrumb } from "@/components/Breadcrumb";
 
 export function generateStaticParams() {
   return PROJECTS.map((p) => ({ slug: p.slug }));
@@ -41,12 +42,12 @@ export default async function ProjectDetailPage({
       <section className="relative pt-36 pb-0 xl:pt-48 overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(217,134,41,0.07),transparent_55%)]" />
         <div className="relative w-11/12 xl:w-10/12 mx-auto px-6 md:px-12 xl:px-0 pb-12 xl:pb-16">
-          <Link
-            href="/projects"
-            className="inline-flex items-center gap-2 text-white/30 text-xs uppercase tracking-[0.25em] hover:text-primary transition-colors duration-300 mb-10"
-          >
-            <ArrowLeft size={12} /> All Work
-          </Link>
+          <Breadcrumb
+            items={[
+              { label: "Work", href: "/projects" },
+              { label: project.title },
+            ]}
+          />
 
           <div className="flex flex-col xl:flex-row xl:items-end xl:justify-between gap-8 mb-12">
             <div>

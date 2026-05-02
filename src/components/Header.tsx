@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, ArrowRight } from "lucide-react";
 
@@ -18,6 +19,10 @@ const navLinks = [
 export function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const pathname = usePathname();
+
+  const isActive = (href: string) =>
+    href === "/" ? pathname === "/" : pathname.startsWith(href);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -77,10 +82,14 @@ export function Header() {
               >
                 <Link
                   href={link.href}
-                  className="relative text-xs uppercase tracking-[0.25em] text-white/70 hover:text-white transition-all duration-300 group"
+                  className={`relative text-xs uppercase tracking-[0.25em] transition-all duration-300 group ${
+                    isActive(link.href) ? "text-primary" : "text-white/70 hover:text-white"
+                  }`}
                 >
                   {link.name}
-                  <span className="absolute left-0 -bottom-2 w-0 h-px bg-primary transition-all duration-400 group-hover:w-full" />
+                  <span className={`absolute left-0 -bottom-2 h-px bg-primary transition-all duration-400 ${
+                    isActive(link.href) ? "w-full" : "w-0 group-hover:w-full"
+                  }`} />
                 </Link>
               </motion.div>
             ))}
@@ -131,7 +140,9 @@ export function Header() {
                 <Link
                   href={link.href}
                   onClick={() => setIsMobileOpen(false)}
-                  className="text-4xl font-display text-white hover:text-primary transition-colors duration-300"
+                  className={`text-4xl font-display transition-colors duration-300 ${
+                    isActive(link.href) ? "text-primary" : "text-white hover:text-primary"
+                  }`}
                 >
                   {link.name}
                 </Link>
