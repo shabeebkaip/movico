@@ -324,3 +324,22 @@
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(217,134,41,0.4);
 }
+
+/* =========================
+   HIDE THIRD-PARTY BADGES
+========================= */
+
+/* Lovable / GPT Engineer platform badge */
+#tagger,
+[id^="lovable"],
+[class*="lovable-badge"],
+[data-lovable],
+iframe[src*="lovable"],
+iframe[src*="gptengineer"] {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  opacity: 0 !important;
+  width: 0 !important;
+  height: 0 !important;
+}
