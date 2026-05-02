@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, ArrowRight, CheckCircle } from "lucide-react";
+import Image from "next/image";
+import { ArrowLeft, ArrowRight, CheckCircle, Play } from "lucide-react";
 import { SERVICES, getServiceBySlug } from "@/lib/services-data";
 
 export function generateStaticParams() {
@@ -38,7 +39,19 @@ export default async function ServiceDetailPage({
     <main className="min-h-screen bg-black text-white">
       {/* Hero */}
       <section className="relative pt-36 pb-20 xl:pt-48 xl:pb-28 px-6 md:px-12 xl:px-20 overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(217,134,41,0.07),transparent_55%)]" />
+        {service.heroImage && (
+          <div className="absolute inset-0">
+            <Image
+              src={service.heroImage}
+              alt=""
+              fill
+              className="object-cover opacity-25"
+              priority
+            />
+            <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-black" />
+          </div>
+        )}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(217,134,41,0.1),transparent_55%)]" />
         <div className="relative w-11/12 xl:w-10/12 mx-auto">
           {/* Breadcrumb */}
           <Link
@@ -85,6 +98,24 @@ export default async function ServiceDetailPage({
       {/* Divider */}
       <div className="w-full h-px bg-white/8" />
 
+      {/* Stats Bar */}
+      {service.stats && service.stats.length > 0 && (
+        <section className="border-b border-white/8 py-10 px-6 md:px-12 xl:px-20">
+          <div className="w-11/12 xl:w-10/12 mx-auto grid grid-cols-2 xl:grid-cols-4 gap-8">
+            {service.stats.map((stat) => (
+              <div key={stat.label}>
+                <div className="font-display font-black text-4xl xl:text-5xl text-primary leading-none">
+                  {stat.value}
+                </div>
+                <div className="text-white/40 text-[10px] uppercase tracking-[0.25em] mt-2">
+                  {stat.label}
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
       {/* Overview */}
       <section className="py-20 xl:py-32 px-6 md:px-12 xl:px-20">
         <div className="w-11/12 xl:w-10/12 mx-auto grid grid-cols-1 xl:grid-cols-2 gap-12 xl:gap-20 items-start">
@@ -106,6 +137,42 @@ export default async function ServiceDetailPage({
           </div>
         </div>
       </section>
+
+      {/* Gallery */}
+      {service.gallery && service.gallery.length > 0 && (
+        <section className="py-20 xl:py-32 px-6 md:px-12 xl:px-20">
+          <div className="w-11/12 xl:w-10/12 mx-auto">
+            <div className="mb-12">
+              <span className="uppercase tracking-[0.5em] text-[10px] text-white/30 block mb-4">
+                Our Work
+              </span>
+              <h2 className="font-display font-black text-3xl md:text-4xl xl:text-5xl uppercase leading-tight text-white">
+                Behind the <span className="text-primary">Lens</span>
+              </h2>
+            </div>
+
+            <div className="grid grid-cols-2 xl:grid-cols-3 gap-2">
+              {service.gallery.map((src, i) => (
+                <div
+                  key={i}
+                  className={`relative overflow-hidden group ${
+                    i === 0 ? "col-span-2 xl:col-span-2 aspect-[16/9]" : "aspect-[4/3]"
+                  }`}
+                >
+                  <Image
+                    src={src}
+                    alt=""
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-700"
+                    sizes="(max-width: 768px) 100vw, 50vw"
+                  />
+                  <div className="absolute inset-0 bg-black/20 group-hover:bg-black/0 transition-colors duration-500" />
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* What's Included */}
       <section className="bg-white/[0.02] border-t border-b border-white/8 py-20 xl:py-32 px-6 md:px-12 xl:px-20">
@@ -142,6 +209,53 @@ export default async function ServiceDetailPage({
           </div>
         </div>
       </section>
+
+      {/* Showreel */}
+      {service.showreelPoster && (
+        <section className="py-20 xl:py-32 px-6 md:px-12 xl:px-20">
+          <div className="w-11/12 xl:w-10/12 mx-auto">
+            <div className="mb-12">
+              <span className="uppercase tracking-[0.5em] text-[10px] text-white/30 block mb-4">
+                Showreel
+              </span>
+              <h2 className="font-display font-black text-3xl md:text-4xl xl:text-5xl uppercase leading-tight text-white">
+                Watch Us <span className="text-primary">Work</span>
+              </h2>
+            </div>
+
+            {service.showreelUrl ? (
+              <div className="relative w-full aspect-video rounded-sm overflow-hidden">
+                <iframe
+                  src={service.showreelUrl}
+                  className="absolute inset-0 w-full h-full"
+                  allow="autoplay; fullscreen; picture-in-picture"
+                  allowFullScreen
+                />
+              </div>
+            ) : (
+              <div className="relative w-full aspect-video overflow-hidden rounded-sm group cursor-pointer">
+                <Image
+                  src={service.showreelPoster}
+                  alt="Showreel"
+                  fill
+                  className="object-cover group-hover:scale-105 transition-transform duration-700"
+                />
+                <div className="absolute inset-0 bg-black/50 group-hover:bg-black/40 transition-colors duration-300 flex flex-col items-center justify-center gap-6">
+                  <div className="w-20 h-20 xl:w-24 xl:h-24 rounded-full bg-primary flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-[0_0_60px_rgba(217,134,41,0.5)]">
+                    <Play size={32} className="text-white ml-1" fill="white" />
+                  </div>
+                  <Link
+                    href={`/contact?service=${service.slug}`}
+                    className="text-white/60 text-xs uppercase tracking-[0.3em] hover:text-primary transition-colors duration-300"
+                  >
+                    Enquire about a project instead →
+                  </Link>
+                </div>
+              </div>
+            )}
+          </div>
+        </section>
+      )}
 
       {/* Our Process */}
       <section className="py-20 xl:py-32 px-6 md:px-12 xl:px-20">

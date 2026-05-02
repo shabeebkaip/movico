@@ -6,6 +6,7 @@ import { Header } from "@/components/Header";
 import { WhatsAppFloat } from "@/components/WhatsAppFloat";
 import Footer from "@/components/Footer";
 import CinematicAtmosphere from "@/components/CinematicAtmosphere";
+import { ScrollRestoration } from "@/components/ScrollRestoration";
 
 const kanit = Kanit({
   weight: ["300", "400", "500", "600", "700", "800"],
@@ -48,6 +49,7 @@ export default function RootLayout({
       </head>
       <body className={kanit.variable}>
         <Providers>
+          <ScrollRestoration />
           <CinematicAtmosphere />
           <Header />
           {children}

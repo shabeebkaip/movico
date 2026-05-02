@@ -7,6 +7,7 @@ import { About } from "@/components/home/About";
 import WorkShowcase from "@/components/home/WorkShowcase";
 import { ServicesSection } from "@/components/home/ServicesSection";
 import ShowReel from "@/components/home/ShowReel";
+import StudioPromo from "@/components/home/StudioPromo";
 import CaseStudy from "@/components/home/CaseStudy";
 import ProcessFlow from "@/components/home/ProcessFlow";
 import Testimonials from "@/components/home/Testimonials";
@@ -48,10 +49,16 @@ export default function Page() {
       {/* 6. Services */}
       <ServicesSection />
 
+      {/* ── Amber surge — studio teaser warm-up ── */}
+      <SceneDivider tone="amber" from="left" spread={380} />
+
+      {/* 7. Studio promo */}
+      <StudioPromo />
+
       {/* ── Amber surge — warm cinematic transition into showreel ── */}
       <SceneDivider tone="amber" from="center" spread={380} intensity={1.2} />
 
-      {/* 7. Showreel */}
+      {/* 8. Showreel */}
       <ShowReel />
 
       {/* ── Deep crimson — dramatic beat before case studies ── */}

@@ -11,9 +11,14 @@ export interface ServiceData {
   longDescription: string;
   tags: string[];
   heroTagline: string;
+  heroImage?: string;
   overview: string;
   offerings: ServiceOffering[];
   process: { step: string; title: string; description: string }[];
+  stats?: { value: string; label: string }[];
+  gallery?: string[];
+  showreelPoster?: string;
+  showreelUrl?: string;
 }
 
 export const SERVICES: ServiceData[] = [
@@ -27,6 +32,22 @@ export const SERVICES: ServiceData[] = [
       "We produce video content that doesn't just look great — it converts, connects, and commands attention. From a single brand film to a full-scale campaign, every frame is engineered with purpose.",
     tags: ["Brand Films", "Commercials", "Cinematic"],
     heroTagline: "Every frame, a statement.",
+    heroImage: "/hero-poster.jpg",
+    stats: [
+      { value: "200+", label: "Videos Produced" },
+      { value: "8+", label: "Years of Experience" },
+      { value: "50+", label: "Brands Served" },
+      { value: "GCC", label: "Regional Coverage" },
+    ],
+    gallery: [
+      "/studio/DSC00405.jpg",
+      "/studio/DSC00358.jpg",
+      "/studio/DSC00248.jpg",
+      "/studio/DSC02006.jpg",
+      "/studio/DSC00364.jpg",
+      "/studio/DSC00336.jpg",
+    ],
+    showreelPoster: "/hero-poster.jpg",
     overview:
       "We approach video production as a discipline of storytelling first, technology second. Our team of directors, cinematographers, and editors work as one cohesive unit — translating your brand's values into visual narratives that audiences feel as much as watch. We operate across Saudi Arabia and the wider GCC region.",
     offerings: [
