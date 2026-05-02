@@ -49,11 +49,12 @@ export function HeroSection() {
         loop
         muted
         playsInline
-        preload="auto"
+        preload="metadata"
+        poster="https://movicoksa.com/wp-content/uploads/2024/10/6B2A6288-scaled.jpg"
         className="absolute inset-0 w-full h-full object-cover scale-105"
       >
         <source
-          src="https://res.cloudinary.com/dm5c31z7w/video/upload/v1769938198/0201_loykmi.mp4"
+          src="https://res.cloudinary.com/dm5c31z7w/video/upload/q_auto,f_auto/v1769938198/0201_loykmi.mp4"
           type="video/mp4"
         />
       </video>
@@ -69,31 +70,30 @@ export function HeroSection() {
             ref={labelRef}
             className="text-white/50 uppercase tracking-[0.5em] text-[10px] md:text-xs mb-6"
           >
-            Riyadh · Saudi Arabia
+            Video Production · Riyadh · Saudi Arabia
           </p>
 
           {/* Overflow-hidden containers for upward reveal */}
           <div className="overflow-hidden mb-1">
-            <div
+            <h1
               ref={line1Ref}
               className="font-display font-black text-white text-[clamp(2.2rem,8vw,7rem)] leading-[0.9] uppercase"
             >
-              Cinematic Stories
-            </div>
+              Corporate Video &
+            </h1>
           </div>
           <div className="overflow-hidden mb-10">
             <div
               ref={line2Ref}
               className="font-display font-black text-primary text-[clamp(2.2rem,8vw,7rem)] leading-[0.85] uppercase"
             >
-              <div>That Move</div>
               <div className="flex items-baseline gap-0">
                 <AnimatedTextCycle
-                  words={["Brands", "People", "Markets", "Culture", "Audiences"]}
+                  words={["Media Production", "Event Coverage", "Brand Films", "Photography"]}
                   interval={3000}
                   className="text-[clamp(2.2rem,8vw,7rem)] leading-[0.85]"
                 />
-                <span>.</span>
+                <span className="text-white">.</span>
               </div>
             </div>
           </div>
@@ -103,8 +103,8 @@ export function HeroSection() {
               ref={subRef}
               className="text-white/55 text-sm md:text-base max-w-xs md:max-w-sm leading-relaxed"
             >
-              Premium video production built for impact — from concept to
-              final cut, we craft content audiences can&apos;t ignore.
+              Riyadh&apos;s leading corporate video company — brand films, event coverage
+              &amp; media production across Saudi Arabia and the GCC.
             </p>
 
             <div ref={ctaRef} className="flex items-center gap-5">

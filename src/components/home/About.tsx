@@ -7,10 +7,10 @@ import { MagicText } from "@/components/ui/magic-text";
 import Counter from "@/components/ui/counter";
 
 const stats = [
-  { value: 120, suffix: "+", label: "Productions" },
-  { value: 50, suffix: "+", label: "Brands Served" },
+  { value: 150, suffix: "+", label: "Projects Completed" },
+  { value: 60, suffix: "+", label: "Brands Served" },
+  { value: 6, suffix: "", label: "Cities in Saudi Arabia" },
   { value: 4, suffix: "+", label: "Years Active" },
-  { value: 15, suffix: "+", label: "Awards Won" },
 ];
 
 export function About() {
@@ -73,19 +73,17 @@ export function About() {
               ref={headingRef}
               className="font-display text-4xl md:text-5xl xl:text-6xl font-black leading-[0.95] uppercase mb-8"
             >
-              We produce videos
+              Riyadh&apos;s corporate
               <br />
-              that target the
+              video company
               <br />
-              <span className="text-primary">neural systems</span>
+              <span className="text-primary">built for impact</span>
               <br />
-              behind attention,
-              <br />
-              memory &amp; action.
+              across Saudi Arabia.
             </h2>
 
             <div className="text-white/70 max-w-md -ml-4">
-              <MagicText text="Movico is a Riyadh-based cinematic production studio. We build high-impact video, events, and brand experiences — engineered for cultural resonance and maximum commercial impact across Saudi Arabia and the region." />
+              <MagicText text="Movico is a Riyadh-based media production studio specialising in corporate videos, event coverage, and brand films — engineered for maximum commercial impact across Saudi Arabia and the GCC." />
             </div>
           </div>
 

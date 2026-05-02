@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { useState } from "react";
+import Link from "next/link";
 import {
   Video,
   CalendarDays,
@@ -9,6 +10,8 @@ import {
   LayoutGrid,
   Sofa,
   Share2,
+  Camera,
+  Clapperboard,
 } from "lucide-react";
 
 const services = [
@@ -17,48 +20,72 @@ const services = [
     icon: Video,
     title: "Video Production",
     description:
-      "High-impact commercials, branded films, and cinematic storytelling crafted for scale and emotion.",
-    tags: ["Brand Films", "Commercials", "Cinematic"],
+      "Corporate videos, brand films, and commercials for Saudi Arabia's leading companies — from concept to final cut in Riyadh.",
+    tags: ["Corporate Videos", "Brand Films", "Commercials"],
+    href: "/services/video-production",
   },
   {
     number: "02",
     icon: CalendarDays,
-    title: "Event Production",
+    title: "Event Coverage",
     description:
-      "Immersive conferences and brand experiences engineered for cultural relevance.",
-    tags: ["Live Events", "Conferences"],
+      "Professional event coverage across Saudi Arabia — conferences, product launches, and brand activations captured with cinematic precision.",
+    tags: ["Live Events", "Conferences", "Saudi Arabia"],
+    href: "/services/event-production",
   },
   {
     number: "03",
     icon: Layers,
     title: "Brand Identity",
     description:
-      "Strategic brand systems designed for longevity, authority, and regional impact.",
+      "Strategic brand systems designed for longevity, authority, and regional impact across the Saudi market.",
     tags: ["Logo", "Visual Systems", "Strategy"],
+    href: "/services/brand-identity",
   },
   {
     number: "04",
+    icon: Camera,
+    title: "Photography",
+    description:
+      "Corporate photography, event photography, and commercial shoots for brands across Saudi Arabia and the GCC.",
+    tags: ["Corporate", "Events", "Commercial"],
+    href: "/studio",
+  },
+  {
+    number: "05",
     icon: LayoutGrid,
     title: "Spatial & Booth",
     description:
       "Exhibition environments built through architectural storytelling and spatial precision.",
     tags: ["Exhibition", "3D Design"],
+    href: "/services/spatial-booth",
   },
   {
-    number: "05",
+    number: "06",
     icon: Sofa,
     title: "Interior Design",
     description:
       "Commercial environments visualised through cinematic precision and creative vision.",
     tags: ["Commercial", "Visualization"],
+    href: "/services/interior-design",
   },
   {
-    number: "06",
+    number: "07",
     icon: Share2,
     title: "Social & Digital",
     description:
       "Performance-driven content ecosystems built for dominance across every platform.",
     tags: ["Social Media", "Campaigns", "Content"],
+    href: "/services/social-digital",
+  },
+  {
+    number: "08",
+    icon: Clapperboard,
+    title: "Media Production",
+    description:
+      "Full-service media production in Riyadh — documentaries, corporate reels, and long-form content for brands across Saudi Arabia.",
+    tags: ["Documentary", "Media", "Riyadh"],
+    href: "/services/video-production",
   },
 ];
 
@@ -82,87 +109,18 @@ export function ServicesSection() {
               What We Do
             </span>
             <h2 className="font-display text-4xl md:text-7xl xl:text-8xl uppercase leading-none">
-              Our Services
+              Media Production<br />
+              <span className="text-primary">Services</span>
             </h2>
           </div>
           <p className="text-white/35 max-w-xs text-sm leading-relaxed md:text-right">
-            From concept to final delivery — spanning video, live events, brand
-            identity, and digital campaigns.
+            Corporate video, event coverage, photography &amp; brand production
+            — serving companies across Saudi Arabia from our Riyadh studio.
           </p>
         </motion.div>
 
-        {/* Bento Grid — Desktop */}
-        <div className="hidden md:grid md:grid-cols-3 gap-4 auto-rows-[minmax(260px,auto)]">
-
-          {/* Video Production — tall, row-span-2 */}
-          <div className="row-span-2">
-            <ServiceCard
-              service={services[0]}
-              index={0}
-              isHovered={hoveredIndex === 0}
-              onHover={() => setHoveredIndex(0)}
-              onLeave={() => setHoveredIndex(null)}
-              className="h-full"
-            />
-          </div>
-
-          {/* Event Production */}
-          <ServiceCard
-            service={services[1]}
-            index={1}
-            isHovered={hoveredIndex === 1}
-            onHover={() => setHoveredIndex(1)}
-            onLeave={() => setHoveredIndex(null)}
-          />
-
-          {/* Brand Identity */}
-          <ServiceCard
-            service={services[2]}
-            index={2}
-            isHovered={hoveredIndex === 2}
-            onHover={() => setHoveredIndex(2)}
-            onLeave={() => setHoveredIndex(null)}
-          />
-
-          {/* Spatial & Booth — wide col-span-2 */}
-          <div className="col-span-2">
-            <ServiceCard
-              service={services[3]}
-              index={3}
-              isHovered={hoveredIndex === 3}
-              onHover={() => setHoveredIndex(3)}
-              onLeave={() => setHoveredIndex(null)}
-              className="h-full"
-              wide
-            />
-          </div>
-
-          {/* Interior Design */}
-          <ServiceCard
-            service={services[4]}
-            index={4}
-            isHovered={hoveredIndex === 4}
-            onHover={() => setHoveredIndex(4)}
-            onLeave={() => setHoveredIndex(null)}
-          />
-
-          {/* Social & Digital — wide col-span-2 */}
-          <div className="col-span-2">
-            <ServiceCard
-              service={services[5]}
-              index={5}
-              isHovered={hoveredIndex === 5}
-              onHover={() => setHoveredIndex(5)}
-              onLeave={() => setHoveredIndex(null)}
-              className="h-full"
-              wide
-            />
-          </div>
-
-        </div>
-
-        {/* Mobile — stacked */}
-        <div className="md:hidden space-y-3">
+        {/* Services Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
           {services.map((service, index) => (
             <ServiceCard
               key={service.number}
@@ -173,6 +131,16 @@ export function ServicesSection() {
               onLeave={() => setHoveredIndex(null)}
             />
           ))}
+        </div>
+
+        {/* View All Services */}
+        <div className="mt-10 text-center">
+          <Link
+            href="/services"
+            className="inline-flex items-center gap-2 border border-white/20 text-white text-xs font-bold uppercase tracking-[0.25em] px-8 py-3.5 rounded-full hover:border-primary hover:text-primary transition-all duration-300"
+          >
+            View All Services
+          </Link>
         </div>
 
       </div>
@@ -187,7 +155,6 @@ function ServiceCard({
   onHover,
   onLeave,
   className = "",
-  wide = false,
 }: {
   service: typeof services[0];
   index: number;
@@ -195,11 +162,11 @@ function ServiceCard({
   onHover: () => void;
   onLeave: () => void;
   className?: string;
-  wide?: boolean;
 }) {
   const Icon = service.icon;
 
   return (
+    <Link href={service.href}>
     <motion.div
       initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
@@ -207,7 +174,7 @@ function ServiceCard({
       transition={{ delay: index * 0.08, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
       onMouseEnter={onHover}
       onMouseLeave={onLeave}
-      className={`group relative rounded-2xl xl:rounded-3xl overflow-hidden cursor-default transition-all duration-500 ${className}`}
+      className={`group relative rounded-2xl xl:rounded-3xl overflow-hidden cursor-pointer transition-all duration-500 ${className}`}
       style={{
         background: isHovered
           ? "rgba(255,255,255,0.06)"
@@ -243,7 +210,7 @@ function ServiceCard({
       />
 
       {/* Card content */}
-      <div className={`relative z-10 flex flex-col p-6 xl:p-8 ${wide ? "min-h-[180px]" : "min-h-[260px]"}`}>
+      <div className="relative z-10 flex flex-col p-6 xl:p-8 min-h-[260px]">
 
         {/* Top row: icon + number */}
         <div className="flex items-start justify-between mb-6">
@@ -285,8 +252,8 @@ function ServiceCard({
         </div>
 
         {/* Title + description */}
-        <div className={`flex-1 ${wide ? "flex items-center gap-10" : ""}`}>
-          <div className={wide ? "flex-1" : ""}>
+        <div className="flex-1">
+          <div>
             <h3
               className="font-display uppercase leading-none mb-3 transition-colors duration-300"
               style={{
@@ -304,8 +271,7 @@ function ServiceCard({
             </p>
           </div>
 
-          {/* Tags — wide cards show inline, others show below */}
-          <div className={`flex flex-wrap gap-2 ${wide ? "flex-none" : "mt-5"}`}>
+          <div className="flex flex-wrap gap-2 mt-5">
             {service.tags.map((tag) => (
               <motion.span
                 key={tag}
@@ -338,5 +304,6 @@ function ServiceCard({
       />
 
     </motion.div>
+    </Link>
   );
 }

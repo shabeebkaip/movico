@@ -15,7 +15,7 @@ const insights = [
       "The visual language of a brand film communicates trust, authority, and emotion before a single word is spoken. Here's why quality of light beats quantity of spend.",
     image: "https://movicoksa.com/wp-content/uploads/2024/10/6B2A6288-scaled.jpg",
     date: "March 2025",
-    href: "#",
+    href: "/blog/why-cinematography-matters",
   },
   {
     id: 2,
@@ -25,7 +25,7 @@ const insights = [
       "Saudi Arabia's media landscape has transformed. Local brands that once relied on traditional advertising are now commanding global attention through cinematic storytelling.",
     image: "https://movicoksa.com/wp-content/uploads/2024/10/SNIL2230-scaled.jpg",
     date: "February 2025",
-    href: "#",
+    href: "/blog/saudi-brands-winning-on-video",
   },
   {
     id: 3,
@@ -35,7 +35,7 @@ const insights = [
       "From pre-production logistics to the final frame of coverage — how Movico approaches large-scale event production for organisations like NEOM and World Defense Show.",
     image: "https://movicoksa.com/wp-content/uploads/2024/10/DSC09438-scaled.jpg",
     date: "January 2025",
-    href: "#",
+    href: "/blog/anatomy-of-world-class-event-production",
   },
 ];
 
@@ -85,14 +85,14 @@ export default function InsightsSection() {
               Ideas &amp; Thinking
             </span>
             <h2 className="font-display font-black text-5xl md:text-6xl xl:text-7xl uppercase text-black leading-none">
-              Insights
+              Blog &amp; Insights
             </h2>
           </div>
           <Link
             href="/blog"
             className="hidden md:flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-black/40 hover:text-black transition-colors duration-300"
           >
-            All Insights →
+            All Posts →
           </Link>
         </div>
 

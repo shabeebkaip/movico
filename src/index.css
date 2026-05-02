@@ -229,6 +229,77 @@
   100% { transform: scale(1.1); }
 }
 
+/* ─── Cinematic film grain ─────────────────────────────── */
+
+@keyframes grainShift {
+  0%   { transform: translate(0,   0);   }
+  10%  { transform: translate(-3%, -4%); }
+  20%  { transform: translate(-5%,  2%); }
+  30%  { transform: translate( 3%, -6%); }
+  40%  { transform: translate(-4%,  5%); }
+  50%  { transform: translate( 5%,  -3%); }
+  60%  { transform: translate(-2%,  6%); }
+  70%  { transform: translate( 4%,  2%); }
+  80%  { transform: translate(-5%, -2%); }
+  90%  { transform: translate( 2%,  5%); }
+  100% { transform: translate(0,   0);   }
+}
+
+.cinema-grain {
+  width:  110%;
+  height: 110%;
+  top:    -5%;
+  left:   -5%;
+  opacity: 0.032;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.78' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 200px 200px;
+  animation: grainShift 0.18s steps(1) infinite;
+}
+
+/* ─── Atmospheric orb drift animations ─────────────────── */
+
+@keyframes orbAmber {
+  0%,100% { transform: translate(0, 0)      scale(1);    }
+  33%      { transform: translate(4%, 8%)    scale(1.06); }
+  66%      { transform: translate(-3%, -5%)  scale(0.96); }
+}
+
+@keyframes orbIndigo {
+  0%,100% { transform: translate(0, 0)      scale(1);    }
+  40%      { transform: translate(-6%, 5%)   scale(1.08); }
+  70%      { transform: translate(3%, -8%)   scale(0.95); }
+}
+
+@keyframes orbCrimson {
+  0%,100% { transform: translate(0, 0)      scale(1);    }
+  30%      { transform: translate(5%, -6%)   scale(1.05); }
+  65%      { transform: translate(-4%, 7%)   scale(0.97); }
+}
+
+@keyframes orbTeal {
+  0%,100% { transform: translate(0, 0)      scale(1);    }
+  45%      { transform: translate(-5%, -4%)  scale(1.07); }
+  80%      { transform: translate(6%, 5%)    scale(0.94); }
+}
+
+.orb-amber   { animation: orbAmber   28s ease-in-out infinite; }
+.orb-indigo  { animation: orbIndigo  34s ease-in-out infinite; }
+.orb-crimson { animation: orbCrimson 22s ease-in-out infinite; }
+.orb-teal    { animation: orbTeal    38s ease-in-out infinite; }
+
+/* Studio marquee */
+@keyframes marqueeStudio {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-marquee-studio {
+  animation: marqueeStudio 30s linear infinite;
+  display: flex;
+  width: max-content;
+}
+
 /* =========================
    SCROLLBAR (Minimal Studio Style)
 ========================= */

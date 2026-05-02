@@ -4,58 +4,86 @@ import { HeroSection } from "@/components/home/HeroSection";
 import { MarqueeText } from "@/components/home/MarqueeText";
 import ClientsSection from "@/components/home/Clients";
 import { About } from "@/components/home/About";
-import MethodologySection from "@/components/home/MethodologySection";
 import WorkShowcase from "@/components/home/WorkShowcase";
 import { ServicesSection } from "@/components/home/ServicesSection";
 import ShowReel from "@/components/home/ShowReel";
+import CaseStudy from "@/components/home/CaseStudy";
 import ProcessFlow from "@/components/home/ProcessFlow";
 import Testimonials from "@/components/home/Testimonials";
 import InsightsSection from "@/components/home/InsightsSection";
 import { FAQSection } from "@/components/home/FAQSection";
 import CTASection from "@/components/home/CTASection";
+import SceneDivider from "@/components/SceneDivider";
 
 export default function Page() {
   return (
     <main className="min-h-screen bg-black">
-      {/* 1. Full-viewport video hero — GSAP text reveal */}
+      {/* 1. Hero */}
       <HeroSection />
 
-      {/* 2. Scrolling brand statement marquee */}
+      {/* ── Warm amber bloom — like a key light fading from the hero ── */}
+      <SceneDivider tone="amber" from="left" spread={380} />
+
+      {/* 2. Marquee */}
       <MarqueeText />
 
-      {/* 3. Client logos — dual-row GSAP marquee */}
+      {/* 3. Clients */}
       <ClientsSection />
 
-      {/* 4. Agency statement + animated stat counters */}
+      {/* ── Deep indigo wash — mood shift into the studio statement ── */}
+      <SceneDivider tone="indigo" from="right" spread={380} />
+
+      {/* 4. About */}
       <About />
 
-      {/* 5. Interactive methodology — accordion with video */}
-      <MethodologySection />
+      {/* ── Dual-tone — amber left / indigo right, like two opposing lights ── */}
+      <SceneDivider tone="amberIndigo" from="center" spread={380} />
 
-      {/* 6. Horizontal scroll work showcase — GSAP pin */}
+      {/* 5. Work showcase */}
       <WorkShowcase />
 
-      {/* 7. Services — numbered list with sticky video */}
+      {/* ── Cool teal — night exterior feel before services ── */}
+      <SceneDivider tone="teal" from="left" spread={380} />
+
+      {/* 6. Services */}
       <ServicesSection />
 
-      {/* 8. Showreel — cinematic video section */}
+      {/* ── Amber surge — warm cinematic transition into showreel ── */}
+      <SceneDivider tone="amber" from="center" spread={380} intensity={1.2} />
+
+      {/* 7. Showreel */}
       <ShowReel />
 
-      {/* 9. Process steps — GSAP stagger */}
+      {/* ── Deep crimson — dramatic beat before case studies ── */}
+      <SceneDivider tone="crimson" from="right" spread={380} />
+
+      {/* 8. Case studies */}
+      <CaseStudy />
+
+      {/* ── Teal — cool counterpoint between case studies and process ── */}
+      <SceneDivider tone="teal" from="left" spread={380} />
+
+      {/* 9. Process */}
       <ProcessFlow />
 
-      {/* 10. Testimonials — quote carousel */}
+      {/* ── Indigo to amber — moody testimonial atmosphere ── */}
+      <SceneDivider tone="amberIndigo" from="right" spread={380} />
+
+      {/* 10. Testimonials */}
       <Testimonials />
 
-      {/* 11. Insights — blog posts grid */}
+      {/* 11. Insights (white section — no divider needed) */}
       <InsightsSection />
 
-      {/* 12. FAQ accordion */}
+      {/* 12. FAQ */}
       <div className="bg-white">
         <FAQSection />
       </div>
 
-      {/* 13. CTA + Contact — dark section with video bg */}
+      {/* ── Final amber bloom before the CTA ── */}
+      <SceneDivider tone="amber" from="center" spread={380} />
+
+      {/* 13. CTA */}
       <CTASection />
     </main>
   );

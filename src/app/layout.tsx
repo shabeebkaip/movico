@@ -5,6 +5,7 @@ import "../index.css";
 import { Header } from "@/components/Header";
 import { WhatsAppFloat } from "@/components/WhatsAppFloat";
 import Footer from "@/components/Footer";
+import CinematicAtmosphere from "@/components/CinematicAtmosphere";
 
 const kanit = Kanit({
   weight: ["300", "400", "500", "600", "700", "800"],
@@ -15,8 +16,8 @@ const kanit = Kanit({
 });
 
 export const metadata: Metadata = {
-  title: "Movico - Leading Marketing Agency in Riyadh, Saudi Arabia",
-  description: "Cinematic production and brand storytelling engineered for impact across the region. Video production, event management, branding, and digital marketing in Riyadh, KSA.",
+  title: "Movico — Corporate Video Production Company Riyadh, Saudi Arabia",
+  description: "Riyadh's leading corporate video production company. Brand films, event coverage, corporate videos & media production across Saudi Arabia and the GCC. Based in Riyadh, KSA.",
   icons: {
     icon: "/logo.webp",
     shortcut: "/logo.webp",
@@ -47,6 +48,7 @@ export default function RootLayout({
       </head>
       <body className={kanit.variable}>
         <Providers>
+          <CinematicAtmosphere />
           <Header />
           {children}
           <Footer />

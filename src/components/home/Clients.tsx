@@ -50,10 +50,10 @@ const ClientsSection = () => {
           <span className="uppercase tracking-[0.5em] text-[10px] text-white/30 block mb-4">
             Trusted By
           </span>
-          <h3 className="font-display font-black text-4xl md:text-5xl xl:text-6xl uppercase text-white leading-none">
+          <h2 className="font-display font-black text-4xl md:text-5xl xl:text-6xl uppercase text-white leading-none">
             Brands That<br />
             <span className="text-primary">Trust Us</span>
-          </h3>
+          </h2>
         </div>
         <p className="text-white/40 text-sm max-w-xs leading-relaxed md:text-right">
           From global giants to regional leaders — our clients are the brands shaping industries.

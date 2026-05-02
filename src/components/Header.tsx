@@ -7,10 +7,11 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, ArrowRight } from "lucide-react";
 
 const navLinks = [
-  { name: "Work", href: "/#work" },
-  { name: "Studio", href: "/#about" },
+  { name: "Home", href: "/" },
+  { name: "Work", href: "/projects" },
   { name: "Services", href: "/services" },
-  { name: "Showreel", href: "/#showreel" },
+  { name: "Studio", href: "/studio" },
+  { name: "Blog", href: "/blog" },
   { name: "Contact", href: "/contact" },
 ];
 
