@@ -76,6 +76,10 @@
 
 @layer utilities {
 
+  /* Hide scrollbar (used by OTT rows) */
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
   /* Typography */
   .font-display { font-family: var(--font-display); }
   .font-body { font-family: var(--font-body); }

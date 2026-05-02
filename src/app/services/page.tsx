@@ -105,7 +105,7 @@ export default function ServicesPage() {
             Start a Project <ArrowRight size={14} />
           </Link>
           <Link
-            href="/start"
+            href="/landing"
             className="border border-white/20 text-white text-xs font-bold uppercase tracking-[0.2em] px-10 py-4 rounded-full hover:border-primary hover:text-primary transition-all duration-300 inline-flex items-center justify-center"
           >
             Book a Discovery Call

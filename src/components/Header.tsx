@@ -98,7 +98,7 @@ export function Header() {
           {/* CTA */}
           <div className="hidden md:block">
             <Link
-              href="/start"
+              href="/landing"
               className="inline-flex items-center gap-2 bg-primary text-white text-xs font-bold uppercase tracking-[0.25em] px-6 py-2.5 rounded-full hover:bg-white hover:text-black transition-all duration-300"
             >
               Start a Project
@@ -150,7 +150,7 @@ export function Header() {
             ))}
 
             <Link
-              href="/start"
+              href="/landing"
               onClick={() => setIsMobileOpen(false)}
               className="mt-6 inline-flex items-center gap-2 bg-primary text-white text-xs font-bold uppercase tracking-[0.25em] px-10 py-4 rounded-full hover:bg-white hover:text-black transition-all duration-300"
             >
