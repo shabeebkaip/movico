@@ -7,41 +7,108 @@ import { ClientLogo } from "./ClientLogo";
 
 gsap.registerPlugin(ScrollTrigger);
 
-// whiteBg: true  → logo has a white/light background; use multiply blend to erase it
-// whiteBg: false → logo already has transparent or dark bg; show as-is
 const clients: { src: string; alt: string; whiteBg?: boolean }[] = [
-  { src: "/clients/Nokia.svg",                                          alt: "Nokia"        },
-  { src: "/clients/aramco.jpg",                                         alt: "Saudi Aramco",  whiteBg: true },
-  { src: "/clients/philips.png",                                        alt: "Philips",       whiteBg: true },
-  { src: "/clients/alfanar.png",                                        alt: "Alfanar"        },
-  { src: "/clients/elm.jpg",                                            alt: "Elm",           whiteBg: true },
-  { src: "/clients/ford.png",                                           alt: "Ford"           },
-  { src: "/clients/leap.jpg",                                           alt: "Leap",          whiteBg: true },
-  { src: "/clients/Saudi_GACA_Logo.svg.png",                            alt: "GACA"           },
-  { src: "/clients/UAPM-3.png",                                         alt: "UAPM"           },
-  { src: "/clients/sabic-saudi-arabia-logo-plastic-company-saudi.jpg",  alt: "SABIC",         whiteBg: true },
-  { src: "/clients/saudi-entertainment-and-amusement-expo-logo-1.jpg",  alt: "SEA Expo",      whiteBg: true },
-  { src: "/clients/84c9628ccd4ee.png",                                  alt: "CJ Logistics"   },
+  { src: "/clients/Nokia 1.svg",                              alt: "Nokia"           },
+  { src: "/clients/Aramco.png",                               alt: "Saudi Aramco"    },
+  { src: "/clients/Philips_logo.png",                         alt: "Philips",          whiteBg: true },
+  { src: "/clients/Alfanar Projects_Logo-1.png",              alt: "Alfanar"         },
+  { src: "/clients/FORD .png",                                alt: "Ford"            },
+  { src: "/clients/Leap.jpg",                                 alt: "Leap",             whiteBg: true },
+  { src: "/clients/GACA LOGO 1.png",                          alt: "GACA"            },
+  { src: "/clients/UAPM-Logo(Property Management Co).png",    alt: "UAPM"            },
+  { src: "/clients/SEA-Expo-logo-Master-03.png",              alt: "SEA Expo",         whiteBg: true },
+  { src: "/clients/Huawei.png",                               alt: "Huawei"          },
+  { src: "/clients/Neom-Logo.png",                            alt: "Neom"            },
+  { src: "/clients/Red_Hat_Logo_2019.svg.png",                alt: "Red Hat",          whiteBg: true },
+  { src: "/clients/SEC_Logo.png",                             alt: "SEC"             },
+  { src: "/clients/Rawabi_2023_Logo_uniform_11.png",          alt: "Rawabi"          },
+  { src: "/clients/AFZCO-LOGO-2020-FINAL.png",                alt: "AFZCO"           },
+  { src: "/clients/ALJAZIRAH LOGO PNG.png",                   alt: "Al Jazirah"      },
+  { src: "/clients/10X Logo 2.png",                           alt: "10X"             },
+  { src: "/clients/Autoville.png",                            alt: "Autoville"       },
+  { src: "/clients/Defence show.png",                         alt: "Defence Show"    },
+  { src: "/clients/Dezerta Logo.png",                         alt: "Dezerta"         },
+  { src: "/clients/FHM 1.png",                                alt: "FHM"             },
+  { src: "/clients/Mansam logo-bilingual Final.png",          alt: "Mansam"          },
+  { src: "/clients/Mega-Group.png",                           alt: "Mega Group"      },
+  { src: "/clients/Modn-ANnan.png",                           alt: "Modn Annan"      },
+  { src: "/clients/Nahdah FC.png",                            alt: "Nahdah FC"       },
+  { src: "/clients/Nationl Grid .SA .png",                    alt: "National Grid SA"},
+  { src: "/clients/PDC.png",                                  alt: "PDC"             },
+  { src: "/clients/POLARIS.png",                              alt: "Polaris"         },
+  { src: "/clients/ShareLogo.jpg",                            alt: "Aramco Iktva",     whiteBg: true },
+  { src: "/clients/UNIFIED-LOGO.png",                         alt: "Unified"         },
+  { src: "/clients/all jerry logo 02.png",                    alt: "All Jerry"       },
+  { src: "/clients/bh_logo_black_onwhite.png",                alt: "BH",               whiteBg: true },
+  { src: "/clients/state_grid.png",                           alt: "State Grid"      },
+  { src: "/clients/glamping_80cm_80cm.png",                   alt: "Glamping"        },
+  { src: "/clients/one mic.png",                              alt: "One Mic"         },
+  { src: "/clients/riyadh dimond.png",                        alt: "Riyadh Diamond"  },
+  { src: "/clients/7d logo .png",                             alt: "7D"              },
+  { src: "/clients/APOTHEEK.png",                             alt: "Apotheek"        },
+  { src: "/clients/Almosa H.jpg",                             alt: "Almosa",           whiteBg: true },
 ];
+
+// Split into 3 rows
+const row1 = clients.slice(0, 14);
+const row2 = clients.slice(14, 27);
+const row3 = clients.slice(27);
+
+function MarqueeRow({
+  items,
+  reverse = false,
+  duration = 40,
+}: {
+  items: typeof clients;
+  reverse?: boolean;
+  duration?: number;
+}) {
+  const doubled = [...items, ...items];
+
+  return (
+    <div className="overflow-hidden relative group/row">
+      {/* fade edges */}
+      <div className="pointer-events-none absolute inset-y-0 left-0 w-32 z-10 bg-linear-to-r from-neutral-50 to-transparent" />
+      <div className="pointer-events-none absolute inset-y-0 right-0 w-32 z-10 bg-linear-to-l from-neutral-50 to-transparent" />
+
+      <div
+        className="flex gap-3 w-max group-hover/row:[animation-play-state:paused]"
+        style={{
+          animation: `marquee${reverse ? "Reverse" : ""} ${duration}s linear infinite`,
+        }}
+      >
+        {doubled.map((client, i) => (
+          <div
+            key={i}
+            className="group flex items-center justify-center bg-white hover:bg-white border border-neutral-100 hover:border-neutral-200 hover:shadow-md rounded-xl px-8 py-6 transition-all duration-300 cursor-default shrink-0 w-52 h-24"
+          >
+            <ClientLogo
+              src={client.src}
+              alt={client.alt}
+              removeWhiteBg
+              className="h-14 w-auto max-w-36 object-contain"
+            />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 const ClientsSection = () => {
   const sectionRef = useRef<HTMLElement>(null);
-  const cardsRef = useRef<HTMLDivElement>(null);
+  const headerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      const cards = cardsRef.current?.querySelectorAll(".client-card");
-      if (!cards) return;
-
-      gsap.from(cards, {
-        y: 40,
+      gsap.from(headerRef.current, {
+        y: 30,
         opacity: 0,
-        duration: 0.7,
-        stagger: 0.08,
+        duration: 0.8,
         ease: "power3.out",
         scrollTrigger: {
           trigger: sectionRef.current,
-          start: "top 75%",
+          start: "top 80%",
         },
       });
     }, sectionRef);
@@ -50,45 +117,43 @@ const ClientsSection = () => {
   }, []);
 
   return (
-    <section ref={sectionRef} className="bg-black py-20 xl:py-32 px-6 md:px-12 xl:px-20">
-      {/* Header */}
-      <div className="mb-16 flex flex-col md:flex-row md:items-end md:justify-between gap-6">
-        <div>
-          <span className="uppercase tracking-[0.5em] text-[10px] text-white/30 block mb-4">
-            Trusted By
-          </span>
-          <h2 className="font-display font-black text-4xl md:text-5xl xl:text-6xl uppercase text-white leading-none">
-            Brands That<br />
-            <span className="text-primary">Trust Us</span>
-          </h2>
-        </div>
-        <p className="text-white/40 text-sm max-w-xs leading-relaxed md:text-right">
-          From global giants to regional leaders — our clients are the brands shaping industries.
-        </p>
-      </div>
+    <>
+      <style>{`
+        @keyframes marquee {
+          from { transform: translateX(0); }
+          to   { transform: translateX(-50%); }
+        }
+        @keyframes marqueeReverse {
+          from { transform: translateX(-50%); }
+          to   { transform: translateX(0); }
+        }
+      `}</style>
 
-      {/* Logo Grid */}
-      <div ref={cardsRef} className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-px bg-white/8">
-        {clients.map((client, i) => (
-          <div
-            key={i}
-            className="client-card group bg-black hover:bg-white/5 transition-colors duration-500 flex flex-col items-center justify-center gap-4 py-10 px-8 cursor-default"
-          >
-            <div className="relative w-full flex items-center justify-center h-16">
-              <ClientLogo
-                src={client.src}
-                alt={client.alt}
-                removeWhiteBg={client.whiteBg}
-                className="h-12 w-auto object-contain opacity-60 group-hover:opacity-100 group-hover:scale-105 transition-all duration-400"
-              />
-            </div>
-            <span className="text-white/20 group-hover:text-white/50 text-[10px] uppercase tracking-[0.3em] transition-colors duration-300">
-              {client.alt}
+      <section ref={sectionRef} className="bg-neutral-50 py-20 xl:py-32 overflow-hidden">
+        {/* Header */}
+        <div ref={headerRef} className="mb-16 px-6 md:px-12 xl:px-20 flex flex-col md:flex-row md:items-end md:justify-between gap-6">
+          <div>
+            <span className="uppercase tracking-[0.5em] text-[10px] text-black/30 block mb-4">
+              Trusted By
             </span>
+            <h2 className="font-display font-black text-4xl md:text-5xl xl:text-6xl uppercase text-black leading-none">
+              Brands That<br />
+              <span className="text-primary">Trust Us</span>
+            </h2>
           </div>
-        ))}
-      </div>
-    </section>
+          <p className="text-black/40 text-sm max-w-xs leading-relaxed md:text-right">
+            From global giants to regional leaders — our clients are the brands shaping industries.
+          </p>
+        </div>
+
+        {/* Marquee rows */}
+        <div className="flex flex-col gap-4">
+          <MarqueeRow items={row1} duration={80} />
+          <MarqueeRow items={row2} reverse duration={90} />
+          <MarqueeRow items={row3} duration={70} />
+        </div>
+      </section>
+    </>
   );
 };
 
