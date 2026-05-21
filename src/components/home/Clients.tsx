@@ -1,13 +1,15 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ClientLogo } from "./ClientLogo";
 
 gsap.registerPlugin(ScrollTrigger);
 
-const clients: { src: string; alt: string; whiteBg?: boolean }[] = [
+interface ClientItem { src: string; alt: string; whiteBg?: boolean }
+
+const FALLBACK_CLIENTS: ClientItem[] = [
   { src: "/clients/Nokia 1.svg",                              alt: "Nokia"           },
   { src: "/clients/Aramco.png",                               alt: "Saudi Aramco"    },
   { src: "/clients/Philips_logo.png",                         alt: "Philips",          whiteBg: true },
@@ -49,17 +51,12 @@ const clients: { src: string; alt: string; whiteBg?: boolean }[] = [
   { src: "/clients/Almosa H.jpg",                             alt: "Almosa",           whiteBg: true },
 ];
 
-// Split into 3 rows
-const row1 = clients.slice(0, 14);
-const row2 = clients.slice(14, 27);
-const row3 = clients.slice(27);
-
 function MarqueeRow({
   items,
   reverse = false,
   duration = 40,
 }: {
-  items: typeof clients;
+  items: ClientItem[];
   reverse?: boolean;
   duration?: number;
 }) {
@@ -75,12 +72,15 @@ function MarqueeRow({
         className="flex gap-3 w-max group-hover/row:[animation-play-state:paused]"
         style={{
           animation: `marquee${reverse ? "Reverse" : ""} ${duration}s linear infinite`,
+          willChange: "transform",
+          backfaceVisibility: "hidden",
+          transform: "translateZ(0)",
         }}
       >
         {doubled.map((client, i) => (
           <div
             key={i}
-            className="group flex items-center justify-center bg-white hover:bg-white border border-neutral-100 hover:border-neutral-200 hover:shadow-md rounded-xl px-8 py-6 transition-all duration-300 cursor-default shrink-0 w-52 h-24"
+            className="group flex items-center justify-center bg-white hover:bg-white border border-neutral-100 hover:border-neutral-200 hover:shadow-md rounded-xl px-8 py-6 transition-shadow duration-300 cursor-default shrink-0 w-52 h-24"
           >
             <ClientLogo
               src={client.src}
@@ -98,6 +98,18 @@ function MarqueeRow({
 const ClientsSection = () => {
   const sectionRef = useRef<HTMLElement>(null);
   const headerRef = useRef<HTMLDivElement>(null);
+  const [clients, setClients] = useState<ClientItem[]>(FALLBACK_CLIENTS);
+
+  useEffect(() => {
+    fetch("/api/cms/clients")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data: Array<{ logo: string; name: string; whiteBg?: boolean }> | null) => {
+        if (data && data.length > 0) {
+          setClients(data.map((c) => ({ src: c.logo, alt: c.name, whiteBg: c.whiteBg })));
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -120,12 +132,12 @@ const ClientsSection = () => {
     <>
       <style>{`
         @keyframes marquee {
-          from { transform: translateX(0); }
-          to   { transform: translateX(-50%); }
+          from { transform: translate3d(0, 0, 0); }
+          to   { transform: translate3d(-50%, 0, 0); }
         }
         @keyframes marqueeReverse {
-          from { transform: translateX(-50%); }
-          to   { transform: translateX(0); }
+          from { transform: translate3d(-50%, 0, 0); }
+          to   { transform: translate3d(0, 0, 0); }
         }
       `}</style>
 
@@ -148,9 +160,9 @@ const ClientsSection = () => {
 
         {/* Marquee rows */}
         <div className="flex flex-col gap-4">
-          <MarqueeRow items={row1} duration={80} />
-          <MarqueeRow items={row2} reverse duration={90} />
-          <MarqueeRow items={row3} duration={70} />
+          <MarqueeRow items={clients.slice(0, Math.ceil(clients.length / 3))} duration={80} />
+          <MarqueeRow items={clients.slice(Math.ceil(clients.length / 3), Math.ceil(clients.length * 2 / 3))} reverse duration={90} />
+          <MarqueeRow items={clients.slice(Math.ceil(clients.length * 2 / 3))} duration={70} />
         </div>
       </section>
     </>

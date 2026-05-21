@@ -16,8 +16,7 @@ import CTASection from "@/components/home/CTASection";
 import SceneDivider from "@/components/SceneDivider";
 
 export default async function Page() {
-  const content = await readContent();
-  const design = await readDesign();
+  const [content, design] = await Promise.all([readContent(), readDesign()]);
   const s = design.sections.home;
 
   return (

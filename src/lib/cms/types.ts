@@ -167,6 +167,19 @@ export interface AboutPageContent {
 
 export interface ContactPageContent {
   hero: PageHeroContent;
+  info: {
+    email: string;
+    phone: string;
+    location: string;
+    hours: string;
+    sideText: string;
+  };
+  social: {
+    instagram: string;
+    linkedin: string;
+    youtube: string;
+  };
+  formspreeId: string;
 }
 
 // ─── Root CMS Content ─────────────────────────────────────────────────────────
@@ -510,6 +523,19 @@ export const defaultContent: CMSContent = {
       heading: "Let's Work Together.",
       label: 'Contact',
     },
+    info: {
+      email: 'info@movicoksa.com',
+      phone: '+966 53 666 0125',
+      location: 'Wadi Laban, Riyadh, Saudi Arabia',
+      hours: 'Sun – Thu  ·  9:00 AM – 6:00 PM AST',
+      sideText: "Go beyond typical with Movico. You're not just choosing a production company — you're selecting a partner who understands your brand and has a genuine interest in crafting meaningful, impactful cinematic stories.",
+    },
+    social: {
+      instagram: '#',
+      linkedin: '#',
+      youtube: '#',
+    },
+    formspreeId: 'movico-contact',
   },
 };
 

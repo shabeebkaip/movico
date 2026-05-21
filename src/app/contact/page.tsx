@@ -7,6 +7,13 @@ import { ArrowRight, CheckCircle } from "lucide-react";
 import { MagneticText } from "@/components/ui/morphing-cursor";
 import type { Metadata } from "next";
 
+interface ContactCMS {
+  hero: { heading: string; label: string };
+  info: { email: string; phone: string; location: string; hours: string; sideText: string };
+  social: { instagram: string; linkedin: string; youtube: string };
+  formspreeId: string;
+}
+
 const SERVICES = [
   "Video Production",
   "Event Production",
@@ -25,14 +32,35 @@ const BUDGETS = [
   "Prefer to discuss",
 ];
 
+const DEFAULT_CMS: ContactCMS = {
+  hero: { heading: "Let's Work Together.", label: "Get In Touch" },
+  info: {
+    email: "info@movicoksa.com",
+    phone: "+966 53 666 0125",
+    location: "Wadi Laban, Riyadh, Saudi Arabia",
+    hours: "Sun – Thu  ·  9:00 AM – 6:00 PM AST",
+    sideText: "Go beyond typical with Movico. You're not just choosing a production company — you're selecting a partner who understands your brand and has a genuine interest in crafting meaningful, impactful cinematic stories.",
+  },
+  social: { instagram: "#", linkedin: "#", youtube: "#" },
+  formspreeId: "movico-contact",
+};
+
 export default function ContactPage() {
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [cms, setCms] = useState<ContactCMS>(DEFAULT_CMS);
 
   const sectionRef = useRef<HTMLElement>(null);
   const headingRef = useRef<HTMLDivElement>(null);
   const formRef = useRef<HTMLDivElement>(null);
   const infoRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    fetch("/api/cms/content")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => { if (data?.contact) setCms(data.contact); })
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     gsap.registerPlugin(ScrollTrigger);
@@ -67,7 +95,7 @@ export default function ContactPage() {
     const form = e.currentTarget;
     const data = new FormData(form);
     try {
-      await fetch("https://formspree.io/f/movico-contact", {
+      await fetch(`https://formspree.io/f/${cms.formspreeId}`, {
         method: "POST",
         body: data,
         headers: { Accept: "application/json" },
@@ -90,7 +118,7 @@ export default function ContactPage() {
         <div className="relative w-11/12 xl:w-10/12 mx-auto">
           <div ref={headingRef}>
             <span className="uppercase tracking-[0.5em] text-[10px] text-white/30 block mb-6">
-              Get In Touch
+              {cms.hero.label}
             </span>
             <h1 className="font-display font-black text-5xl md:text-7xl xl:text-[8rem] uppercase leading-[0.9] mb-0 flex flex-col items-start gap-0">
               <MagneticText
@@ -229,67 +257,44 @@ export default function ContactPage() {
 
           {/* Contact Info */}
           <div ref={infoRef} className="xl:pl-8 space-y-12">
-            <p className="text-white/50 text-lg leading-relaxed">
-              Go beyond typical with Movico. You&apos;re not just choosing a
-              production company — you&apos;re selecting a partner who
-              understands your brand and has a genuine interest in crafting
-              meaningful, impactful cinematic stories.
-            </p>
+            <p className="text-white/50 text-lg leading-relaxed">{cms.info.sideText}</p>
 
             <div className="space-y-8">
               <div>
-                <p className="text-[10px] uppercase tracking-[0.4em] text-white/30 mb-2">
-                  Email
-                </p>
-                <a
-                  href="mailto:info@movicoksa.com"
-                  className="text-white hover:text-primary transition-colors duration-300"
-                >
-                  info@movicoksa.com
+                <p className="text-[10px] uppercase tracking-[0.4em] text-white/30 mb-2">Email</p>
+                <a href={`mailto:${cms.info.email}`} className="text-white hover:text-primary transition-colors duration-300">
+                  {cms.info.email}
                 </a>
               </div>
               <div>
-                <p className="text-[10px] uppercase tracking-[0.4em] text-white/30 mb-2">
-                  Phone / WhatsApp
-                </p>
-                <a
-                  href="tel:+966536660125"
-                  className="text-white hover:text-primary transition-colors duration-300"
-                >
-                  +966 53 666 0125
+                <p className="text-[10px] uppercase tracking-[0.4em] text-white/30 mb-2">Phone / WhatsApp</p>
+                <a href={`tel:${cms.info.phone.replace(/\s/g, "")}`} className="text-white hover:text-primary transition-colors duration-300">
+                  {cms.info.phone}
                 </a>
               </div>
               <div>
-                <p className="text-[10px] uppercase tracking-[0.4em] text-white/30 mb-2">
-                  Location
-                </p>
-                <p className="text-white">Wadi Laban, Riyadh, Saudi Arabia</p>
+                <p className="text-[10px] uppercase tracking-[0.4em] text-white/30 mb-2">Location</p>
+                <p className="text-white">{cms.info.location}</p>
               </div>
               <div>
-                <p className="text-[10px] uppercase tracking-[0.4em] text-white/30 mb-2">
-                  Business Hours
-                </p>
-                <p className="text-white/60 text-sm">
-                  Sun – Thu &nbsp;·&nbsp; 9:00 AM – 6:00 PM AST
-                </p>
+                <p className="text-[10px] uppercase tracking-[0.4em] text-white/30 mb-2">Business Hours</p>
+                <p className="text-white/60 text-sm">{cms.info.hours}</p>
               </div>
             </div>
 
             {/* Social */}
             <div>
-              <p className="text-[10px] uppercase tracking-[0.4em] text-white/30 mb-4">
-                Follow Us
-              </p>
+              <p className="text-[10px] uppercase tracking-[0.4em] text-white/30 mb-4">Follow Us</p>
               <div className="flex gap-6 text-sm uppercase tracking-[0.2em] text-white/50">
-                <a href="#" className="hover:text-primary transition-colors duration-300">
-                  Instagram
-                </a>
-                <a href="#" className="hover:text-primary transition-colors duration-300">
-                  LinkedIn
-                </a>
-                <a href="#" className="hover:text-primary transition-colors duration-300">
-                  YouTube
-                </a>
+                {cms.social.instagram && cms.social.instagram !== "#" && (
+                  <a href={cms.social.instagram} className="hover:text-primary transition-colors duration-300">Instagram</a>
+                )}
+                {cms.social.linkedin && cms.social.linkedin !== "#" && (
+                  <a href={cms.social.linkedin} className="hover:text-primary transition-colors duration-300">LinkedIn</a>
+                )}
+                {cms.social.youtube && cms.social.youtube !== "#" && (
+                  <a href={cms.social.youtube} className="hover:text-primary transition-colors duration-300">YouTube</a>
+                )}
               </div>
             </div>
 

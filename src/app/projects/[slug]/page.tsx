@@ -3,12 +3,11 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight } from "lucide-react";
-import { PROJECTS, getProjectBySlug } from "@/lib/projects-data";
+import { getProjectBySlug as getCMSProject, listProjects } from "@/lib/cms/projects";
+import { PROJECTS, getProjectBySlug as getStaticProject } from "@/lib/projects-data";
 import { Breadcrumb } from "@/components/Breadcrumb";
 
-export function generateStaticParams() {
-  return PROJECTS.map((p) => ({ slug: p.slug }));
-}
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({
   params,
@@ -16,12 +15,21 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const project = getProjectBySlug(slug);
-  if (!project) return {};
-  return {
-    title: `${project.title} — ${project.client} | Movico`,
-    description: project.shortDescription,
-  };
+  try {
+    const project = await getCMSProject(slug) ?? getStaticProject(slug);
+    if (!project) return {};
+    return {
+      title: `${project.title} — ${project.client} | Movico`,
+      description: project.shortDescription,
+    };
+  } catch {
+    const project = getStaticProject(slug);
+    if (!project) return {};
+    return {
+      title: `${project.title} — ${project.client} | Movico`,
+      description: project.shortDescription,
+    };
+  }
 }
 
 export default async function ProjectDetailPage({
@@ -30,11 +38,31 @@ export default async function ProjectDetailPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const project = getProjectBySlug(slug);
+
+  let project: {
+    slug: string; number: string; client: string; title: string; category: string;
+    location: string; year: string; shortDescription: string; fullDescription: string;
+    result: string; tags: string[]; coverImage: string; images: string[]; featured: boolean;
+  } | null | undefined;
+
+  let allProjects: { slug: string; title: string }[];
+
+  try {
+    [project, allProjects] = await Promise.all([
+      getCMSProject(slug),
+      listProjects(),
+    ]);
+    if (!project) project = getStaticProject(slug) ?? null;
+    if (allProjects.length === 0) allProjects = PROJECTS;
+  } catch {
+    project = getStaticProject(slug) ?? null;
+    allProjects = PROJECTS;
+  }
+
   if (!project) notFound();
 
-  const currentIndex = PROJECTS.findIndex((p) => p.slug === slug);
-  const nextProject = PROJECTS[(currentIndex + 1) % PROJECTS.length];
+  const currentIndex = allProjects.findIndex((p) => p.slug === slug);
+  const nextProject = allProjects[(currentIndex + 1) % allProjects.length];
 
   return (
     <main className="min-h-screen bg-black text-white">
@@ -204,24 +232,26 @@ export default async function ProjectDetailPage({
       </section>
 
       {/* Next Project */}
-      <Link
-        href={`/projects/${nextProject.slug}`}
-        className="group block border-t border-white/8 py-10 px-6 md:px-12 xl:px-20 hover:bg-white/[0.02] transition-colors duration-300"
-      >
-        <div className="w-11/12 xl:w-10/12 mx-auto flex items-center justify-between">
-          <div>
-            <span className="text-[10px] uppercase tracking-[0.4em] text-white/25 block mb-2">
-              Next Project
-            </span>
-            <span className="font-display font-black text-2xl xl:text-4xl uppercase text-white/60 group-hover:text-white transition-colors duration-300">
-              {nextProject.title}
-            </span>
+      {nextProject && (
+        <Link
+          href={`/projects/${nextProject.slug}`}
+          className="group block border-t border-white/8 py-10 px-6 md:px-12 xl:px-20 hover:bg-white/[0.02] transition-colors duration-300"
+        >
+          <div className="w-11/12 xl:w-10/12 mx-auto flex items-center justify-between">
+            <div>
+              <span className="text-[10px] uppercase tracking-[0.4em] text-white/25 block mb-2">
+                Next Project
+              </span>
+              <span className="font-display font-black text-2xl xl:text-4xl uppercase text-white/60 group-hover:text-white transition-colors duration-300">
+                {nextProject.title}
+              </span>
+            </div>
+            <div className="w-12 h-12 rounded-full border border-white/15 flex items-center justify-center group-hover:bg-primary group-hover:border-primary transition-all duration-300">
+              <ArrowRight size={18} className="text-white/40 group-hover:text-white transition-colors duration-300" />
+            </div>
           </div>
-          <div className="w-12 h-12 rounded-full border border-white/15 flex items-center justify-center group-hover:bg-primary group-hover:border-primary transition-all duration-300">
-            <ArrowRight size={18} className="text-white/40 group-hover:text-white transition-colors duration-300" />
-          </div>
-        </div>
-      </Link>
+        </Link>
+      )}
     </main>
   );
 }

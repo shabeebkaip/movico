@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight } from "lucide-react";
+import { listProjects } from "@/lib/cms/projects";
 import { PROJECTS } from "@/lib/projects-data";
 
 export const metadata: Metadata = {
@@ -10,7 +11,18 @@ export const metadata: Metadata = {
     "Explore Movico's portfolio of corporate videos, event productions, and brand films for leading companies across Saudi Arabia and the GCC.",
 };
 
-export default function ProjectsPage() {
+export const dynamic = "force-dynamic";
+
+export default async function ProjectsPage() {
+  let projects: { slug: string; client: string; year: string; category: string; title: string; shortDescription: string; coverImage: string }[];
+
+  try {
+    const cms = await listProjects();
+    projects = cms.length > 0 ? cms : PROJECTS;
+  } catch {
+    projects = PROJECTS;
+  }
+
   return (
     <main className="min-h-screen bg-black text-white">
       {/* Hero */}
@@ -37,7 +49,7 @@ export default function ProjectsPage() {
       {/* Projects Grid */}
       <section className="py-20 xl:py-28 px-6 md:px-12 xl:px-20">
         <div className="w-11/12 xl:w-10/12 mx-auto grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 xl:gap-8">
-          {PROJECTS.map((project) => (
+          {projects.map((project) => (
             <Link
               key={project.slug}
               href={`/projects/${project.slug}`}

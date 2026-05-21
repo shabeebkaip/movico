@@ -16,6 +16,8 @@ import {
   Info,
   Phone,
   Briefcase,
+  Users,
+  FolderOpen,
 } from "lucide-react";
 
 const navSections = [
@@ -27,6 +29,8 @@ const navSections = [
       { label: "About", href: "/admin/content/about", icon: Info },
       { label: "Services", href: "/admin/content/services", icon: Briefcase },
       { label: "Contact", href: "/admin/content/contact", icon: Phone },
+      { label: "Clients", href: "/admin/content/clients", icon: Users },
+      { label: "Projects", href: "/admin/content/projects", icon: FolderOpen },
     ],
   },
   {
