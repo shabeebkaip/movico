@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { useState } from "react";
 import Link from "next/link";
+import type { LucideIcon } from "lucide-react";
 import {
   Video,
   CalendarDays,
@@ -13,84 +14,35 @@ import {
   Camera,
   Clapperboard,
 } from "lucide-react";
+import type { ServicesContent } from "@/lib/cms/types";
+import { defaultContent } from "@/lib/cms/types";
 
-const services = [
-  {
-    number: "01",
-    icon: Video,
-    title: "Video Production",
-    description:
-      "Corporate videos, brand films, and commercials for Saudi Arabia's leading companies — from concept to final cut in Riyadh.",
-    tags: ["Corporate Videos", "Brand Films", "Commercials"],
-    href: "/services/video-production",
-  },
-  {
-    number: "02",
-    icon: CalendarDays,
-    title: "Event Coverage",
-    description:
-      "Professional event coverage across Saudi Arabia — conferences, product launches, and brand activations captured with cinematic precision.",
-    tags: ["Live Events", "Conferences", "Saudi Arabia"],
-    href: "/services/event-production",
-  },
-  {
-    number: "03",
-    icon: Layers,
-    title: "Brand Identity",
-    description:
-      "Strategic brand systems designed for longevity, authority, and regional impact across the Saudi market.",
-    tags: ["Logo", "Visual Systems", "Strategy"],
-    href: "/services/brand-identity",
-  },
-  {
-    number: "04",
-    icon: Camera,
-    title: "Photography",
-    description:
-      "Corporate photography, event photography, and commercial shoots for brands across Saudi Arabia and the GCC.",
-    tags: ["Corporate", "Events", "Commercial"],
-    href: "/studio",
-  },
-  {
-    number: "05",
-    icon: LayoutGrid,
-    title: "Spatial & Booth",
-    description:
-      "Exhibition environments built through architectural storytelling and spatial precision.",
-    tags: ["Exhibition", "3D Design"],
-    href: "/services/spatial-booth",
-  },
-  {
-    number: "06",
-    icon: Sofa,
-    title: "Interior Design",
-    description:
-      "Commercial environments visualised through cinematic precision and creative vision.",
-    tags: ["Commercial", "Visualization"],
-    href: "/services/interior-design",
-  },
-  {
-    number: "07",
-    icon: Share2,
-    title: "Social & Digital",
-    description:
-      "Performance-driven content ecosystems built for dominance across every platform.",
-    tags: ["Social Media", "Campaigns", "Content"],
-    href: "/services/social-digital",
-  },
-  {
-    number: "08",
-    icon: Clapperboard,
-    title: "Media Production",
-    description:
-      "Full-service media production in Riyadh — documentaries, corporate reels, and long-form content for brands across Saudi Arabia.",
-    tags: ["Documentary", "Media", "Riyadh"],
-    href: "/services/video-production",
-  },
-];
+const D = defaultContent.home.services;
 
-export function ServicesSection() {
+const ICON_MAP: Record<string, LucideIcon> = {
+  Video,
+  CalendarDays,
+  Layers,
+  LayoutGrid,
+  Sofa,
+  Share2,
+  Camera,
+  Clapperboard,
+};
+
+export function ServicesSection({
+  content = D,
+  columns = 4,
+}: {
+  content?: ServicesContent;
+  columns?: 2 | 3 | 4;
+}) {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const colClass = { 2: "md:grid-cols-2", 3: "md:grid-cols-3", 4: "xl:grid-cols-4" }[columns];
+  const services = content.items.map((item) => ({
+    ...item,
+    icon: ICON_MAP[item.icon] ?? Video,
+  }));
 
   return (
     <section id="services" className="bg-black text-white py-20 xl:py-28">
@@ -106,21 +58,20 @@ export function ServicesSection() {
         >
           <div>
             <span className="uppercase tracking-[0.5em] text-[10px] text-white/40 block mb-4">
-              What We Do
+              {content.label}
             </span>
             <h2 className="font-display text-4xl md:text-7xl xl:text-8xl uppercase leading-none">
-              Media Production<br />
-              <span className="text-primary">Services</span>
+              {content.headingLine1}<br />
+              <span className="text-primary">{content.headingHighlight}</span>
             </h2>
           </div>
           <p className="text-white/35 max-w-xs text-sm leading-relaxed md:text-right">
-            Corporate video, event coverage, photography &amp; brand production
-            — serving companies across Saudi Arabia from our Riyadh studio.
+            {content.subheading}
           </p>
         </motion.div>
 
         {/* Services Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+        <div className={`grid grid-cols-1 md:grid-cols-2 ${colClass} gap-4`}>
           {services.map((service, index) => (
             <ServiceCard
               key={service.number}
@@ -156,7 +107,7 @@ function ServiceCard({
   onLeave,
   className = "",
 }: {
-  service: typeof services[0];
+  service: { number: string; icon: LucideIcon; title: string; description: string; tags: string[]; href: string };
   index: number;
   isHovered: boolean;
   onHover: () => void;

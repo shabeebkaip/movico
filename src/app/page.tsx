@@ -1,5 +1,4 @@
-"use client";
-
+import { readContent, readDesign } from "@/lib/cms/store";
 import { HeroSection } from "@/components/home/HeroSection";
 import { MarqueeText } from "@/components/home/MarqueeText";
 import ClientsSection from "@/components/home/Clients";
@@ -16,82 +15,94 @@ import { FAQSection } from "@/components/home/FAQSection";
 import CTASection from "@/components/home/CTASection";
 import SceneDivider from "@/components/SceneDivider";
 
-export default function Page() {
+export default async function Page() {
+  const content = await readContent();
+  const design = await readDesign();
+  const s = design.sections.home;
+
   return (
     <main className="min-h-screen bg-black">
-      {/* 1. Hero */}
-      <HeroSection />
+      {s.hero && <HeroSection content={content.home.hero} />}
 
-      {/* ── Warm amber bloom — like a key light fading from the hero ── */}
-      <SceneDivider tone="amber" from="left" spread={380} />
+      {design.sceneDividers.enabled && s.hero && (
+        <SceneDivider tone="amber" from="left" spread={380} />
+      )}
 
-      {/* 2. Marquee */}
-      <MarqueeText />
+      {s.marquee && <MarqueeText content={content.home.marquee} />}
 
-      {/* 3. Clients */}
-      <ClientsSection />
+      {s.clients && <ClientsSection />}
 
-      {/* ── Deep indigo wash — mood shift into the studio statement ── */}
-      <SceneDivider tone="indigo" from="right" spread={380} />
+      {design.sceneDividers.enabled && s.clients && (
+        <SceneDivider tone="indigo" from="right" spread={380} />
+      )}
 
-      {/* 4. About */}
-      <About />
+      {s.about && <About content={content.home.about} />}
 
-      {/* ── Dual-tone — amber left / indigo right, like two opposing lights ── */}
-      <SceneDivider tone="amberIndigo" from="center" spread={380} />
+      {design.sceneDividers.enabled && s.about && (
+        <SceneDivider tone="amberIndigo" from="center" spread={380} />
+      )}
 
-      {/* 5. Work showcase */}
-      <WorkShowcase />
+      {s.workShowcase && <WorkShowcase />}
 
-      {/* ── Cool teal — night exterior feel before services ── */}
-      <SceneDivider tone="teal" from="left" spread={380} />
+      {design.sceneDividers.enabled && s.workShowcase && (
+        <SceneDivider tone="teal" from="left" spread={380} />
+      )}
 
-      {/* 6. Services */}
-      <ServicesSection />
+      {s.services && (
+        <ServicesSection
+          content={content.home.services}
+          columns={design.layout.servicesColumns as 2 | 3 | 4}
+        />
+      )}
 
-      {/* ── Amber surge — studio teaser warm-up ── */}
-      <SceneDivider tone="amber" from="left" spread={380} />
+      {design.sceneDividers.enabled && s.services && (
+        <SceneDivider tone="amber" from="left" spread={380} />
+      )}
 
-      {/* 7. Studio promo */}
-      <StudioPromo />
+      {s.studioPromo && <StudioPromo />}
 
-      {/* ── Amber surge — warm cinematic transition into showreel ── */}
-      <SceneDivider tone="amber" from="center" spread={380} intensity={1.2} />
+      {design.sceneDividers.enabled && s.studioPromo && (
+        <SceneDivider tone="amber" from="center" spread={380} intensity={1.2} />
+      )}
 
-      {/* 8. Showreel */}
-      <ShowReel />
+      {s.showreel && <ShowReel />}
 
-      {/* ── Deep crimson — dramatic beat before case studies ── */}
-      <SceneDivider tone="crimson" from="right" spread={380} />
+      {design.sceneDividers.enabled && s.showreel && (
+        <SceneDivider tone="crimson" from="right" spread={380} />
+      )}
 
-      {/* 8. Case studies */}
-      <CaseStudy />
+      {s.caseStudy && <CaseStudy />}
 
-      {/* ── Teal — cool counterpoint between case studies and process ── */}
-      <SceneDivider tone="teal" from="left" spread={380} />
+      {design.sceneDividers.enabled && s.caseStudy && (
+        <SceneDivider tone="teal" from="left" spread={380} />
+      )}
 
-      {/* 9. Process */}
-      <ProcessFlow />
+      {s.process && <ProcessFlow content={content.home.process} />}
 
-      {/* ── Indigo to amber — moody testimonial atmosphere ── */}
-      <SceneDivider tone="amberIndigo" from="right" spread={380} />
+      {design.sceneDividers.enabled && s.process && (
+        <SceneDivider tone="amberIndigo" from="right" spread={380} />
+      )}
 
-      {/* 10. Testimonials */}
-      <Testimonials />
+      {s.testimonials && (
+        <Testimonials
+          content={content.home.testimonials}
+          layout={design.layout.testimonialsLayout as "columns" | "carousel" | "grid"}
+        />
+      )}
 
-      {/* 11. Insights (white section — no divider needed) */}
-      <InsightsSection />
+      {s.insights && <InsightsSection />}
 
-      {/* 12. FAQ */}
-      <div className="bg-white">
-        <FAQSection />
-      </div>
+      {s.faq && (
+        <div className="bg-white">
+          <FAQSection content={content.home.faq} />
+        </div>
+      )}
 
-      {/* ── Final amber bloom before the CTA ── */}
-      <SceneDivider tone="amber" from="center" spread={380} />
+      {design.sceneDividers.enabled && s.faq && (
+        <SceneDivider tone="amber" from="center" spread={380} />
+      )}
 
-      {/* 13. CTA */}
-      <CTASection />
+      {s.cta && <CTASection content={content.home.cta} />}
     </main>
   );
 }

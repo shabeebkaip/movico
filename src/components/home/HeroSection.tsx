@@ -5,8 +5,12 @@ import { gsap } from "gsap";
 import Link from "next/link";
 import { ArrowDown } from "lucide-react";
 import AnimatedTextCycle from "@/components/ui/animated-text-cycle";
+import type { HeroContent } from "@/lib/cms/types";
+import { defaultContent } from "@/lib/cms/types";
 
-export function HeroSection() {
+const D = defaultContent.home.hero;
+
+export function HeroSection({ content = D }: { content?: HeroContent }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const line1Ref = useRef<HTMLDivElement>(null);
   const line2Ref = useRef<HTMLDivElement>(null);
@@ -50,13 +54,10 @@ export function HeroSection() {
         muted
         playsInline
         preload="metadata"
-        poster="https://movicoksa.com/wp-content/uploads/2024/10/6B2A6288-scaled.jpg"
+        poster={content.posterUrl}
         className="absolute inset-0 w-full h-full object-cover scale-105"
       >
-        <source
-          src="https://res.cloudinary.com/dm5c31z7w/video/upload/q_auto,f_auto/v1769938198/0201_loykmi.mp4"
-          type="video/mp4"
-        />
+        <source src={content.videoUrl} type="video/mp4" />
       </video>
 
       {/* Multi-layer overlay */}
@@ -70,7 +71,7 @@ export function HeroSection() {
             ref={labelRef}
             className="text-white/50 uppercase tracking-[0.5em] text-[10px] md:text-xs mb-6"
           >
-            Video Production · Riyadh · Saudi Arabia
+            {content.label}
           </p>
 
           {/* Overflow-hidden containers for upward reveal */}
@@ -79,7 +80,7 @@ export function HeroSection() {
               ref={line1Ref}
               className="font-display font-black text-white text-[clamp(2.2rem,8vw,7rem)] leading-[0.9] uppercase"
             >
-              Corporate Video &
+              {content.headlineLine1}
             </h1>
           </div>
           <div className="overflow-hidden mb-10">
@@ -89,7 +90,7 @@ export function HeroSection() {
             >
               <div className="flex items-baseline gap-0">
                 <AnimatedTextCycle
-                  words={["Media Production", "Event Coverage", "Brand Films", "Photography"]}
+                  words={content.cyclePhrases}
                   interval={3000}
                   className="text-[clamp(2.2rem,8vw,7rem)] leading-[0.85]"
                 />
@@ -103,25 +104,24 @@ export function HeroSection() {
               ref={subRef}
               className="text-white/55 text-sm md:text-base max-w-xs md:max-w-sm leading-relaxed"
             >
-              Riyadh&apos;s leading corporate video company — brand films, event coverage
-              &amp; media production across Saudi Arabia and the GCC.
+              {content.subtitle}
             </p>
 
             <div ref={ctaRef} className="flex items-center gap-5">
               <Link
-                href="#contact"
+                href={content.ctaPrimary.href}
                 className="bg-primary text-white text-xs font-bold uppercase tracking-[0.2em] px-6 py-3.5 md:px-8 md:py-4 rounded-full hover:bg-white hover:text-black transition-all duration-300"
               >
-                Start a Project
+                {content.ctaPrimary.text}
               </Link>
               <Link
-                href="#showreel"
+                href={content.ctaSecondary.href}
                 className="text-white/60 text-xs uppercase tracking-[0.2em] hover:text-white transition-colors duration-300 flex items-center gap-2 group"
               >
                 <span className="w-8 h-8 rounded-full border border-white/30 flex items-center justify-center group-hover:border-primary group-hover:bg-primary transition-all duration-300">
                   ▶
                 </span>
-                Watch Reel
+                {content.ctaSecondary.text}
               </Link>
             </div>
           </div>

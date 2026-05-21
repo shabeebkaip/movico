@@ -1,0 +1,43 @@
+{
+  "colors": {
+    "primary": "#d98629",
+    "primaryDark": "#c4771e"
+  },
+  "typography": {
+    "headingScale": 1.0,
+    "bodyScale": 1.0
+  },
+  "spacing": {
+    "sectionPadding": "default"
+  },
+  "layout": {
+    "servicesColumns": 4,
+    "heroStyle": "fullscreen",
+    "testimonialsLayout": "columns",
+    "processLayout": "horizontal"
+  },
+  "sections": {
+    "home": {
+      "hero": true,
+      "marquee": true,
+      "clients": true,
+      "about": true,
+      "workShowcase": true,
+      "services": true,
+      "studioPromo": true,
+      "showreel": true,
+      "caseStudy": true,
+      "process": true,
+      "testimonials": true,
+      "insights": true,
+      "faq": true,
+      "cta": true
+    }
+  },
+  "animations": {
+    "enabled": true
+  },
+  "sceneDividers": {
+    "enabled": true
+  }
+}

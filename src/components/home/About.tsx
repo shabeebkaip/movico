@@ -5,15 +5,13 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { MagicText } from "@/components/ui/magic-text";
 import Counter from "@/components/ui/counter";
+import type { AboutContent } from "@/lib/cms/types";
+import { defaultContent } from "@/lib/cms/types";
 
-const stats = [
-  { value: 150, suffix: "+", label: "Projects Completed" },
-  { value: 60, suffix: "+", label: "Brands Served" },
-  { value: 6, suffix: "", label: "Cities in Saudi Arabia" },
-  { value: 4, suffix: "+", label: "Years Active" },
-];
+const D = defaultContent.home.about;
 
-export function About() {
+export function About({ content = D }: { content?: AboutContent }) {
+  const stats = content.stats;
   const sectionRef = useRef<HTMLElement>(null);
   const headingRef = useRef<HTMLHeadingElement>(null);
   const rightRef = useRef<HTMLDivElement>(null);
@@ -66,24 +64,24 @@ export function About() {
           {/* Left — statement */}
           <div>
             <span className="uppercase tracking-[0.5em] text-[10px] text-white/40 mb-8 block">
-              Who We Are
+              {content.label}
             </span>
 
             <h2
               ref={headingRef}
               className="font-display text-4xl md:text-5xl xl:text-6xl font-black leading-[0.95] uppercase mb-8"
             >
-              Riyadh&apos;s corporate
+              {content.headingLine1}
               <br />
-              video company
+              {content.headingLine2}
               <br />
-              <span className="text-primary">built for impact</span>
+              <span className="text-primary">{content.headingHighlight}</span>
               <br />
-              across Saudi Arabia.
+              {content.headingLine4}
             </h2>
 
             <div className="text-white/70 max-w-md -ml-4">
-              <MagicText text="Movico is a Riyadh-based media production studio specialising in corporate videos, event coverage, and brand films — engineered for maximum commercial impact across Saudi Arabia and the GCC." />
+              <MagicText text={content.body} />
             </div>
           </div>
 

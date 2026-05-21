@@ -3,40 +3,13 @@
 import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import type { ProcessContent } from "@/lib/cms/types";
+import { defaultContent } from "@/lib/cms/types";
 
-const steps = [
-  {
-    number: "01",
-    title: "Discovery",
-    description:
-      "Understanding objectives, audience and positioning to define creative direction.",
-  },
-  {
-    number: "02",
-    title: "Pre-Production",
-    description:
-      "Concept development, scripting, casting and logistical planning.",
-  },
-  {
-    number: "03",
-    title: "Production",
-    description:
-      "Cinematography, lighting design and coordinated on-set execution.",
-  },
-  {
-    number: "04",
-    title: "Post-Production",
-    description: "Editing, grading, sound design and motion refinement.",
-  },
-  {
-    number: "05",
-    title: "Distribution",
-    description:
-      "Platform optimisation and strategic rollout for maximum impact.",
-  },
-];
+const D = defaultContent.home.process;
 
-const ProcessFlow = () => {
+const ProcessFlow = ({ content = D }: { content?: ProcessContent }) => {
+  const steps = content.steps;
   const sectionRef = useRef<HTMLElement>(null);
   const headingRef = useRef<HTMLDivElement>(null);
   const stepsRef = useRef<HTMLDivElement>(null);

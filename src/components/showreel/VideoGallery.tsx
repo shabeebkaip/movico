@@ -28,19 +28,28 @@ function VideoCard({
   video: VideoItem;
   onPlay: (v: VideoItem) => void;
 }) {
+  const [imgFailed, setImgFailed] = useState(false);
+
   return (
     <button
       onClick={() => onPlay(video)}
       className="group/card shrink-0 relative w-[240px] md:w-[280px] xl:w-[320px] aspect-video overflow-hidden rounded-sm cursor-pointer focus:outline-none"
     >
       {/* Thumbnail */}
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src={driveThumb(video.id)}
-        alt={video.title}
-        loading="lazy"
-        className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover/card:scale-110"
-      />
+      {!imgFailed ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={driveThumb(video)}
+          alt={video.title}
+          loading="lazy"
+          onError={() => setImgFailed(true)}
+          className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover/card:scale-110"
+        />
+      ) : (
+        <div className="absolute inset-0 bg-gradient-to-br from-[#1a1a1a] to-[#0a0a0a] flex items-center justify-center transition-transform duration-500 group-hover/card:scale-105">
+          <Play size={28} className="text-white/20" />
+        </div>
+      )}
 
       {/* Always-on dark vignette */}
       <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
@@ -209,12 +218,22 @@ function VideoModal({
           <div className="absolute bottom-0 left-0 w-8 h-8 border-b-2 border-l-2 border-primary/60 z-10 pointer-events-none" />
           <div className="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-primary/60 z-10 pointer-events-none" />
 
-          <iframe
-            src={`${driveEmbed(video.id)}?autoplay=1`}
-            className="absolute inset-0 w-full h-full"
-            allow="autoplay; fullscreen"
-            allowFullScreen
-          />
+          {video.source === "cloudinary" && video.cloudinaryVideoUrl ? (
+            <video
+              src={video.cloudinaryVideoUrl}
+              className="absolute inset-0 w-full h-full"
+              autoPlay
+              controls
+              playsInline
+            />
+          ) : (
+            <iframe
+              src={`${driveEmbed(video.id)}?autoplay=1`}
+              className="absolute inset-0 w-full h-full"
+              allow="autoplay; fullscreen"
+              allowFullScreen
+            />
+          )}
         </div>
 
         {/* CTA strip */}
@@ -249,6 +268,7 @@ export default function VideoGallery({
   works: VideoItem[];
 }) {
   const [active, setActive] = useState<VideoItem | null>(null);
+  const [heroImgFailed, setHeroImgFailed] = useState(false);
   const close = useCallback(() => setActive(null), []);
 
   const featured = highlights[0];
@@ -260,13 +280,21 @@ export default function VideoGallery({
       {/* ══════════════════════════════════════════════
           HERO — full-bleed featured film
       ══════════════════════════════════════════════ */}
-      <section className="relative w-full h-[75vh] xl:h-[85vh] overflow-hidden">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={driveThumb(featured.id)}
-          alt={featured.title}
-          className="absolute inset-0 w-full h-full object-cover"
-        />
+      <section className="relative w-full h-[75vh] xl:h-[85vh] overflow-hidden bg-[#0a0a0a]">
+        {/* Hero thumbnail — hidden when Drive isn't accessible */}
+        {!heroImgFailed && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={driveThumb(featured)}
+            alt={featured.title}
+            onError={() => setHeroImgFailed(true)}
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+        )}
+        {/* Fallback gradient when thumbnail fails */}
+        {heroImgFailed && (
+          <div className="absolute inset-0 bg-gradient-to-br from-[#1a0f00] via-[#0a0a0a] to-[#000000]" />
+        )}
 
         {/* Left-to-right fade */}
         <div className="absolute inset-0 bg-gradient-to-r from-black/95 via-black/50 to-transparent" />

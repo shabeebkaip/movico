@@ -3,42 +3,13 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Plus } from "lucide-react";
-import Link from "next/link";
+import type { FAQContent } from "@/lib/cms/types";
+import { defaultContent } from "@/lib/cms/types";
 
-const faqs = [
-  {
-    question: "What types of productions does Movico specialise in?",
-    answer:
-      "We specialise in high-impact commercials, branded films, large-scale event productions, spatial and booth design, interior visualisation, and social/digital campaigns. Each project is built around cinematic quality and strategic intent.",
-  },
-  {
-    question: "Where is Movico based and do you work internationally?",
-    answer:
-      "We are headquartered in Riyadh, Saudi Arabia, and operate across the GCC and internationally. Our portfolio includes landmark productions for World Defense Show, Leap Conference, Neom, and Ford Al Jazirah.",
-  },
-  {
-    question: "How do I start a production with Movico?",
-    answer:
-      "Fill out our enquiry form or contact us directly. We schedule a discovery session to understand your objectives, audience, and timeline — then propose a tailored production plan with a transparent quote.",
-  },
-  {
-    question: "How long does a typical production take?",
-    answer:
-      "Timelines vary by scope. A corporate film typically takes 4–8 weeks from brief to delivery. Full event productions are planned 8–16 weeks in advance. We always build in time for revisions and quality control.",
-  },
-  {
-    question: "What is your pricing structure?",
-    answer:
-      "Every production is scoped individually. We offer transparent project-based quotes after a brief consultation. There are no hidden costs — what's quoted is what's invoiced.",
-  },
-  {
-    question: "Can Movico handle both creative direction and full execution?",
-    answer:
-      "Yes. From concepting and scripting to on-set production, post-production, and final delivery — we handle the complete pipeline. You deal with one team, one point of contact, from start to finish.",
-  },
-];
+const D = defaultContent.home.faq;
 
-export function FAQSection() {
+export function FAQSection({ content = D }: { content?: FAQContent }) {
+  const faqs = content.items;
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   return (
@@ -52,8 +23,8 @@ export function FAQSection() {
           transition={{ duration: 0.8 }}
           className="text-4xl xl:text-6xl font-black uppercase text-center md:text-left"
         >
-          Frequently Asked{" "}
-          <span style={{ color: "#d98629" }}>Questions?</span>
+          {content.heading}{" "}
+          <span style={{ color: "#d98629" }}>{content.headingHighlight}</span>
         </motion.h5>
       </div>
 

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Kanit } from "next/font/google";
+import { headers } from "next/headers";
 import Providers from "./providers";
 import "../index.css";
 import { Header } from "@/components/Header";
@@ -7,6 +8,9 @@ import { WhatsAppFloat } from "@/components/WhatsAppFloat";
 import Footer from "@/components/Footer";
 import CinematicAtmosphere from "@/components/CinematicAtmosphere";
 import { ScrollRestoration } from "@/components/ScrollRestoration";
+import { readDesign } from "@/lib/cms/store";
+import { CMSProvider } from "@/components/cms/CMSContext";
+import { CMSAdminBar } from "@/components/cms/CMSAdminBar";
 
 const kanit = Kanit({
   weight: ["300", "400", "500", "600", "700", "800"],
@@ -26,15 +30,24 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const design = await readDesign();
+  const cssVars = {
+    "--color-primary": design.colors.primary,
+    "--color-primary-dark": design.colors.primaryDark,
+  } as React.CSSProperties;
+
+  const headersList = await headers();
+  const pathname = headersList.get("x-pathname") ?? "";
+  const isAdmin = pathname.startsWith("/admin");
+
   return (
-    <html lang="en">
+    <html lang="en" style={cssVars} suppressHydrationWarning>
       <head>
-        {/* Satoshi — display/headings (Fontshare, not available via next/font) */}
         <link rel="preconnect" href="https://api.fontshare.com" />
         <link
           rel="stylesheet"
@@ -49,12 +62,15 @@ export default function RootLayout({
       </head>
       <body className={kanit.variable}>
         <Providers>
-          <ScrollRestoration />
-          <CinematicAtmosphere />
-          <Header />
-          {children}
-          <Footer />
-          <WhatsAppFloat />
+          <CMSProvider>
+            {!isAdmin && <CMSAdminBar />}
+            {!isAdmin && <ScrollRestoration />}
+            {!isAdmin && <CinematicAtmosphere />}
+            {!isAdmin && <Header />}
+            {children}
+            {!isAdmin && <Footer />}
+            {!isAdmin && <WhatsAppFloat />}
+          </CMSProvider>
         </Providers>
       </body>
     </html>

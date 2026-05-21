@@ -1,8 +1,11 @@
 export interface VideoItem {
-  id: string; // Google Drive file ID
+  id: string; // Google Drive file ID or Cloudinary public_id
   title: string;
   client?: string;
   category: string;
+  thumbnail?: string; // Cloudinary/CDN URL for thumbnail
+  source?: "drive" | "cloudinary";
+  cloudinaryVideoUrl?: string; // Full Cloudinary video URL (when source === 'cloudinary')
 }
 
 export const HIGHLIGHTS: VideoItem[] = [
@@ -38,8 +41,8 @@ export const VIDEO_WORKS: VideoItem[] = [
   { id: "1aX-wwixpqXeEs9ETGV97aUTL34Ai1D69", title: "Campaign Video",               category: "Commercial"  },
 ];
 
-export function driveThumb(id: string) {
-  return `https://drive.google.com/thumbnail?id=${id}&sz=w800-h450`;
+export function driveThumb(video: VideoItem) {
+  return video.thumbnail ?? `https://drive.google.com/thumbnail?id=${video.id}&sz=w800-h450`;
 }
 
 export function driveEmbed(id: string) {

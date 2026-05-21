@@ -4,8 +4,12 @@ import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { MagneticText } from "@/components/ui/morphing-cursor";
+import type { CTAContent } from "@/lib/cms/types";
+import { defaultContent } from "@/lib/cms/types";
 
-const CTASection = () => {
+const D = defaultContent.home.cta;
+
+const CTASection = ({ content = D }: { content?: CTAContent }) => {
   const sectionRef = useRef<HTMLElement>(null);
   const headingRef = useRef<HTMLHeadingElement>(null);
   const formRef = useRef<HTMLDivElement>(null);
@@ -65,21 +69,21 @@ const CTASection = () => {
         {/* Heading */}
         <div className="text-center mb-10 md:mb-16 xl:mb-20">
           <span className="uppercase tracking-[0.5em] text-[10px] text-white/40 block mb-6">
-            Get In Touch
+            {content.label}
           </span>
           <h2
             ref={headingRef}
             className="font-display font-black text-4xl md:text-7xl xl:text-[8rem] uppercase leading-[0.9] flex flex-col items-center gap-0 overflow-hidden"
           >
             <MagneticText
-              text="Let's Create"
-              hoverText="Let's Create"
+              text={content.headingLine1}
+              hoverText={content.headingLine1}
               className="text-white"
               circleClassName="bg-white"
               innerTextClassName="text-black"
             />
             <MagneticText
-              text="Something."
+              text={content.headingLine2}
               hoverText="Together."
               className="text-primary"
               circleClassName="bg-primary"
@@ -142,7 +146,7 @@ const CTASection = () => {
                 type="submit"
                 className="w-full md:w-auto bg-primary text-white text-xs font-bold uppercase tracking-[0.25em] px-10 py-4 rounded-full hover:bg-white hover:text-black transition-all duration-300 mt-4"
               >
-                Send Message
+                {content.ctaButtonText}
               </button>
             </form>
           </div>
@@ -151,10 +155,7 @@ const CTASection = () => {
           <div ref={contentRef} className="xl:pl-8 space-y-10">
             <div>
               <p className="text-white/55 text-lg leading-relaxed mb-8">
-                Go beyond typical with Movico. You&apos;re not just choosing a
-                production company — you&apos;re selecting a partner who
-                understands your brand and has a genuine interest in crafting
-                meaningful, impactful cinematic stories.
+                {content.subtext}
               </p>
             </div>
 
@@ -164,10 +165,10 @@ const CTASection = () => {
                   Email
                 </p>
                 <a
-                  href="mailto:info@movicoksa.com"
+                  href={`mailto:${content.email}`}
                   className="text-white hover:text-primary transition-colors duration-300"
                 >
-                  info@movicoksa.com
+                  {content.email}
                 </a>
               </div>
               <div>
@@ -175,17 +176,17 @@ const CTASection = () => {
                   Phone
                 </p>
                 <a
-                  href="tel:+966536660125"
+                  href={`tel:${content.phone.replace(/\s/g, "")}`}
                   className="text-white hover:text-primary transition-colors duration-300"
                 >
-                  +966 53 666 0125
+                  {content.phone}
                 </a>
               </div>
               <div>
                 <p className="text-[10px] uppercase tracking-[0.4em] text-white/30 mb-2">
                   Location
                 </p>
-                <p className="text-white">Wadi Laban, Riyadh, Saudi Arabia</p>
+                <p className="text-white">{content.location}</p>
               </div>
             </div>
 
@@ -195,9 +196,9 @@ const CTASection = () => {
                 Client Satisfaction
               </p>
               <p className="font-display font-black text-5xl text-primary">
-                98<span className="text-2xl">%</span>
+                {content.satisfactionScore}
               </p>
-              <p className="text-white/40 text-xs mt-1">Would recommend us</p>
+              <p className="text-white/40 text-xs mt-1">{content.satisfactionLabel}</p>
             </div>
           </div>
         </div>

@@ -2,8 +2,12 @@
 
 import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
+import type { MarqueeContent } from "@/lib/cms/types";
+import { defaultContent } from "@/lib/cms/types";
 
-export function MarqueeText() {
+const D = defaultContent.home.marquee;
+
+export function MarqueeText({ content = D }: { content?: MarqueeContent }) {
   const rowRef = useRef<HTMLDivElement>(null);
   const row2Ref = useRef<HTMLDivElement>(null);
 
@@ -24,8 +28,9 @@ export function MarqueeText() {
     return () => ctx.revert();
   }, []);
 
-  const text1 = "Cinematic Production Built For Impact\u00a0\u00a0\u00a0•\u00a0\u00a0\u00a0";
-  const text2 = "Video That Moves Brands\u00a0\u00a0\u00a0•\u00a0\u00a0\u00a0Brand Films\u00a0\u00a0\u00a0•\u00a0\u00a0\u00a0Events\u00a0\u00a0\u00a0•\u00a0\u00a0\u00a0Social Content\u00a0\u00a0\u00a0•\u00a0\u00a0\u00a0";
+  const SEP = "   •   ";
+  const text1 = content.row1 + SEP;
+  const text2 = content.row2 + SEP;
   const copies = 4;
 
   return (

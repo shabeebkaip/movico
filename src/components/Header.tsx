@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, ArrowRight } from "lucide-react";
+import { useCMS } from "@/components/cms/CMSContext";
 
 const navLinks = [
   { name: "Home", href: "/" },
@@ -21,15 +22,13 @@ export function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const pathname = usePathname();
+  const { isAdmin } = useCMS();
 
   const isActive = (href: string) =>
     href === "/" ? pathname === "/" : pathname.startsWith(href);
 
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 40);
-    };
-
+    const handleScroll = () => setIsScrolled(window.scrollY > 40);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
@@ -38,30 +37,30 @@ export function Header() {
     document.body.style.overflow = isMobileOpen ? "hidden" : "auto";
   }, [isMobileOpen]);
 
+  // Shift header down when admin bar is visible
+  const topOffset = isAdmin ? "top-12" : "top-3";
+
   return (
     <>
       <motion.header
         initial={{ y: -60, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-        className="fixed top-3 left-1/2 -translate-x-1/2 z-50 w-[94%] max-w-6xl"
+        className={`fixed ${topOffset} left-1/2 -translate-x-1/2 z-50 w-[94%] max-w-6xl transition-all duration-300`}
       >
         <div
           className={`
-            h-14 md:h-16
-            px-5 md:px-8
+            h-14 md:h-16 px-5 md:px-8
             flex items-center justify-between
-            rounded-full
-            transition-all duration-500
-            ${
-              isScrolled
-                ? "bg-black/85 backdrop-blur-xl border border-white/10 shadow-deep"
-                : "bg-black/40 backdrop-blur-lg border border-white/5"
+            rounded-full transition-all duration-500
+            ${isScrolled
+              ? "bg-black/85 backdrop-blur-xl border border-white/10 shadow-[0_8px_40px_rgba(0,0,0,0.5)]"
+              : "bg-black/40 backdrop-blur-lg border border-white/5"
             }
           `}
         >
           {/* Logo */}
-          <Link href="/" className="flex items-center">
+          <Link href="/" className="flex items-center shrink-0">
             <Image
               src="/logo.webp"
               alt="Movico Studio"
@@ -73,7 +72,7 @@ export function Header() {
           </Link>
 
           {/* Desktop Nav */}
-          <nav className="hidden md:flex items-center gap-12">
+          <nav className="hidden md:flex items-center gap-8 lg:gap-12">
             {navLinks.map((link, i) => (
               <motion.div
                 key={link.name}
@@ -132,11 +131,7 @@ export function Header() {
                 key={link.name}
                 initial={{ opacity: 0, y: 40 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{
-                  delay: index * 0.1,
-                  duration: 0.6,
-                  ease: [0.22, 1, 0.36, 1],
-                }}
+                transition={{ delay: index * 0.1, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
               >
                 <Link
                   href={link.href}
