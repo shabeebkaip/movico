@@ -1,10 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { listProjects, listAllProjects, createProject, bulkCreateProjects, projectCount } from '@/lib/cms/projects';
-
-function isAuthorised(req: NextRequest) {
-  const cookie = req.cookies.get('cms-auth')?.value;
-  return cookie === (process.env.CMS_SECRET || 'movico-cms-2026-xK9mQpLvNz');
-}
+import { isAuthorised } from '@/lib/auth';
 
 export async function GET(req: NextRequest) {
   const all = req.nextUrl.searchParams.get('all') === 'true';

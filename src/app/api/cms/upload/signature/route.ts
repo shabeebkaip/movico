@@ -1,10 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { cloudinary } from '@/lib/cloudinary';
-
-function isAuthorised(req: NextRequest) {
-  const cookie = req.cookies.get('cms-auth')?.value;
-  return cookie === (process.env.CMS_SECRET || 'movico2024');
-}
+import { isAuthorised } from '@/lib/auth';
 
 export async function POST(req: NextRequest) {
   if (!isAuthorised(req)) return NextResponse.json({ error: 'Unauthorised' }, { status: 401 });

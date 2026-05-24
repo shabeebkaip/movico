@@ -13,9 +13,9 @@ if (!g._mongoPromise) {
   const client = new MongoClient(uri, {
     maxPoolSize: 10,
     minPoolSize: 1,
-    connectTimeoutMS: 10_000,
-    socketTimeoutMS: 45_000,
-    serverSelectionTimeoutMS: 10_000,
+    connectTimeoutMS: 5_000,
+    socketTimeoutMS: 30_000,
+    serverSelectionTimeoutMS: 5_000,
     maxIdleTimeMS: 120_000,
   });
   g._mongoPromise = client.connect();

@@ -1,7 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { findUserByEmail, verifyPassword, updateLastLogin } from '@/lib/cms/users';
+import { signAdminToken, COOKIE_NAME } from '@/lib/auth';
+import { checkRateLimit } from '@/lib/rate-limit';
 
 export async function POST(request: NextRequest) {
+  const ip = request.headers.get('x-forwarded-for') ?? 'unknown';
+  if (!checkRateLimit(`login:${ip}`, 5, 15 * 60 * 1000)) {
+    return NextResponse.json({ error: 'Too many attempts. Try again later.' }, { status: 429 });
+  }
+
   try {
     const body = (await request.json()) as { email?: string; password?: string };
 
@@ -19,12 +26,11 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 });
     }
 
-    // Update last login (non-blocking)
     if (user._id) void updateLastLogin(user._id);
 
-    const secret = process.env.CMS_SECRET || 'movico-cms-2026-xK9mQpLvNz';
+    const token = signAdminToken(user.email);
     const response = NextResponse.json({ success: true, email: user.email });
-    response.cookies.set('cms-auth', secret, {
+    response.cookies.set(COOKIE_NAME, token, {
       httpOnly: true,
       path: '/',
       maxAge: 86400 * 7,
@@ -40,6 +46,6 @@ export async function POST(request: NextRequest) {
 
 export async function DELETE() {
   const response = NextResponse.json({ success: true });
-  response.cookies.set('cms-auth', '', { httpOnly: true, path: '/', maxAge: 0 });
+  response.cookies.set(COOKIE_NAME, '', { httpOnly: true, path: '/', maxAge: 0 });
   return response;
 }

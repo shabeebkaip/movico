@@ -2,12 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { revalidatePath } from 'next/cache';
 import { readContent, writeContent } from '@/lib/cms/store';
 import { CMSContent } from '@/lib/cms/types';
-
-function isAuthorised(request: NextRequest): boolean {
-  const cookie = request.cookies.get('cms-auth')?.value;
-  const secret = process.env.CMS_SECRET || 'movico2024';
-  return cookie === secret;
-}
+import { isAuthorised } from '@/lib/auth';
 
 export async function GET(request: NextRequest) {
   if (!isAuthorised(request)) {
@@ -34,6 +29,7 @@ export async function POST(request: NextRequest) {
     revalidatePath('/');
     revalidatePath('/about');
     revalidatePath('/contact');
+    revalidatePath('/studio');
     return NextResponse.json({ success: true });
   } catch (err) {
     console.error('[CMS] Failed to write content:', err);

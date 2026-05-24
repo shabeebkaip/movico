@@ -256,18 +256,18 @@ const sectionAnchors: Record<SectionId, string> = {
 // ─── Shared style constants ───────────────────────────────────────────────────
 
 const inputCls =
-  "bg-[#0a0a0a] border border-white/[0.08] rounded-lg px-3 py-2.5 text-white text-sm w-full focus:border-[#d98629]/50 focus:outline-none placeholder:text-white/20 transition-colors duration-150";
+  "bg-slate-50 border border-slate-200 rounded-lg px-3 py-2.5 text-slate-900 text-sm w-full focus:border-[#d98629]/50 focus:outline-none placeholder:text-slate-400 transition-colors duration-150";
 
 const textareaCls =
-  "bg-[#0a0a0a] border border-white/[0.08] rounded-lg px-3 py-2.5 text-white text-sm w-full focus:border-[#d98629]/50 focus:outline-none placeholder:text-white/20 transition-colors duration-150 resize-none";
+  "bg-slate-50 border border-slate-200 rounded-lg px-3 py-2.5 text-slate-900 text-sm w-full focus:border-[#d98629]/50 focus:outline-none placeholder:text-slate-400 transition-colors duration-150 resize-none";
 
-const labelCls = "text-[10px] uppercase tracking-[0.12em] text-white/35 mb-1.5 block";
+const labelCls = "text-[10px] uppercase tracking-[0.12em] text-slate-400 mb-1.5 block";
 
 const addBtnCls =
-  "bg-white/[0.04] border border-white/[0.08] text-white/50 text-xs rounded-lg px-3 py-2 hover:bg-white/[0.07] hover:text-white/70 w-full mt-2 transition-all flex items-center justify-center gap-2";
+  "bg-white/[0.04] border border-slate-200 text-slate-500 text-xs rounded-lg px-3 py-2 hover:bg-slate-100 hover:text-slate-700 w-full mt-2 transition-all flex items-center justify-center gap-2";
 
 const deleteBtnCls =
-  "text-white/20 hover:text-red-400 transition-colors p-1 rounded hover:bg-red-400/10";
+  "text-slate-400 hover:text-red-400 transition-colors p-1 rounded hover:bg-red-400/10";
 
 const tagChipCls =
   "flex items-center gap-1 bg-[#d98629]/15 text-[#d98629] text-[11px] px-2.5 py-1 rounded-full border border-[#d98629]/25";
@@ -378,7 +378,7 @@ function HeroEditor({
         onUpload={({ url }) => update("home.hero.videoUrl", url)}
       />
       {data.videoUrl && (
-        <p className="text-[10px] text-white/25 font-mono truncate mt-1" title={data.videoUrl}>{data.videoUrl}</p>
+        <p className="text-[10px] text-slate-400 font-mono truncate mt-1" title={data.videoUrl}>{data.videoUrl}</p>
       )}
       <div className={dividerCls} />
       <CloudinaryUploader
@@ -389,7 +389,7 @@ function HeroEditor({
         onUpload={({ url }) => update("home.hero.posterUrl", url)}
       />
       {data.posterUrl && (
-        <p className="text-[10px] text-white/25 font-mono truncate mt-1" title={data.posterUrl}>{data.posterUrl}</p>
+        <p className="text-[10px] text-slate-400 font-mono truncate mt-1" title={data.posterUrl}>{data.posterUrl}</p>
       )}
     </div>
   );
@@ -451,7 +451,7 @@ function AboutEditor({
             <div key={i} className="flex gap-2 items-center">
               <input
                 type="number"
-                className="bg-[#0a0a0a] border border-white/[0.08] rounded-lg px-3 py-2.5 text-white text-sm w-24 focus:border-[#d98629]/50 focus:outline-none transition-colors duration-150"
+                className="bg-slate-50 border border-slate-200 rounded-lg px-3 py-2.5 text-slate-900 text-sm w-24 focus:border-[#d98629]/50 focus:outline-none transition-colors duration-150"
                 value={stat.value}
                 onChange={(e) => {
                   const next = [...data.stats];
@@ -461,7 +461,7 @@ function AboutEditor({
                 placeholder="Value"
               />
               <input
-                className="bg-[#0a0a0a] border border-white/[0.08] rounded-lg px-3 py-2.5 text-white text-sm w-16 focus:border-[#d98629]/50 focus:outline-none transition-colors duration-150"
+                className="bg-slate-50 border border-slate-200 rounded-lg px-3 py-2.5 text-slate-900 text-sm w-16 focus:border-[#d98629]/50 focus:outline-none transition-colors duration-150"
                 value={stat.suffix}
                 onChange={(e) => {
                   const next = [...data.stats];
@@ -471,7 +471,7 @@ function AboutEditor({
                 placeholder="+"
               />
               <input
-                className="bg-[#0a0a0a] border border-white/[0.08] rounded-lg px-3 py-2.5 text-white text-sm flex-1 focus:border-[#d98629]/50 focus:outline-none transition-colors duration-150"
+                className="bg-slate-50 border border-slate-200 rounded-lg px-3 py-2.5 text-slate-900 text-sm flex-1 focus:border-[#d98629]/50 focus:outline-none transition-colors duration-150"
                 value={stat.label}
                 onChange={(e) => {
                   const next = [...data.stats];
@@ -530,21 +530,21 @@ function ServicesEditor({
         <label className={labelCls}>Services</label>
         <div className="space-y-1.5">
           {data.items.map((item, i) => (
-            <div key={i} className="rounded-lg border border-white/[0.07] overflow-hidden">
+            <div key={i} className="rounded-lg border border-slate-200 overflow-hidden">
               <button
                 type="button"
                 onClick={() => setExpandedIdx(expandedIdx === i ? null : i)}
-                className="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-white/[0.03] transition-colors text-left"
+                className="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-slate-100 transition-colors text-left"
               >
                 <span className="text-[10px] text-[#d98629]/70 font-mono w-6 shrink-0">{item.number}</span>
                 <div className="flex-1 min-w-0">
-                  <p className="text-white text-xs font-medium truncate">{item.title || "Untitled"}</p>
-                  <p className="text-white/30 text-[10px] truncate">{item.description}</p>
+                  <p className="text-slate-900 text-xs font-medium truncate">{item.title || "Untitled"}</p>
+                  <p className="text-slate-400 text-[10px] truncate">{item.description}</p>
                 </div>
                 {expandedIdx === i ? (
-                  <ChevronDown size={12} className="text-white/30 shrink-0" />
+                  <ChevronDown size={12} className="text-slate-400 shrink-0" />
                 ) : (
-                  <ChevronRight size={12} className="text-white/30 shrink-0" />
+                  <ChevronRight size={12} className="text-slate-400 shrink-0" />
                 )}
                 <button
                   type="button"
@@ -559,7 +559,7 @@ function ServicesEditor({
                 </button>
               </button>
               {expandedIdx === i && (
-                <div className="px-3 pb-3 pt-1 border-t border-white/[0.05] space-y-3 bg-white/[0.01]">
+                <div className="px-3 pb-3 pt-1 border-t border-slate-200 space-y-3 bg-white/[0.01]">
                   <Field label="Title">
                     <input
                       className={inputCls}
@@ -669,7 +669,7 @@ function ProcessEditor({
         <label className={labelCls}>Steps</label>
         <div className="space-y-3">
           {data.steps.map((step, i) => (
-            <div key={i} className="bg-white/[0.02] border border-white/[0.06] rounded-lg p-3 space-y-2">
+            <div key={i} className="bg-white/[0.02] border border-slate-200 rounded-lg p-3 space-y-2">
               <div className="flex items-center gap-2">
                 <span className="text-[#d98629]/60 text-xs font-mono w-6 shrink-0">{String(i + 1).padStart(2, "0")}</span>
                 <input
@@ -752,23 +752,23 @@ function TestimonialsEditor({
         <label className={labelCls}>Testimonials</label>
         <div className="space-y-1.5">
           {data.items.map((item, i) => (
-            <div key={i} className="rounded-lg border border-white/[0.07] overflow-hidden">
+            <div key={i} className="rounded-lg border border-slate-200 overflow-hidden">
               <button
                 type="button"
                 onClick={() => setExpandedIdx(expandedIdx === i ? null : i)}
-                className="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-white/[0.03] transition-colors text-left"
+                className="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-slate-100 transition-colors text-left"
               >
-                <div className="w-6 h-6 rounded-full bg-white/10 shrink-0 flex items-center justify-center text-[10px] text-white/40">
+                <div className="w-6 h-6 rounded-full bg-white/10 shrink-0 flex items-center justify-center text-[10px] text-slate-500">
                   {item.name ? item.name[0].toUpperCase() : "?"}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-white text-xs font-medium">{item.name || "Unnamed"}</p>
-                  <p className="text-white/30 text-[10px]">{item.role}</p>
+                  <p className="text-slate-900 text-xs font-medium">{item.name || "Unnamed"}</p>
+                  <p className="text-slate-400 text-[10px]">{item.role}</p>
                 </div>
                 {expandedIdx === i ? (
-                  <ChevronDown size={12} className="text-white/30 shrink-0" />
+                  <ChevronDown size={12} className="text-slate-400 shrink-0" />
                 ) : (
-                  <ChevronRight size={12} className="text-white/30 shrink-0" />
+                  <ChevronRight size={12} className="text-slate-400 shrink-0" />
                 )}
                 <button
                   type="button"
@@ -783,7 +783,7 @@ function TestimonialsEditor({
                 </button>
               </button>
               {expandedIdx === i && (
-                <div className="px-3 pb-3 pt-1 border-t border-white/[0.05] space-y-3 bg-white/[0.01]">
+                <div className="px-3 pb-3 pt-1 border-t border-slate-200 space-y-3 bg-white/[0.01]">
                   <Field label="Testimonial Text">
                     <textarea
                       className={textareaCls}
@@ -874,17 +874,17 @@ function FAQEditor({
         <label className={labelCls}>FAQ Items</label>
         <div className="space-y-1.5">
           {data.items.map((item, i) => (
-            <div key={i} className="rounded-lg border border-white/[0.07] overflow-hidden">
+            <div key={i} className="rounded-lg border border-slate-200 overflow-hidden">
               <button
                 type="button"
                 onClick={() => setExpandedIdx(expandedIdx === i ? null : i)}
-                className="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-white/[0.03] transition-colors text-left"
+                className="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-slate-100 transition-colors text-left"
               >
-                <p className="flex-1 text-white/70 text-xs truncate">{item.question || "Untitled question"}</p>
+                <p className="flex-1 text-slate-700 text-xs truncate">{item.question || "Untitled question"}</p>
                 {expandedIdx === i ? (
-                  <ChevronDown size={12} className="text-white/30 shrink-0" />
+                  <ChevronDown size={12} className="text-slate-400 shrink-0" />
                 ) : (
-                  <ChevronRight size={12} className="text-white/30 shrink-0" />
+                  <ChevronRight size={12} className="text-slate-400 shrink-0" />
                 )}
                 <button
                   type="button"
@@ -899,7 +899,7 @@ function FAQEditor({
                 </button>
               </button>
               {expandedIdx === i && (
-                <div className="px-3 pb-3 pt-1 border-t border-white/[0.05] space-y-3 bg-white/[0.01]">
+                <div className="px-3 pb-3 pt-1 border-t border-slate-200 space-y-3 bg-white/[0.01]">
                   <Field label="Question">
                     <input
                       className={inputCls}
@@ -999,7 +999,7 @@ function CTAEditor({
         onUpload={({ url }) => update("home.cta.videoUrl", url)}
       />
       {data.videoUrl && (
-        <p className="text-[10px] text-white/25 font-mono truncate mt-1" title={data.videoUrl}>{data.videoUrl}</p>
+        <p className="text-[10px] text-slate-400 font-mono truncate mt-1" title={data.videoUrl}>{data.videoUrl}</p>
       )}
     </div>
   );
@@ -1107,8 +1107,8 @@ export default function ContentPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-[#0a0a0a]">
-        <Loader2 size={20} className="animate-spin text-white/30" />
+      <div className="flex items-center justify-center min-h-screen bg-slate-50">
+        <Loader2 size={20} className="animate-spin text-slate-400" />
       </div>
     );
   }
@@ -1149,12 +1149,12 @@ export default function ContentPage() {
   })();
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#0a0a0a]">
+    <div className="min-h-screen flex flex-col bg-slate-50">
       {/* Top Bar */}
-      <header className="h-14 border-b border-white/[0.06] flex items-center px-6 gap-4 shrink-0 bg-[#0a0a0a] z-10">
+      <header className="h-14 border-b border-slate-200 flex items-center px-6 gap-4 shrink-0 bg-slate-50 z-10">
         <div className="flex items-center flex-1 min-w-0">
-          <span className="text-white/30 text-xs">Pages /</span>
-          <span className="text-white text-xs font-semibold ml-1">Home</span>
+          <span className="text-slate-400 text-xs">Pages /</span>
+          <span className="text-slate-900 text-xs font-semibold ml-1">Home</span>
         </div>
         <div className="flex items-center gap-3">
           {statusNode}
@@ -1176,7 +1176,7 @@ export default function ContentPage() {
           href="/"
           target="_blank"
           rel="noreferrer"
-          className="flex items-center gap-1.5 text-white/40 hover:text-white text-xs border border-white/[0.08] px-3 py-1.5 rounded-lg hover:border-white/20 transition-all"
+          className="flex items-center gap-1.5 text-slate-500 hover:text-white text-xs border border-slate-200 px-3 py-1.5 rounded-lg hover:border-slate-300 transition-all"
         >
           ↗ View Site
         </a>
@@ -1185,7 +1185,7 @@ export default function ContentPage() {
       {/* Body */}
       <div className="flex-1 flex overflow-hidden">
         {/* Left — Section Nav */}
-        <nav className="w-52 shrink-0 border-r border-white/[0.06] overflow-y-auto bg-[#0a0a0a] py-3">
+        <nav className="w-52 shrink-0 border-r border-slate-200 overflow-y-auto bg-slate-50 py-3">
           {sectionDefs.map(({ id, label, description, Icon }) => {
             const isActive = activeSection === id;
             return (
@@ -1195,13 +1195,13 @@ export default function ContentPage() {
                 className={`w-full flex items-center gap-3 px-4 py-3 text-left transition-all duration-150 border-l-2 ${
                   isActive
                     ? "bg-[#d98629]/10 border-[#d98629] text-white"
-                    : "border-transparent text-white/40 hover:text-white/70 hover:bg-white/[0.03]"
+                    : "border-transparent text-slate-500 hover:text-slate-700 hover:bg-slate-100"
                 }`}
               >
                 <Icon size={14} className="shrink-0" />
                 <div className="min-w-0">
                   <p className="text-xs font-medium leading-tight">{label}</p>
-                  <p className="text-[10px] text-white/30 leading-tight mt-0.5 truncate">{description}</p>
+                  <p className="text-[10px] text-slate-400 leading-tight mt-0.5 truncate">{description}</p>
                 </div>
               </button>
             );
@@ -1209,11 +1209,11 @@ export default function ContentPage() {
         </nav>
 
         {/* Center — Field Editor */}
-        <div className="w-[420px] shrink-0 overflow-y-auto p-6 border-r border-white/[0.06] bg-[#0a0a0a]">
+        <div className="w-[420px] shrink-0 overflow-y-auto p-6 border-r border-slate-200 bg-slate-50">
           {/* Section header */}
           <div className="mb-6">
-            <h2 className="text-white font-semibold text-base">{activeDef.label}</h2>
-            <p className="text-white/30 text-xs mt-0.5">{activeDef.description}</p>
+            <h2 className="text-slate-900 font-semibold text-base">{activeDef.label}</h2>
+            <p className="text-slate-400 text-xs mt-0.5">{activeDef.description}</p>
           </div>
 
           {/* Section-specific editor */}
@@ -1231,18 +1231,18 @@ export default function ContentPage() {
         <div className="flex-1 relative bg-[#050505]">
           <div className="absolute inset-0 flex flex-col">
             {/* Preview toolbar */}
-            <div className="h-10 bg-[#0f0f0f] border-b border-white/[0.06] flex items-center px-4 gap-3 shrink-0">
+            <div className="h-10 bg-slate-50 border-b border-slate-200 flex items-center px-4 gap-3 shrink-0">
               <div className="flex gap-1.5">
                 <div className="w-2.5 h-2.5 rounded-full bg-white/10" />
                 <div className="w-2.5 h-2.5 rounded-full bg-white/10" />
                 <div className="w-2.5 h-2.5 rounded-full bg-white/10" />
               </div>
-              <div className="flex-1 bg-[#1a1a1a] rounded-md px-3 py-1 text-[11px] text-white/30">
+              <div className="flex-1 bg-white rounded-md px-3 py-1 text-[11px] text-slate-400">
                 localhost:3000
               </div>
               <button
                 onClick={refreshPreview}
-                className="text-white/30 hover:text-white/70 transition-colors"
+                className="text-slate-400 hover:text-slate-700 transition-colors"
                 title="Refresh preview"
               >
                 <RotateCcw size={12} />

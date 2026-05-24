@@ -1,11 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { videoCount, createVideo } from '@/lib/cms/videos';
 import { HIGHLIGHTS, VIDEO_WORKS } from '@/lib/showreel-data';
-
-function isAuthorised(req: NextRequest) {
-  const cookie = req.cookies.get('cms-auth')?.value;
-  return cookie === (process.env.CMS_SECRET || 'movico2024');
-}
+import { isAuthorised } from '@/lib/auth';
 
 export async function POST(req: NextRequest) {
   if (!isAuthorised(req)) return NextResponse.json({ error: 'Unauthorised' }, { status: 401 });

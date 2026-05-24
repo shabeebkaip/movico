@@ -33,15 +33,15 @@ const BLANK: Omit<CMSProject, "_id"> = {
 };
 
 const inputCls =
-  "w-full bg-[#141414] border border-white/10 text-white rounded-lg px-3 py-2.5 text-sm focus:border-[#d98629] focus:outline-none transition-colors placeholder:text-white/25";
-const labelCls = "block text-[11px] uppercase tracking-[0.15em] text-white/40 mb-1.5";
+  "w-full bg-white border border-slate-200 text-slate-900 rounded-lg px-3 py-2.5 text-sm focus:border-[#d98629] focus:outline-none transition-colors placeholder:text-slate-400";
+const labelCls = "block text-[11px] uppercase tracking-[0.15em] text-slate-500 mb-1.5";
 
 function Toggle({ on, onToggle, label, sub }: { on: boolean; onToggle: () => void; label: string; sub?: string }) {
   return (
     <div className="flex items-center justify-between py-3">
       <div>
-        <p className="text-white text-sm font-medium">{label}</p>
-        {sub && <p className="text-white/30 text-xs mt-0.5">{sub}</p>}
+        <p className="text-slate-900 text-sm font-medium">{label}</p>
+        {sub && <p className="text-slate-400 text-xs mt-0.5">{sub}</p>}
       </div>
       <button
         type="button"
@@ -56,8 +56,8 @@ function Toggle({ on, onToggle, label, sub }: { on: boolean; onToggle: () => voi
 
 function SectionCard({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="bg-[#111111] border border-white/[0.07] rounded-xl p-6 space-y-4">
-      <h3 className="text-white/50 text-[11px] uppercase tracking-[0.2em] font-medium">{title}</h3>
+    <div className="bg-white border border-slate-200 rounded-xl p-6 space-y-4">
+      <h3 className="text-slate-500 text-[11px] uppercase tracking-[0.2em] font-medium">{title}</h3>
       {children}
     </div>
   );
@@ -146,19 +146,19 @@ export default function ProjectForm({ initialData, projectId }: { initialData?: 
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a]">
+    <div className="min-h-screen bg-slate-50">
       {/* Sticky top bar */}
-      <div className="sticky top-0 z-20 bg-[#0f0f0f] border-b border-white/[0.05] px-8 py-4 flex items-center justify-between">
+      <div className="sticky top-0 z-20 bg-slate-50 border-b border-slate-200 px-8 py-4 flex items-center justify-between">
         <div className="flex items-center gap-4">
           <button
             onClick={() => router.push("/admin/content/projects")}
-            className="flex items-center gap-2 text-white/40 hover:text-white text-xs uppercase tracking-[0.15em] transition-colors"
+            className="flex items-center gap-2 text-slate-500 hover:text-white text-xs uppercase tracking-[0.15em] transition-colors"
           >
             <ArrowLeft size={13} />
             Projects
           </button>
           <span className="text-white/15">/</span>
-          <span className="text-white/60 text-sm truncate max-w-xs">
+          <span className="text-slate-500 text-sm truncate max-w-xs">
             {form.title || (isEdit ? "Edit Project" : "New Project")}
           </span>
         </div>
@@ -168,7 +168,7 @@ export default function ProjectForm({ initialData, projectId }: { initialData?: 
               href={`/projects/${form.slug}`}
               target="_blank"
               rel="noreferrer"
-              className="flex items-center gap-1.5 text-white/30 hover:text-white text-xs uppercase tracking-[0.12em] px-3 py-2 rounded-lg hover:bg-white/[0.04] transition-all"
+              className="flex items-center gap-1.5 text-slate-400 hover:text-white text-xs uppercase tracking-[0.12em] px-3 py-2 rounded-lg hover:bg-slate-100 transition-all"
             >
               <ExternalLink size={11} />
               View
@@ -178,7 +178,7 @@ export default function ProjectForm({ initialData, projectId }: { initialData?: 
             <button
               onClick={handleDelete}
               disabled={deleting}
-              className="flex items-center gap-1.5 text-white/30 hover:text-red-400 text-xs uppercase tracking-[0.12em] px-3 py-2 rounded-lg hover:bg-red-400/[0.06] transition-all disabled:opacity-40"
+              className="flex items-center gap-1.5 text-slate-400 hover:text-red-400 text-xs uppercase tracking-[0.12em] px-3 py-2 rounded-lg hover:bg-red-400/[0.06] transition-all disabled:opacity-40"
             >
               {deleting ? <Loader2 size={11} className="animate-spin" /> : <Trash2 size={11} />}
               Delete
@@ -216,7 +216,7 @@ export default function ProjectForm({ initialData, projectId }: { initialData?: 
                       placeholder="https://…"
                     />
                   </div>
-                  <div className="text-center text-white/20 text-xs uppercase tracking-[0.15em]">or</div>
+                  <div className="text-center text-slate-400 text-xs uppercase tracking-[0.15em]">or</div>
                   <CloudinaryUploader
                     resourceType="image"
                     folder="movico/projects"
@@ -315,7 +315,7 @@ export default function ProjectForm({ initialData, projectId }: { initialData?: 
 
             {/* Gallery */}
             <SectionCard title="Gallery Images">
-              <p className="text-white/30 text-xs -mt-1">These appear in the image grid on the case study page.</p>
+              <p className="text-slate-400 text-xs -mt-1">These appear in the image grid on the case study page.</p>
 
               {/* Upload button */}
               <CloudinaryUploader
@@ -373,7 +373,7 @@ export default function ProjectForm({ initialData, projectId }: { initialData?: 
                           <Trash2 size={12} />
                         </button>
                       </div>
-                      <span className="absolute top-1.5 left-1.5 text-[9px] font-mono bg-black/60 text-white/60 px-1.5 py-0.5 rounded-full">
+                      <span className="absolute top-1.5 left-1.5 text-[9px] font-mono bg-black/60 text-slate-500 px-1.5 py-0.5 rounded-full">
                         {i + 1}
                       </span>
                     </div>
@@ -420,7 +420,7 @@ export default function ProjectForm({ initialData, projectId }: { initialData?: 
                 {tagsInput.trim() && (
                   <div className="flex flex-wrap gap-1.5 mt-2">
                     {tagsInput.split(",").map((t) => t.trim()).filter(Boolean).map((tag) => (
-                      <span key={tag} className="text-[10px] uppercase tracking-[0.15em] border border-white/10 text-white/40 px-2 py-0.5 rounded-full">
+                      <span key={tag} className="text-[10px] uppercase tracking-[0.15em] border border-slate-200 text-slate-500 px-2 py-0.5 rounded-full">
                         {tag}
                       </span>
                     ))}

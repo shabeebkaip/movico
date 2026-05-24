@@ -2,12 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { revalidatePath } from 'next/cache';
 import { readDesign, writeDesign } from '@/lib/cms/store';
 import { CMSDesign } from '@/lib/cms/types';
-
-function isAuthorised(request: NextRequest): boolean {
-  const cookie = request.cookies.get('cms-auth')?.value;
-  const secret = process.env.CMS_SECRET || 'movico2024';
-  return cookie === secret;
-}
+import { isAuthorised } from '@/lib/auth';
 
 export async function GET(request: NextRequest) {
   if (!isAuthorised(request)) {

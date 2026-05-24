@@ -114,10 +114,10 @@ function ControlCard({
   children: React.ReactNode;
 }) {
   return (
-    <div className="bg-[#111111] border border-white/[0.06] rounded-xl overflow-hidden">
-      <div className="flex items-center gap-3 px-5 py-4 border-b border-white/[0.04]">
-        <Icon size={14} className="text-white/40" />
-        <span className="text-white font-semibold text-sm">{title}</span>
+    <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
+      <div className="flex items-center gap-3 px-5 py-4 border-b border-slate-200">
+        <Icon size={14} className="text-slate-500" />
+        <span className="text-slate-900 font-semibold text-sm">{title}</span>
       </div>
       <div className="px-5 py-5 space-y-5">{children}</div>
     </div>
@@ -134,7 +134,7 @@ function SegmentedControl<T extends string | number>({
   onChange: (v: T) => void;
 }) {
   return (
-    <div className="flex bg-[#1a1a1a] border border-white/10 rounded-lg p-0.5 gap-0.5">
+    <div className="flex bg-white border border-slate-200 rounded-lg p-0.5 gap-0.5">
       {options.map((opt) => (
         <button
           key={String(opt.value)}
@@ -143,7 +143,7 @@ function SegmentedControl<T extends string | number>({
           className={`flex-1 text-xs py-1.5 rounded-md transition-all duration-150 font-medium ${
             value === opt.value
               ? "bg-[#d98629] text-black"
-              : "text-white/40 hover:text-white"
+              : "text-slate-500 hover:text-white"
           }`}
         >
           {opt.label}
@@ -238,18 +238,18 @@ export default function DesignPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <Loader2 size={20} className="animate-spin text-white/30" />
+        <Loader2 size={20} className="animate-spin text-slate-400" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#0a0a0a]">
+    <div className="min-h-screen flex flex-col bg-slate-50">
       {/* Top Bar */}
-      <header className="h-14 border-b border-white/[0.06] flex items-center px-6 justify-between shrink-0 bg-[#0a0a0a] z-10">
+      <header className="h-14 border-b border-slate-200 flex items-center px-6 justify-between shrink-0 bg-slate-50 z-10">
         <div className="flex items-center">
-          <span className="text-white/30 text-xs">Pages /</span>
-          <span className="text-white text-xs font-semibold ml-1">Design</span>
+          <span className="text-slate-400 text-xs">Pages /</span>
+          <span className="text-slate-900 text-xs font-semibold ml-1">Design</span>
         </div>
         <SaveStatusIndicator status={saveStatus} />
         <div className="flex items-center gap-3">
@@ -257,7 +257,7 @@ export default function DesignPage() {
             href="/"
             target="_blank"
             rel="noreferrer"
-            className="flex items-center gap-1.5 text-white/40 hover:text-white text-xs border border-white/[0.08] px-3 py-1.5 rounded-lg hover:border-white/20 transition-all"
+            className="flex items-center gap-1.5 text-slate-500 hover:text-white text-xs border border-slate-200 px-3 py-1.5 rounded-lg hover:border-slate-300 transition-all"
           >
             ↗ View Site
           </a>
@@ -280,12 +280,12 @@ export default function DesignPage() {
       {/* Body — two-column split */}
       <div className="flex-1 flex overflow-hidden">
         {/* Left — Controls (scrollable) */}
-        <div className="w-[380px] shrink-0 border-r border-white/[0.06] overflow-y-auto p-6 space-y-4 bg-[#0a0a0a]">
+        <div className="w-[380px] shrink-0 border-r border-slate-200 overflow-y-auto p-6 space-y-4 bg-slate-50">
 
           {/* Brand Colors */}
           <ControlCard icon={Palette} title="Brand Colors">
             <div>
-              <label className="block text-[11px] uppercase tracking-[0.15em] text-white/40 mb-2">
+              <label className="block text-[11px] uppercase tracking-[0.15em] text-slate-500 mb-2">
                 Primary Color
               </label>
               <div className="flex items-center gap-3">
@@ -299,7 +299,7 @@ export default function DesignPage() {
                   />
                 </div>
                 <input
-                  className="flex-1 bg-[#1a1a1a] border border-white/10 text-white rounded-lg px-3 py-2 text-sm focus:border-[#d98629] focus:outline-none transition-colors font-mono uppercase"
+                  className="flex-1 bg-white border border-slate-200 text-slate-900 rounded-lg px-3 py-2 text-sm focus:border-[#d98629] focus:outline-none transition-colors font-mono uppercase"
                   value={design.colors.primary}
                   onChange={(e) => set(["colors", "primary"], e.target.value)}
                   maxLength={7}
@@ -307,7 +307,7 @@ export default function DesignPage() {
               </div>
             </div>
             <div>
-              <label className="block text-[11px] uppercase tracking-[0.15em] text-white/40 mb-2">
+              <label className="block text-[11px] uppercase tracking-[0.15em] text-slate-500 mb-2">
                 Primary Dark
               </label>
               <div className="flex items-center gap-3">
@@ -319,7 +319,7 @@ export default function DesignPage() {
                   style={{ background: design.colors.primaryDark }}
                 />
                 <input
-                  className="flex-1 bg-[#1a1a1a] border border-white/10 text-white rounded-lg px-3 py-2 text-sm focus:border-[#d98629] focus:outline-none transition-colors font-mono uppercase"
+                  className="flex-1 bg-white border border-slate-200 text-slate-900 rounded-lg px-3 py-2 text-sm focus:border-[#d98629] focus:outline-none transition-colors font-mono uppercase"
                   value={design.colors.primaryDark}
                   onChange={(e) => set(["colors", "primaryDark"], e.target.value)}
                   maxLength={7}
@@ -338,7 +338,7 @@ export default function DesignPage() {
           <ControlCard icon={Type} title="Typography">
             <div>
               <div className="flex items-center justify-between mb-2">
-                <label className="text-[11px] uppercase tracking-[0.15em] text-white/40">Heading Scale</label>
+                <label className="text-[11px] uppercase tracking-[0.15em] text-slate-500">Heading Scale</label>
                 <span className="text-xs font-mono font-semibold" style={{ color: design.colors.primary }}>
                   {design.typography.headingScale.toFixed(2)}×
                 </span>
@@ -351,19 +351,19 @@ export default function DesignPage() {
                 onValueChange={([v]) => set(["typography", "headingScale"], v)}
                 className="mb-3"
               />
-              <div className="flex items-end gap-2 p-3 bg-[#1a1a1a] rounded-lg border border-white/[0.06]">
+              <div className="flex items-end gap-2 p-3 bg-white rounded-lg border border-slate-200">
                 <span
-                  className="font-bold text-white leading-none"
+                  className="font-bold leading-none"
                   style={{ fontSize: `${24 * design.typography.headingScale}px`, color: design.colors.primary }}
                 >
                   Aa
                 </span>
-                <span className="text-white/40 text-xs mb-0.5">Heading preview</span>
+                <span className="text-slate-500 text-xs mb-0.5">Heading preview</span>
               </div>
             </div>
             <div>
               <div className="flex items-center justify-between mb-2">
-                <label className="text-[11px] uppercase tracking-[0.15em] text-white/40">Body Scale</label>
+                <label className="text-[11px] uppercase tracking-[0.15em] text-slate-500">Body Scale</label>
                 <span className="text-xs font-mono font-semibold" style={{ color: design.colors.primary }}>
                   {design.typography.bodyScale.toFixed(2)}×
                 </span>
@@ -376,8 +376,8 @@ export default function DesignPage() {
                 onValueChange={([v]) => set(["typography", "bodyScale"], v)}
                 className="mb-3"
               />
-              <div className="p-3 bg-[#1a1a1a] rounded-lg border border-white/[0.06]">
-                <p className="text-white/60 leading-relaxed" style={{ fontSize: `${14 * design.typography.bodyScale}px` }}>
+              <div className="p-3 bg-white rounded-lg border border-slate-200">
+                <p className="text-slate-500 leading-relaxed" style={{ fontSize: `${14 * design.typography.bodyScale}px` }}>
                   Body text preview at selected scale.
                 </p>
               </div>
@@ -387,7 +387,7 @@ export default function DesignPage() {
           {/* Spacing */}
           <ControlCard icon={Layers} title="Spacing">
             <div>
-              <label className="block text-[11px] uppercase tracking-[0.15em] text-white/40 mb-2">
+              <label className="block text-[11px] uppercase tracking-[0.15em] text-slate-500 mb-2">
                 Section Padding
               </label>
               <SegmentedControl
@@ -405,7 +405,7 @@ export default function DesignPage() {
           {/* Layout Variants */}
           <ControlCard icon={Layout} title="Layout Variants">
             <div>
-              <label className="block text-[11px] uppercase tracking-[0.15em] text-white/40 mb-2">Services Columns</label>
+              <label className="block text-[11px] uppercase tracking-[0.15em] text-slate-500 mb-2">Services Columns</label>
               <SegmentedControl
                 options={[
                   { label: "2", value: 2 as const },
@@ -417,7 +417,7 @@ export default function DesignPage() {
               />
             </div>
             <div>
-              <label className="block text-[11px] uppercase tracking-[0.15em] text-white/40 mb-2">Hero Style</label>
+              <label className="block text-[11px] uppercase tracking-[0.15em] text-slate-500 mb-2">Hero Style</label>
               <SegmentedControl
                 options={[
                   { label: "Fullscreen", value: "fullscreen" as const },
@@ -428,7 +428,7 @@ export default function DesignPage() {
               />
             </div>
             <div>
-              <label className="block text-[11px] uppercase tracking-[0.15em] text-white/40 mb-2">Testimonials Layout</label>
+              <label className="block text-[11px] uppercase tracking-[0.15em] text-slate-500 mb-2">Testimonials Layout</label>
               <SegmentedControl
                 options={[
                   { label: "Columns", value: "columns" as const },
@@ -440,7 +440,7 @@ export default function DesignPage() {
               />
             </div>
             <div>
-              <label className="block text-[11px] uppercase tracking-[0.15em] text-white/40 mb-2">Process Layout</label>
+              <label className="block text-[11px] uppercase tracking-[0.15em] text-slate-500 mb-2">Process Layout</label>
               <SegmentedControl
                 options={[
                   { label: "Horizontal", value: "horizontal" as const },
@@ -460,9 +460,9 @@ export default function DesignPage() {
                 return (
                   <div
                     key={key}
-                    className="flex items-center justify-between py-2 border-b border-white/[0.04] last:border-0"
+                    className="flex items-center justify-between py-2 border-b border-slate-200 last:border-0"
                   >
-                    <span className={`text-sm transition-all duration-150 ${visible ? "text-white" : "text-white/30 line-through"}`}>
+                    <span className={`text-sm transition-all duration-150 ${visible ? "text-slate-900" : "text-slate-400 line-through"}`}>
                       {label}
                     </span>
                     <Switch
@@ -479,18 +479,18 @@ export default function DesignPage() {
           <ControlCard icon={Zap} title="Animations & Effects">
             <div className="flex items-center justify-between py-1">
               <div>
-                <p className="text-white text-sm">Master Animations</p>
-                <p className="text-white/40 text-xs mt-0.5">Enables all scroll and entrance animations</p>
+                <p className="text-slate-900 text-sm">Master Animations</p>
+                <p className="text-slate-500 text-xs mt-0.5">Enables all scroll and entrance animations</p>
               </div>
               <Switch
                 checked={design.animations.enabled}
                 onCheckedChange={(checked) => set(["animations", "enabled"], checked)}
               />
             </div>
-            <div className="flex items-center justify-between py-1 border-t border-white/[0.04]">
+            <div className="flex items-center justify-between py-1 border-t border-slate-200">
               <div>
-                <p className="text-white text-sm">Scene Dividers</p>
-                <p className="text-white/40 text-xs mt-0.5">Decorative dividers between sections</p>
+                <p className="text-slate-900 text-sm">Scene Dividers</p>
+                <p className="text-slate-500 text-xs mt-0.5">Decorative dividers between sections</p>
               </div>
               <Switch
                 checked={design.sceneDividers.enabled}
@@ -500,8 +500,8 @@ export default function DesignPage() {
           </ControlCard>
 
           {/* Design Tokens Summary */}
-          <div className="bg-[#111111] border border-white/[0.06] rounded-xl p-4">
-            <p className="text-[11px] uppercase tracking-[0.15em] text-white/30 mb-3">Design Tokens</p>
+          <div className="bg-white border border-slate-200 rounded-xl p-4">
+            <p className="text-[11px] uppercase tracking-[0.15em] text-slate-400 mb-3">Design Tokens</p>
             <div className="grid grid-cols-2 gap-2 text-xs">
               {[
                 { label: "Primary", value: design.colors.primary },
@@ -513,9 +513,9 @@ export default function DesignPage() {
                 { label: "Services Grid", value: `${design.layout.servicesColumns} cols` },
                 { label: "Testimonials", value: design.layout.testimonialsLayout },
               ].map(({ label, value }) => (
-                <div key={label} className="flex items-center justify-between bg-[#1a1a1a] rounded-lg px-2.5 py-2">
-                  <span className="text-white/40 text-[10px]">{label}</span>
-                  <span className="text-white font-mono text-[10px]">{value}</span>
+                <div key={label} className="flex items-center justify-between bg-white rounded-lg px-2.5 py-2">
+                  <span className="text-slate-500 text-[10px]">{label}</span>
+                  <span className="text-slate-900 font-mono text-[10px]">{value}</span>
                 </div>
               ))}
             </div>
@@ -526,18 +526,18 @@ export default function DesignPage() {
         <div className="flex-1 relative bg-[#050505]">
           <div className="absolute inset-0 flex flex-col">
             {/* Preview toolbar */}
-            <div className="h-10 bg-[#0f0f0f] border-b border-white/[0.06] flex items-center px-4 gap-3 shrink-0">
+            <div className="h-10 bg-slate-50 border-b border-slate-200 flex items-center px-4 gap-3 shrink-0">
               <div className="flex gap-1.5">
                 <div className="w-2.5 h-2.5 rounded-full bg-white/10" />
                 <div className="w-2.5 h-2.5 rounded-full bg-white/10" />
                 <div className="w-2.5 h-2.5 rounded-full bg-white/10" />
               </div>
-              <div className="flex-1 bg-[#1a1a1a] rounded-md px-3 py-1 text-[11px] text-white/30">
+              <div className="flex-1 bg-white rounded-md px-3 py-1 text-[11px] text-slate-400">
                 localhost:3000
               </div>
               <button
                 onClick={refreshPreview}
-                className="text-white/30 hover:text-white/70 transition-colors"
+                className="text-slate-400 hover:text-slate-700 transition-colors"
                 title="Refresh preview"
               >
                 <RotateCcw size={12} />

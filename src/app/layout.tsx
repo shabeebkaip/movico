@@ -9,6 +9,7 @@ import Footer from "@/components/Footer";
 import CinematicAtmosphere from "@/components/CinematicAtmosphere";
 import { ScrollRestoration } from "@/components/ScrollRestoration";
 import { readDesign } from "@/lib/cms/store";
+import { defaultDesign } from "@/lib/cms/types";
 import { CMSProvider } from "@/components/cms/CMSContext";
 import { CMSAdminBar } from "@/components/cms/CMSAdminBar";
 
@@ -35,30 +36,34 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const design = await readDesign();
+  const headersList = await headers();
+  const pathname = headersList.get("x-pathname") ?? "";
+  const isAdmin = pathname.startsWith("/admin");
+
+  const design = isAdmin ? defaultDesign : await readDesign();
   const cssVars = {
     "--color-primary": design.colors.primary,
     "--color-primary-dark": design.colors.primaryDark,
   } as React.CSSProperties;
 
-  const headersList = await headers();
-  const pathname = headersList.get("x-pathname") ?? "";
-  const isAdmin = pathname.startsWith("/admin");
-
   return (
     <html lang="en" style={cssVars} suppressHydrationWarning>
       <head>
-        <link rel="preconnect" href="https://api.fontshare.com" />
-        <link
-          rel="stylesheet"
-          href="https://api.fontshare.com/v2/css?f[]=satoshi@900,700,500,400&display=swap"
-        />
-        <link
-          rel="preload"
-          href="https://res.cloudinary.com/dm5c31z7w/video/upload/v1769938198/0201_loykmi.mp4"
-          as="video"
-          type="video/mp4"
-        />
+        {!isAdmin && (
+          <>
+            <link rel="preconnect" href="https://api.fontshare.com" />
+            <link
+              rel="stylesheet"
+              href="https://api.fontshare.com/v2/css?f[]=satoshi@900,700,500,400&display=swap"
+            />
+            <link
+              rel="preload"
+              href="https://res.cloudinary.com/dm5c31z7w/video/upload/v1769938198/0201_loykmi.mp4"
+              as="video"
+              type="video/mp4"
+            />
+          </>
+        )}
       </head>
       <body className={kanit.variable}>
         <Providers>

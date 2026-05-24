@@ -182,6 +182,74 @@ export interface ContactPageContent {
   formspreeId: string;
 }
 
+// ─── Studio ───────────────────────────────────────────────────────────────────
+
+export interface StudioPackage {
+  number: string;
+  title: string;
+  tagline: string;
+  description: string;
+  includes: string[];
+  highlight: boolean;
+}
+
+export interface StudioWorkImage {
+  src: string;
+  alt: string;
+  wide: boolean;
+}
+
+export interface StudioContent {
+  hero: {
+    headlineLine1: string;
+    headlineLine2: string;
+    headlineLine3: string;
+    subtitle: string;
+    ctaPrimary: CTALink;
+    ctaSecondary: CTALink;
+    heroImage: string;
+  };
+  marqueeItems: string[];
+  space: {
+    headingLine1: string;
+    headingLine2: string;
+    description: string;
+    stats: Array<{ value: string; label: string }>;
+    heroImage: string;
+    smallImage: string;
+    bottomImages: Array<{ src: string; label: string }>;
+  };
+  work: {
+    heading: string;
+    headingAccent: string;
+    subtext: string;
+    inlineCTAHeading: string;
+    inlineCTASubtext: string;
+    images: StudioWorkImage[];
+  };
+  packages: {
+    headingLine1: string;
+    headingLine2: string;
+    subtext: string;
+    items: StudioPackage[];
+  };
+  quote: {
+    line1: string;
+    line2: string;
+    line3: string;
+    bgImage: string;
+  };
+  finalCTA: {
+    headingLine1: string;
+    headingLine2: string;
+    headingLine3: string;
+    body: string;
+    ctaPrimary: CTALink;
+    ctaSecondary: CTALink;
+    images: string[];
+  };
+}
+
 // ─── Root CMS Content ─────────────────────────────────────────────────────────
 
 export interface CMSContent {
@@ -189,6 +257,7 @@ export interface CMSContent {
   home: HomeContent;
   about: AboutPageContent;
   contact: ContactPageContent;
+  studio: StudioContent;
 }
 
 // ─── Design ───────────────────────────────────────────────────────────────────
@@ -536,6 +605,125 @@ export const defaultContent: CMSContent = {
       youtube: '#',
     },
     formspreeId: 'movico-contact',
+  },
+  studio: {
+    hero: {
+      headlineLine1: 'Every great visual',
+      headlineLine2: 'begins in the',
+      headlineLine3: 'right space.',
+      subtitle: 'Built for creators, brands, and storytellers. From controlled lighting environments to complete production support — the studio adapts to your vision, not the other way around.',
+      ctaPrimary: { text: 'Book the Studio', href: '/contact?service=studio' },
+      ctaSecondary: { text: 'View Packages', href: '#packages' },
+      heroImage: '/studio/1776759672415.jpg',
+    },
+    marqueeItems: [
+      'Full Lighting Control',
+      '4K+ Camera Equipment',
+      '5 Studio Packages',
+      'Riyadh, KSA',
+      'Open Daily',
+      'Professional Crew Available',
+      'Post-Production In-House',
+    ],
+    space: {
+      headingLine1: 'Step inside',
+      headingLine2: 'the studio.',
+      description: 'Designed from the ground up for premium production. Flexible setups, full lighting control, and every tool on-hand.',
+      stats: [
+        { value: '12+', label: 'Light Sources' },
+        { value: '5',   label: 'Backdrop Colours' },
+        { value: '4K',  label: 'Camera Capability' },
+        { value: '∞',   label: 'Creative Setups' },
+      ],
+      heroImage: '/studio/1776759672085.jpg',
+      smallImage: '/studio/1776759672394.jpg',
+      bottomImages: [
+        { src: '/studio/1776759672182.jpg', label: 'Lighting Corner' },
+        { src: '/studio/1776759672064.jpg', label: 'Cyclorama Floor' },
+        { src: '/studio/1776759672332.jpg', label: 'Backdrop Zone' },
+      ],
+    },
+    work: {
+      heading: 'This is what',
+      headingAccent: 'you can create.',
+      subtext: 'Every image below was produced inside Movico Studio — by brands, creators, and campaigns just like yours.',
+      inlineCTAHeading: 'Ready to create yours?',
+      inlineCTASubtext: 'Walk in with your vision. Walk out with content.',
+      images: [
+        { src: '/studio/DSC00405.jpg', alt: 'Fashion shoot — vibrant backdrop',  wide: false },
+        { src: '/studio/DSC00251.jpg', alt: 'Teal background portrait session',  wide: false },
+        { src: '/studio/DSC00336.jpg', alt: 'Group brand campaign',              wide: true  },
+        { src: '/studio/DSC00358.jpg', alt: 'Editorial portrait session',         wide: false },
+        { src: '/studio/DSC01860.jpg', alt: 'Fashion editorial',                  wide: false },
+        { src: '/studio/DSC00369.jpg', alt: 'Vibrant color session',              wide: false },
+        { src: '/studio/DSC01903.jpg', alt: 'Lifestyle campaign shoot',           wide: true  },
+        { src: '/studio/DSC02006.jpg', alt: 'Minimal portrait shoot',             wide: false },
+        { src: '/studio/DSC00346.jpg', alt: 'Purple editorial session',           wide: false },
+        { src: '/studio/DSC00269.jpg', alt: 'Content creator shoot',              wide: false },
+      ],
+    },
+    packages: {
+      headingLine1: 'Flexible solutions',
+      headingLine2: 'for every shoot.',
+      subtext: 'Five packages, one studio. Every option can be customised — just ask.',
+      items: [
+        {
+          number: '01',
+          title: 'Studio Floor Rental',
+          tagline: 'Your space, your rules.',
+          description: 'A fully equipped professional studio for rent. Ideal for independent creators who need a reliable, ready-to-use environment.',
+          includes: ['Spacious studio floor', 'Basic lighting setup', 'Power access', 'Changing area'],
+          highlight: false,
+        },
+        {
+          number: '02',
+          title: 'Floor + Equipment',
+          tagline: 'Better quality, zero logistics.',
+          description: 'Professional equipment included. Designed for creators who want elevated quality without managing the overhead.',
+          includes: ['Studio floor', 'Professional lighting setups', 'Camera support equipment', 'Grip and accessories'],
+          highlight: false,
+        },
+        {
+          number: '03',
+          title: 'Floor + Production Team',
+          tagline: 'Bring the vision. We handle the rest.',
+          description: 'Our experienced crew steps in. Perfect for brands who want a seamlessly guided shoot from start to finish.',
+          includes: ['Studio floor', 'Equipment setup', 'Production crew', 'Shoot management support'],
+          highlight: false,
+        },
+        {
+          number: '04',
+          title: 'Production + Post',
+          tagline: 'Captured and delivered, polished.',
+          description: 'End-to-end — from shoot floor to final delivery. Your content captured, graded, and ready to publish.',
+          includes: ['Studio floor', 'Full production team', 'Editing and colour grading', 'Final output delivery'],
+          highlight: false,
+        },
+        {
+          number: '05',
+          title: 'Premium Package',
+          tagline: 'From concept to final frame — everything.',
+          description: 'Full-scale production for high-end campaigns, brand films, and commercials. Every element handled under one roof.',
+          includes: ['Studio space', 'Professional models', 'Complete production team', 'Advanced equipment', 'Post-production — editing, grading, sound', 'Creative direction support'],
+          highlight: true,
+        },
+      ],
+    },
+    quote: {
+      line1: 'From a single frame to a complete story —',
+      line2: 'Movico Studio',
+      line3: 'is where your vision becomes real.',
+      bgImage: '/studio/1776759672622.jpg',
+    },
+    finalCTA: {
+      headingLine1: 'Your shoot.',
+      headingLine2: 'Our studio.',
+      headingLine3: "Let's go.",
+      body: "Whether you're a brand, a creator, or an agency — Movico Studio is equipped to make your next project look exceptional. Book a session or talk to us about a full production package.",
+      ctaPrimary: { text: 'Book the Studio', href: '/contact?service=studio' },
+      ctaSecondary: { text: 'See Packages', href: '#packages' },
+      images: ['/studio/1776759672291.jpg', '/studio/DSC01860.jpg', '/studio/1776759672218.jpg'],
+    },
   },
 };
 

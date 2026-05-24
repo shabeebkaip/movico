@@ -1,10 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { updateClient, deleteClient } from '@/lib/cms/clients';
-
-function isAuthorised(req: NextRequest) {
-  const cookie = req.cookies.get('cms-auth')?.value;
-  return cookie === (process.env.CMS_SECRET || 'movico-cms-2026-xK9mQpLvNz');
-}
+import { isAuthorised } from '@/lib/auth';
 
 export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   if (!isAuthorised(req)) return NextResponse.json({ error: 'Unauthorised' }, { status: 401 });

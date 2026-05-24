@@ -16,7 +16,7 @@ interface CMSClient {
 }
 
 const inputCls =
-  "w-full bg-[#1a1a1a] border border-white/10 text-white rounded-lg px-3 py-2 text-sm focus:border-[#d98629] focus:outline-none transition-colors";
+  "w-full bg-white border border-slate-200 text-slate-900 rounded-lg px-3 py-2 text-sm focus:border-[#d98629] focus:outline-none transition-colors";
 
 function ClientCard({
   client, isFirst, isLast,
@@ -32,7 +32,7 @@ function ClientCard({
   onMoveDown: () => void;
 }) {
   return (
-    <div className="group relative bg-[#111111] border border-white/[0.07] hover:border-white/[0.14] rounded-2xl overflow-hidden transition-all duration-200">
+    <div className="group relative bg-white border border-slate-200 hover:border-white/[0.14] rounded-2xl overflow-hidden transition-all duration-200">
       {/* Logo area — white bg so all logos are clearly visible */}
       <div className="relative flex items-center justify-center px-5 py-7 bg-white" style={{ minHeight: 108 }}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -64,19 +64,19 @@ function ClientCard({
           <button
             onClick={onMoveUp}
             disabled={isFirst}
-            className="w-5 h-5 bg-black/50 hover:bg-black/80 rounded flex items-center justify-center text-white/70 disabled:opacity-20 transition-all text-[10px] leading-none"
+            className="w-5 h-5 bg-black/50 hover:bg-black/80 rounded flex items-center justify-center text-slate-700 disabled:opacity-20 transition-all text-[10px] leading-none"
           >↑</button>
           <button
             onClick={onMoveDown}
             disabled={isLast}
-            className="w-5 h-5 bg-black/50 hover:bg-black/80 rounded flex items-center justify-center text-white/70 disabled:opacity-20 transition-all text-[10px] leading-none"
+            className="w-5 h-5 bg-black/50 hover:bg-black/80 rounded flex items-center justify-center text-slate-700 disabled:opacity-20 transition-all text-[10px] leading-none"
           >↓</button>
         </div>
       </div>
 
       {/* Footer */}
-      <div className="flex items-center justify-between px-3 py-2.5 border-t border-white/[0.05]">
-        <p className={`text-[11px] font-medium truncate mr-2 ${client.visible ? "text-white/70" : "text-white/25"}`}>
+      <div className="flex items-center justify-between px-3 py-2.5 border-t border-slate-200">
+        <p className={`text-[11px] font-medium truncate mr-2 ${client.visible ? "text-slate-700" : "text-slate-400"}`}>
           {client.name}
         </p>
         {/* Visibility toggle */}
@@ -257,11 +257,11 @@ export default function ClientsAdminPage() {
       {/* Header */}
       <div className="flex items-start justify-between mb-8">
         <div>
-          <p className="text-[11px] uppercase tracking-[0.2em] text-white/30 mb-1">Pages</p>
-          <h1 className="text-white font-bold text-xl" style={{ fontFamily: "Satoshi, sans-serif" }}>
+          <p className="text-[11px] uppercase tracking-[0.2em] text-slate-400 mb-1">Pages</p>
+          <h1 className="text-slate-900 font-bold text-xl" style={{ fontFamily: "Satoshi, sans-serif" }}>
             Clients
           </h1>
-          <p className="text-white/40 text-xs mt-0.5">
+          <p className="text-slate-500 text-xs mt-0.5">
             {clients.length > 0
               ? `${clients.length} total · ${visibleCount} visible in marquee`
               : "Manage client logos shown in the marquee section"}
@@ -272,7 +272,7 @@ export default function ClientsAdminPage() {
             <button
               onClick={handleSeed}
               disabled={seeding}
-              className="flex items-center gap-2 text-white/60 hover:text-white text-xs uppercase tracking-[0.12em] px-4 py-2.5 rounded-full border border-white/10 hover:border-white/20 transition-all disabled:opacity-40"
+              className="flex items-center gap-2 text-slate-500 hover:text-white text-xs uppercase tracking-[0.12em] px-4 py-2.5 rounded-full border border-slate-200 hover:border-slate-300 transition-all disabled:opacity-40"
             >
               {seeding ? <Loader2 size={12} className="animate-spin" /> : <Database size={12} />}
               {seeding ? "Seeding…" : "Seed Defaults"}
@@ -292,13 +292,13 @@ export default function ClientsAdminPage() {
       {/* Grid / states */}
       {loading ? (
         <div className="flex items-center justify-center h-64">
-          <Loader2 size={20} className="animate-spin text-white/30" />
+          <Loader2 size={20} className="animate-spin text-slate-400" />
         </div>
       ) : clients.length === 0 ? (
-        <div className="bg-[#111111] border border-white/[0.06] rounded-xl p-16 text-center">
-          <Users size={32} className="text-white/20 mx-auto mb-4" />
-          <p className="text-white/40 text-sm mb-1">No clients yet</p>
-          <p className="text-white/20 text-xs mb-6">Seed all 39 defaults or add manually</p>
+        <div className="bg-white border border-slate-200 rounded-xl p-16 text-center">
+          <Users size={32} className="text-slate-400 mx-auto mb-4" />
+          <p className="text-slate-500 text-sm mb-1">No clients yet</p>
+          <p className="text-slate-400 text-xs mb-6">Seed all 39 defaults or add manually</p>
           <button
             onClick={handleSeed}
             disabled={seeding}
@@ -331,10 +331,10 @@ export default function ClientsAdminPage() {
       {showPanel && (
         <div className="fixed inset-0 z-50 flex">
           <div className="absolute inset-0 bg-black/50" onClick={() => setShowPanel(false)} />
-          <div className="relative ml-auto w-full max-w-sm bg-[#111111] border-l border-white/[0.06] flex flex-col h-full">
-            <div className="flex items-center justify-between px-6 py-5 border-b border-white/[0.06]">
-              <h2 className="text-white font-semibold text-sm">{editTarget ? "Edit Client" : "Add Client"}</h2>
-              <button onClick={() => setShowPanel(false)} className="text-white/30 hover:text-white"><X size={16} /></button>
+          <div className="relative ml-auto w-full max-w-sm bg-white border-l border-slate-200 flex flex-col h-full">
+            <div className="flex items-center justify-between px-6 py-5 border-b border-slate-200">
+              <h2 className="text-slate-900 font-semibold text-sm">{editTarget ? "Edit Client" : "Add Client"}</h2>
+              <button onClick={() => setShowPanel(false)} className="text-slate-400 hover:text-white"><X size={16} /></button>
             </div>
 
             <div className="flex-1 overflow-y-auto p-6 space-y-5">
@@ -346,7 +346,7 @@ export default function ClientsAdminPage() {
                 onUpload={({ url }) => setFormLogo(url)}
               />
               <div>
-                <label className="block text-[11px] uppercase tracking-[0.15em] text-white/40 mb-1.5">Or paste URL / path</label>
+                <label className="block text-[11px] uppercase tracking-[0.15em] text-slate-500 mb-1.5">Or paste URL / path</label>
                 <input
                   className={inputCls}
                   value={formLogo}
@@ -356,14 +356,14 @@ export default function ClientsAdminPage() {
               </div>
               {formLogo && (
                 <div className={`h-24 rounded-xl flex items-center justify-center border ${
-                  formWhiteBg ? "bg-white border-white/20" : "bg-[#0a0a0a] border-white/[0.06]"
+                  formWhiteBg ? "bg-white border-slate-300" : "bg-slate-50 border-slate-200"
                 }`}>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={formLogo} alt="preview" className="max-h-16 max-w-[80%] object-contain" />
                 </div>
               )}
               <div>
-                <label className="block text-[11px] uppercase tracking-[0.15em] text-white/40 mb-1.5">Client Name</label>
+                <label className="block text-[11px] uppercase tracking-[0.15em] text-slate-500 mb-1.5">Client Name</label>
                 <input
                   className={inputCls}
                   value={formName}
@@ -371,10 +371,10 @@ export default function ClientsAdminPage() {
                   placeholder="e.g. Saudi Aramco"
                 />
               </div>
-              <div className="flex items-center justify-between py-3 border-t border-white/[0.06]">
+              <div className="flex items-center justify-between py-3 border-t border-slate-200">
                 <div>
-                  <p className="text-white text-sm font-medium">White Background</p>
-                  <p className="text-white/30 text-xs mt-0.5">For dark logos on the live site marquee</p>
+                  <p className="text-slate-900 text-sm font-medium">White Background</p>
+                  <p className="text-slate-400 text-xs mt-0.5">For dark logos on the live site marquee</p>
                 </div>
                 <button
                   type="button"
@@ -386,7 +386,7 @@ export default function ClientsAdminPage() {
               </div>
             </div>
 
-            <div className="px-6 py-4 border-t border-white/[0.06]">
+            <div className="px-6 py-4 border-t border-slate-200">
               <button
                 onClick={handleSave}
                 disabled={saving || !formName.trim() || !formLogo.trim()}

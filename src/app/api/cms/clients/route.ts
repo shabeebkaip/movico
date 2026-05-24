@@ -1,10 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { listClients, listAllClients, createClient, bulkCreateClients, clientCount } from '@/lib/cms/clients';
-
-function isAuthorised(req: NextRequest) {
-  const cookie = req.cookies.get('cms-auth')?.value;
-  return cookie === (process.env.CMS_SECRET || 'movico-cms-2026-xK9mQpLvNz');
-}
+import { isAuthorised } from '@/lib/auth';
 
 export async function GET(req: NextRequest) {
   // Public reads allowed (frontend marquee); ?all=true requires auth (admin list)

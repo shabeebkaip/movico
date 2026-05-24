@@ -41,8 +41,8 @@ function ProjectCard({
   return (
     <div className={`group relative rounded-2xl overflow-hidden border transition-all duration-300 cursor-pointer ${
       project.visible
-        ? "border-white/[0.08] hover:border-white/20"
-        : "border-white/[0.04] opacity-50 grayscale"
+        ? "border-slate-200 hover:border-slate-300"
+        : "border-slate-200 opacity-50 grayscale"
     }`}>
       {/* Cover image */}
       <div className="relative aspect-[16/10] overflow-hidden bg-white/5" onClick={onEdit}>
@@ -81,7 +81,7 @@ function ProjectCard({
 
         {/* Top badges */}
         <div className="absolute top-3 left-3 flex items-center gap-1.5">
-          <span className="text-[10px] font-mono text-white/60 bg-black/50 px-2 py-0.5 rounded-full backdrop-blur-sm">
+          <span className="text-[10px] font-mono text-slate-500 bg-black/50 px-2 py-0.5 rounded-full backdrop-blur-sm">
             {project.number}
           </span>
           {project.featured && (
@@ -97,14 +97,14 @@ function ProjectCard({
           <button
             onClick={(e) => { e.stopPropagation(); onMoveUp(); }}
             disabled={isFirst}
-            className="w-6 h-6 bg-black/60 hover:bg-black/90 rounded-lg flex items-center justify-center text-white/70 disabled:opacity-20 transition-all backdrop-blur-sm"
+            className="w-6 h-6 bg-black/60 hover:bg-black/90 rounded-lg flex items-center justify-center text-slate-700 disabled:opacity-20 transition-all backdrop-blur-sm"
           >
             <ArrowUp size={11} />
           </button>
           <button
             onClick={(e) => { e.stopPropagation(); onMoveDown(); }}
             disabled={isLast}
-            className="w-6 h-6 bg-black/60 hover:bg-black/90 rounded-lg flex items-center justify-center text-white/70 disabled:opacity-20 transition-all backdrop-blur-sm"
+            className="w-6 h-6 bg-black/60 hover:bg-black/90 rounded-lg flex items-center justify-center text-slate-700 disabled:opacity-20 transition-all backdrop-blur-sm"
           >
             <ArrowDown size={11} />
           </button>
@@ -119,10 +119,10 @@ function ProjectCard({
       </div>
 
       {/* Footer */}
-      <div className="bg-[#111111] px-4 py-3.5 flex items-start justify-between gap-3">
+      <div className="bg-white px-4 py-3.5 flex items-start justify-between gap-3">
         <div className="min-w-0 flex-1" onClick={onEdit}>
-          <p className="text-white text-sm font-semibold leading-tight truncate">{project.title}</p>
-          <p className="text-white/35 text-[11px] mt-0.5 truncate">
+          <p className="text-slate-900 text-sm font-semibold leading-tight truncate">{project.title}</p>
+          <p className="text-slate-400 text-[11px] mt-0.5 truncate">
             {project.client} · {project.location} · {project.year}
           </p>
         </div>
@@ -133,7 +133,7 @@ function ProjectCard({
           className={`shrink-0 flex items-center gap-1.5 text-[10px] uppercase tracking-[0.1em] px-2.5 py-1.5 rounded-lg transition-all duration-200 ${
             project.visible
               ? "text-[#d98629] bg-[#d98629]/[0.1] hover:bg-[#d98629]/20"
-              : "text-white/30 bg-white/[0.04] hover:bg-white/[0.08]"
+              : "text-slate-400 bg-white/[0.04] hover:bg-slate-100"
           }`}
         >
           {project.visible ? <Eye size={11} /> : <EyeOff size={11} />}
@@ -238,11 +238,11 @@ export default function ProjectsAdminPage() {
       {/* Header */}
       <div className="flex items-start justify-between mb-8">
         <div>
-          <p className="text-[11px] uppercase tracking-[0.2em] text-white/30 mb-1">Pages</p>
-          <h1 className="text-white font-bold text-xl" style={{ fontFamily: "Satoshi, sans-serif" }}>
+          <p className="text-[11px] uppercase tracking-[0.2em] text-slate-400 mb-1">Pages</p>
+          <h1 className="text-slate-900 font-bold text-xl" style={{ fontFamily: "Satoshi, sans-serif" }}>
             Projects
           </h1>
-          <p className="text-white/40 text-xs mt-0.5">
+          <p className="text-slate-500 text-xs mt-0.5">
             {projects.length > 0
               ? `${projects.length} total · ${visibleCount} visible`
               : "Manage portfolio projects and case studies"}
@@ -253,7 +253,7 @@ export default function ProjectsAdminPage() {
             <button
               onClick={handleSeed}
               disabled={seeding}
-              className="flex items-center gap-2 text-white/60 hover:text-white text-xs uppercase tracking-[0.12em] px-4 py-2.5 rounded-full border border-white/10 hover:border-white/20 transition-all disabled:opacity-40"
+              className="flex items-center gap-2 text-slate-500 hover:text-white text-xs uppercase tracking-[0.12em] px-4 py-2.5 rounded-full border border-slate-200 hover:border-slate-300 transition-all disabled:opacity-40"
             >
               {seeding ? <Loader2 size={12} className="animate-spin" /> : <Database size={12} />}
               {seeding ? "Seeding…" : "Seed Defaults"}
@@ -273,13 +273,13 @@ export default function ProjectsAdminPage() {
       {/* States */}
       {loading ? (
         <div className="flex items-center justify-center h-64">
-          <Loader2 size={20} className="animate-spin text-white/30" />
+          <Loader2 size={20} className="animate-spin text-slate-400" />
         </div>
       ) : projects.length === 0 ? (
-        <div className="bg-[#111111] border border-white/[0.06] rounded-xl p-16 text-center">
-          <FolderOpen size={32} className="text-white/20 mx-auto mb-4" />
-          <p className="text-white/40 text-sm mb-1">No projects yet</p>
-          <p className="text-white/20 text-xs mb-6">Seed the 3 default projects or add your own</p>
+        <div className="bg-white border border-slate-200 rounded-xl p-16 text-center">
+          <FolderOpen size={32} className="text-slate-400 mx-auto mb-4" />
+          <p className="text-slate-500 text-sm mb-1">No projects yet</p>
+          <p className="text-slate-400 text-xs mb-6">Seed the 3 default projects or add your own</p>
           <button
             onClick={handleSeed}
             disabled={seeding}
