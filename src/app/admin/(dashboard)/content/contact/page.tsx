@@ -7,13 +7,18 @@ import {
   Loader2,
   CheckCircle2,
   AlertCircle,
-  RotateCcw,
   Phone,
   Info,
   Share2,
   Settings2,
+  PanelRight,
+  PanelRightClose,
+  PanelLeft,
+  PanelLeftClose,
   type LucideIcon,
 } from "lucide-react";
+import { ScaledPreviewPane } from "@/components/cms/ScaledPreviewPane";
+import { useAdminLayout } from "@/contexts/AdminLayoutContext";
 
 interface ContactCMS {
   contact: {
@@ -194,11 +199,14 @@ function FormEditor({ value, set }: { value: string; set: (path: string[], v: st
 type SaveStatus = "idle" | "unsaved" | "saving" | "saved" | "error";
 
 export default function ContactContentPage() {
+  const { sidebarOpen, toggleSidebar } = useAdminLayout();
   const [content, setContent] = useState<ContactCMS | null>(null);
   const [loading, setLoading] = useState(true);
   const [saveStatus, setSaveStatus] = useState<SaveStatus>("idle");
   const [unsavedCount, setUnsavedCount] = useState(0);
   const [activeSection, setActiveSection] = useState<SectionId>("hero");
+  const [sectionNavExpanded, setSectionNavExpanded] = useState(true);
+  const [showPreview, setShowPreview] = useState(true);
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -289,111 +297,102 @@ export default function ContactContentPage() {
   return (
     <div className="min-h-screen flex flex-col bg-slate-50">
       {/* Top Bar */}
-      <header className="h-14 border-b border-slate-200 flex items-center px-6 gap-4 shrink-0 bg-slate-50 z-10">
+      <header className="h-14 border-b border-slate-200 flex items-center px-4 gap-2 shrink-0 bg-white z-10">
         <div className="flex items-center flex-1 min-w-0">
           <span className="text-slate-400 text-xs">Pages /</span>
           <span className="text-slate-900 text-xs font-semibold ml-1">Contact</span>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-1 border border-slate-200 rounded-lg p-1">
+          <button onClick={toggleSidebar} title={sidebarOpen ? "Collapse sidebar" : "Expand sidebar"}
+            className={`p-1.5 rounded-md transition-all ${sidebarOpen ? "bg-slate-900 text-white" : "text-slate-400 hover:text-slate-700"}`}>
+            {sidebarOpen ? <PanelLeftClose size={13} /> : <PanelLeft size={13} />}
+          </button>
+          <button onClick={() => setSectionNavExpanded((v) => !v)} title={sectionNavExpanded ? "Collapse section nav" : "Expand section nav"}
+            className={`p-1.5 rounded-md transition-all ${sectionNavExpanded ? "bg-slate-900 text-white" : "text-slate-400 hover:text-slate-700"}`}>
+            {sectionNavExpanded ? <PanelLeftClose size={13} /> : <PanelLeft size={13} />}
+          </button>
+          <button onClick={() => setShowPreview((v) => !v)} title={showPreview ? "Hide preview" : "Show preview"}
+            className={`p-1.5 rounded-md transition-all ${showPreview ? "bg-slate-900 text-white" : "text-slate-400 hover:text-slate-700"}`}>
+            {showPreview ? <PanelRightClose size={13} /> : <PanelRight size={13} />}
+          </button>
+        </div>
+        <div className="flex items-center gap-2">
           {statusNode}
           <button
             onClick={() => content && save(content)}
             disabled={saveStatus === "saving" || saveStatus === "saved" || saveStatus === "idle"}
-            className="flex items-center gap-2 bg-[#d98629] hover:bg-[#c4771e] disabled:opacity-40 disabled:cursor-not-allowed text-black text-xs font-semibold px-4 py-2 rounded-lg transition-all duration-150"
+            className="flex items-center gap-2 bg-[#d98629] hover:bg-[#c4771e] disabled:opacity-40 disabled:cursor-not-allowed text-black text-xs font-semibold px-4 py-2 rounded-lg transition-all"
           >
-            {saveStatus === "saving" ? (
-              <><Loader2 size={12} className="animate-spin" /> Saving…</>
-            ) : saveStatus === "saved" ? (
-              <><CheckCircle2 size={12} /> Saved</>
-            ) : (
-              <><Save size={12} /> Save Changes</>
-            )}
+            {saveStatus === "saving" ? <><Loader2 size={12} className="animate-spin" /> Saving…</>
+              : saveStatus === "saved" ? <><CheckCircle2 size={12} /> Saved</>
+              : <><Save size={12} /> Save Changes</>}
           </button>
         </div>
-        <a
-          href="/contact"
-          target="_blank"
-          rel="noreferrer"
-          className="flex items-center gap-1.5 text-slate-500 hover:text-slate-900 text-xs border border-slate-200 px-3 py-1.5 rounded-lg hover:border-slate-300 transition-all"
-        >
+        <a href="/contact" target="_blank" rel="noreferrer"
+          className="flex items-center gap-1.5 text-slate-500 hover:text-slate-800 text-xs border border-slate-200 px-3 py-1.5 rounded-lg hover:border-slate-300 transition-all">
           ↗ View Page
         </a>
       </header>
 
-      {/* Body */}
       <div className="flex-1 flex overflow-hidden">
-        {/* Left — Section Nav */}
-        <nav className="w-52 shrink-0 border-r border-slate-200 overflow-y-auto bg-slate-50 py-3">
-          {sectionDefs.map(({ id, label, description, Icon }) => {
-            const isActive = activeSection === id;
-            return (
-              <button
-                key={id}
-                onClick={() => setActiveSection(id)}
-                className={`w-full flex items-center gap-3 px-4 py-3 text-left transition-all duration-150 border-l-2 ${
-                  isActive
-                    ? "bg-[#d98629]/10 border-[#d98629] text-slate-900"
-                    : "border-transparent text-slate-500 hover:text-slate-700 hover:bg-slate-100"
-                }`}
-              >
-                <Icon size={14} className="shrink-0" />
-                <div className="min-w-0">
-                  <p className="text-xs font-medium leading-tight">{label}</p>
-                  <p className="text-[10px] text-slate-400 leading-tight mt-0.5 truncate">{description}</p>
-                </div>
-              </button>
-            );
-          })}
-        </nav>
+        {sectionNavExpanded ? (
+          <nav className="w-44 shrink-0 border-r border-slate-200 overflow-y-auto bg-slate-50 py-3">
+            {sectionDefs.map(({ id, label, description, Icon }) => {
+              const isActive = activeSection === id;
+              return (
+                <button key={id} onClick={() => setActiveSection(id)}
+                  className={`w-full flex items-center gap-3 px-4 py-3 text-left transition-all duration-150 border-l-2 ${
+                    isActive ? "bg-[#d98629]/10 border-[#d98629] text-slate-900" : "border-transparent text-slate-500 hover:text-slate-700 hover:bg-slate-100"
+                  }`}
+                >
+                  <Icon size={14} className="shrink-0" />
+                  <div className="min-w-0">
+                    <p className="text-xs font-medium leading-tight">{label}</p>
+                    <p className="text-[10px] text-slate-400 leading-tight mt-0.5 truncate">{description}</p>
+                  </div>
+                </button>
+              );
+            })}
+          </nav>
+        ) : (
+          <nav className="w-10 shrink-0 border-r border-slate-200 overflow-y-auto bg-slate-50 py-3 flex flex-col items-center gap-0.5">
+            {sectionDefs.map(({ id, label, Icon }) => {
+              const isActive = activeSection === id;
+              return (
+                <button
+                  key={id}
+                  onClick={() => setActiveSection(id)}
+                  title={label}
+                  className={`group relative w-full flex items-center justify-center py-2.5 transition-all border-l-2 ${
+                    isActive
+                      ? "border-[#d98629] bg-[#d98629]/10 text-[#d98629]"
+                      : "border-transparent text-slate-400 hover:text-slate-700 hover:bg-slate-100"
+                  }`}
+                >
+                  <Icon size={14} />
+                  <span className="pointer-events-none absolute left-full ml-2 whitespace-nowrap bg-slate-800 text-white text-[11px] px-2 py-1 rounded-md opacity-0 group-hover:opacity-100 transition-opacity z-50 shadow-lg">
+                    {label}
+                  </span>
+                </button>
+              );
+            })}
+          </nav>
+        )}
 
-        {/* Center — Field Editor */}
-        <div className="w-[420px] shrink-0 overflow-y-auto p-6 border-r border-slate-200 bg-slate-50">
+        <div className={`${showPreview ? "w-[400px] shrink-0" : "flex-1"} overflow-y-auto p-6 border-r border-slate-200 bg-slate-50`}>
           <div className="mb-6">
-            <h2 className="text-slate-900 font-semibold text-base">
-              {sectionDefs.find((s) => s.id === activeSection)?.label}
-            </h2>
-            <p className="text-slate-400 text-xs mt-0.5">
-              {sectionDefs.find((s) => s.id === activeSection)?.description}
-            </p>
+            <h2 className="text-slate-900 font-semibold text-base">{sectionDefs.find((s) => s.id === activeSection)?.label}</h2>
+            <p className="text-slate-400 text-xs mt-0.5">{sectionDefs.find((s) => s.id === activeSection)?.description}</p>
           </div>
-
           {activeSection === "hero"   && <HeroEditor   data={c.hero}   set={set} />}
           {activeSection === "info"   && <InfoEditor   data={c.info}   set={set} />}
           {activeSection === "social" && <SocialEditor data={c.social} set={set} />}
           {activeSection === "form"   && <FormEditor   value={c.formspreeId} set={set} />}
         </div>
 
-        {/* Right — Live Preview */}
-        <div className="flex-1 relative bg-[#050505]">
-          <div className="absolute inset-0 flex flex-col">
-            {/* Preview toolbar */}
-            <div className="h-10 bg-slate-50 border-b border-slate-200 flex items-center px-4 gap-3 shrink-0">
-              <div className="flex gap-1.5">
-                <div className="w-2.5 h-2.5 rounded-full bg-slate-200" />
-                <div className="w-2.5 h-2.5 rounded-full bg-slate-200" />
-                <div className="w-2.5 h-2.5 rounded-full bg-slate-200" />
-              </div>
-              <div className="flex-1 bg-white rounded-md px-3 py-1 text-[11px] text-slate-400">
-                localhost:3000/contact
-              </div>
-              <button
-                onClick={refreshPreview}
-                className="text-slate-400 hover:text-slate-700 transition-colors"
-                title="Refresh preview"
-              >
-                <RotateCcw size={12} />
-              </button>
-            </div>
-
-            {/* iframe */}
-            <iframe
-              ref={iframeRef}
-              src="/contact"
-              className="flex-1 w-full border-0"
-              title="Contact Page Preview"
-            />
-          </div>
-        </div>
+        {showPreview && (
+          <ScaledPreviewPane src="/contact" iframeRef={iframeRef} onRefresh={refreshPreview} />
+        )}
       </div>
     </div>
   );

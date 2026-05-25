@@ -90,7 +90,9 @@ export function CMSProvider({ children }: { children: React.ReactNode }) {
         if (contentRes.ok) {
           const contentData = (await contentRes.json()) as CMSContent;
           setContent(contentData);
-          setIsAdmin(true);
+          // Don't show admin UI when rendered inside a preview iframe
+          const inIframe = typeof window !== "undefined" && window.self !== window.top;
+          if (!inIframe) setIsAdmin(true);
         }
 
         if (designRes.ok) {

@@ -5,7 +5,8 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import {
   Plus, Trash2, Loader2, FolderOpen, Database, Pencil,
-  ArrowUp, ArrowDown, Star, Eye, EyeOff,
+  ArrowUp, ArrowDown, Star, Eye, EyeOff, LayoutGrid, List,
+  MapPin, Calendar, Tag,
 } from "lucide-react";
 import { DEFAULT_PROJECTS } from "./defaultProjects";
 
@@ -25,132 +26,190 @@ interface CMSProject {
   visible: boolean;
 }
 
-function ProjectCard({
+// ─── Grid Card ────────────────────────────────────────────────────────────────
+
+function GridCard({
   project, isFirst, isLast,
   onEdit, onToggle, onDelete, onMoveUp, onMoveDown,
 }: {
-  project: CMSProject;
-  isFirst: boolean;
-  isLast: boolean;
-  onEdit: () => void;
-  onToggle: () => void;
-  onDelete: () => void;
-  onMoveUp: () => void;
-  onMoveDown: () => void;
+  project: CMSProject; isFirst: boolean; isLast: boolean;
+  onEdit: () => void; onToggle: () => void; onDelete: () => void;
+  onMoveUp: () => void; onMoveDown: () => void;
 }) {
   return (
-    <div className={`group relative rounded-2xl overflow-hidden border transition-all duration-300 cursor-pointer ${
-      project.visible
-        ? "border-slate-200 hover:border-slate-300"
-        : "border-slate-200 opacity-50 grayscale"
+    <div className={`group bg-white rounded-2xl overflow-hidden border transition-all duration-200 hover:shadow-md ${
+      project.visible ? "border-slate-200 hover:border-slate-300" : "border-slate-200 opacity-60"
     }`}>
-      {/* Cover image */}
-      <div className="relative aspect-[16/10] overflow-hidden bg-white/5" onClick={onEdit}>
+      {/* Image */}
+      <div className="relative aspect-[16/10] overflow-hidden bg-slate-100 cursor-pointer" onClick={onEdit}>
         {project.coverImage ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={project.coverImage}
-            alt={project.title}
-            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-          />
+          <img src={project.coverImage} alt={project.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
         ) : (
-          <div className="w-full h-full flex items-center justify-center">
-            <FolderOpen size={28} className="text-white/15" />
+          <div className="w-full h-full flex flex-col items-center justify-center gap-2">
+            <FolderOpen size={24} className="text-slate-300" />
+            <span className="text-[11px] text-slate-400">No cover image</span>
           </div>
         )}
 
-        {/* Dark overlay on hover */}
-        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/55 transition-all duration-300" />
+        {/* Gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
-        {/* Hover actions */}
-        <div className="absolute inset-0 flex items-center justify-center gap-3 opacity-0 group-hover:opacity-100 transition-all duration-300">
+        {/* Hover edit button */}
+        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
           <button
             onClick={(e) => { e.stopPropagation(); onEdit(); }}
-            className="flex items-center gap-2 bg-[#d98629] text-black text-[11px] font-bold uppercase tracking-[0.15em] px-4 py-2 rounded-full hover:scale-105 transition-transform"
+            className="flex items-center gap-2 bg-[#d98629] text-black text-[11px] font-bold uppercase tracking-[0.15em] px-4 py-2 rounded-full hover:scale-105 transition-transform shadow-lg"
           >
-            <Pencil size={11} />
-            Edit
-          </button>
-          <button
-            onClick={(e) => { e.stopPropagation(); onDelete(); }}
-            className="w-8 h-8 bg-white/10 hover:bg-red-500/80 rounded-full flex items-center justify-center text-white transition-all hover:scale-105"
-          >
-            <Trash2 size={13} />
+            <Pencil size={11} /> Edit Project
           </button>
         </div>
 
-        {/* Top badges */}
+        {/* Top-left badges */}
         <div className="absolute top-3 left-3 flex items-center gap-1.5">
-          <span className="text-[10px] font-mono text-slate-500 bg-black/50 px-2 py-0.5 rounded-full backdrop-blur-sm">
-            {project.number}
+          <span className="text-[10px] font-mono bg-black/50 text-white/80 px-2 py-0.5 rounded-full backdrop-blur-sm">
+            #{project.number}
           </span>
           {project.featured && (
-            <span className="flex items-center gap-1 text-[10px] bg-[#d98629]/90 text-black font-bold px-2 py-0.5 rounded-full backdrop-blur-sm">
-              <Star size={8} fill="currentColor" />
-              Featured
+            <span className="flex items-center gap-1 text-[10px] bg-[#d98629] text-black font-bold px-2 py-0.5 rounded-full">
+              <Star size={8} fill="currentColor" /> Featured
             </span>
           )}
         </div>
 
         {/* Top-right reorder */}
         <div className="absolute top-3 right-3 flex flex-col gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-          <button
-            onClick={(e) => { e.stopPropagation(); onMoveUp(); }}
-            disabled={isFirst}
-            className="w-6 h-6 bg-black/60 hover:bg-black/90 rounded-lg flex items-center justify-center text-slate-700 disabled:opacity-20 transition-all backdrop-blur-sm"
-          >
-            <ArrowUp size={11} />
+          <button onClick={(e) => { e.stopPropagation(); onMoveUp(); }} disabled={isFirst}
+            className="w-6 h-6 bg-black/50 hover:bg-black/80 backdrop-blur-sm rounded-md flex items-center justify-center text-white disabled:opacity-20 transition-all">
+            <ArrowUp size={10} />
           </button>
-          <button
-            onClick={(e) => { e.stopPropagation(); onMoveDown(); }}
-            disabled={isLast}
-            className="w-6 h-6 bg-black/60 hover:bg-black/90 rounded-lg flex items-center justify-center text-slate-700 disabled:opacity-20 transition-all backdrop-blur-sm"
-          >
-            <ArrowDown size={11} />
+          <button onClick={(e) => { e.stopPropagation(); onMoveDown(); }} disabled={isLast}
+            className="w-6 h-6 bg-black/50 hover:bg-black/80 backdrop-blur-sm rounded-md flex items-center justify-center text-white disabled:opacity-20 transition-all">
+            <ArrowDown size={10} />
           </button>
         </div>
 
-        {/* Category pill — bottom left */}
+        {/* Category pill bottom-left */}
         <div className="absolute bottom-3 left-3">
-          <span className="text-[10px] uppercase tracking-[0.2em] bg-black/60 text-white/80 px-2.5 py-1 rounded-full backdrop-blur-sm">
+          <span className="text-[9px] uppercase tracking-[0.18em] bg-black/55 text-white/90 px-2.5 py-1 rounded-full backdrop-blur-sm">
             {project.category}
           </span>
         </div>
       </div>
 
-      {/* Footer */}
-      <div className="bg-white px-4 py-3.5 flex items-start justify-between gap-3">
-        <div className="min-w-0 flex-1" onClick={onEdit}>
-          <p className="text-slate-900 text-sm font-semibold leading-tight truncate">{project.title}</p>
+      {/* Card body */}
+      <div className="px-4 py-3 flex items-center justify-between gap-3">
+        <div className="min-w-0 flex-1 cursor-pointer" onClick={onEdit}>
+          <p className="text-slate-900 text-sm font-semibold truncate leading-snug">{project.title}</p>
           <p className="text-slate-400 text-[11px] mt-0.5 truncate">
             {project.client} · {project.location} · {project.year}
           </p>
         </div>
+        <div className="flex items-center gap-1.5 shrink-0">
+          <button onClick={onToggle}
+            className={`flex items-center gap-1 text-[10px] font-semibold px-2.5 py-1.5 rounded-lg transition-all ${
+              project.visible
+                ? "bg-emerald-50 text-emerald-600 hover:bg-emerald-100"
+                : "bg-slate-100 text-slate-400 hover:bg-slate-200"
+            }`}>
+            {project.visible ? <Eye size={10} /> : <EyeOff size={10} />}
+            {project.visible ? "Live" : "Hidden"}
+          </button>
+          <button onClick={onDelete}
+            className="w-7 h-7 flex items-center justify-center rounded-lg text-slate-300 hover:text-red-500 hover:bg-red-50 transition-all">
+            <Trash2 size={13} />
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
 
-        {/* Visibility toggle */}
-        <button
-          onClick={onToggle}
-          className={`shrink-0 flex items-center gap-1.5 text-[10px] uppercase tracking-[0.1em] px-2.5 py-1.5 rounded-lg transition-all duration-200 ${
-            project.visible
-              ? "text-[#d98629] bg-[#d98629]/[0.1] hover:bg-[#d98629]/20"
-              : "text-slate-400 bg-white/[0.04] hover:bg-slate-100"
-          }`}
-        >
-          {project.visible ? <Eye size={11} /> : <EyeOff size={11} />}
+// ─── List Row ─────────────────────────────────────────────────────────────────
+
+function ListRow({
+  project, isFirst, isLast,
+  onEdit, onToggle, onDelete, onMoveUp, onMoveDown,
+}: {
+  project: CMSProject; isFirst: boolean; isLast: boolean;
+  onEdit: () => void; onToggle: () => void; onDelete: () => void;
+  onMoveUp: () => void; onMoveDown: () => void;
+}) {
+  return (
+    <div className={`group flex items-center gap-4 bg-white border rounded-xl px-4 py-3 transition-all hover:shadow-sm ${
+      project.visible ? "border-slate-200 hover:border-slate-300" : "border-slate-200 opacity-60"
+    }`}>
+      {/* Thumb */}
+      <div className="w-16 h-10 rounded-lg overflow-hidden bg-slate-100 shrink-0">
+        {project.coverImage
+          ? <img src={project.coverImage} alt={project.title} className="w-full h-full object-cover" /> // eslint-disable-line @next/next/no-img-element
+          : <div className="w-full h-full flex items-center justify-center"><FolderOpen size={14} className="text-slate-300" /></div>
+        }
+      </div>
+
+      {/* Info */}
+      <div className="flex-1 min-w-0 cursor-pointer" onClick={onEdit}>
+        <div className="flex items-center gap-2">
+          <p className="text-sm font-semibold text-slate-800 truncate">{project.title}</p>
+          {project.featured && (
+            <span className="shrink-0 flex items-center gap-1 text-[9px] bg-[#d98629]/10 text-[#d98629] font-bold px-1.5 py-0.5 rounded-full">
+              <Star size={7} fill="currentColor" /> Featured
+            </span>
+          )}
+        </div>
+        <div className="flex items-center gap-3 mt-0.5">
+          <span className="flex items-center gap-1 text-[11px] text-slate-400"><Tag size={9} />{project.category}</span>
+          <span className="flex items-center gap-1 text-[11px] text-slate-400"><MapPin size={9} />{project.location}</span>
+          <span className="flex items-center gap-1 text-[11px] text-slate-400"><Calendar size={9} />{project.year}</span>
+        </div>
+      </div>
+
+      {/* Client */}
+      <p className="text-xs text-slate-500 truncate w-32 shrink-0 hidden lg:block">{project.client}</p>
+
+      {/* Actions */}
+      <div className="flex items-center gap-1.5 shrink-0">
+        <div className="flex flex-col gap-0.5">
+          <button onClick={onMoveUp} disabled={isFirst}
+            className="w-5 h-5 flex items-center justify-center rounded text-slate-300 hover:text-slate-600 hover:bg-slate-100 disabled:opacity-20 transition-all">
+            <ArrowUp size={10} />
+          </button>
+          <button onClick={onMoveDown} disabled={isLast}
+            className="w-5 h-5 flex items-center justify-center rounded text-slate-300 hover:text-slate-600 hover:bg-slate-100 disabled:opacity-20 transition-all">
+            <ArrowDown size={10} />
+          </button>
+        </div>
+        <button onClick={onEdit}
+          className="flex items-center gap-1.5 text-[11px] font-medium text-slate-500 hover:text-slate-900 bg-slate-50 hover:bg-slate-100 px-2.5 py-1.5 rounded-lg transition-all border border-slate-200">
+          <Pencil size={10} /> Edit
+        </button>
+        <button onClick={onToggle}
+          className={`flex items-center gap-1 text-[10px] font-semibold px-2.5 py-1.5 rounded-lg transition-all ${
+            project.visible ? "bg-emerald-50 text-emerald-600 hover:bg-emerald-100" : "bg-slate-100 text-slate-400 hover:bg-slate-200"
+          }`}>
+          {project.visible ? <Eye size={10} /> : <EyeOff size={10} />}
           {project.visible ? "Live" : "Hidden"}
+        </button>
+        <button onClick={onDelete}
+          className="w-7 h-7 flex items-center justify-center rounded-lg text-slate-300 hover:text-red-500 hover:bg-red-50 transition-all">
+          <Trash2 size={13} />
         </button>
       </div>
     </div>
   );
 }
 
+// ─── Page ─────────────────────────────────────────────────────────────────────
+
 export default function ProjectsAdminPage() {
   const router = useRouter();
   const [projects, setProjects] = useState<CMSProject[]>([]);
   const [loading, setLoading] = useState(true);
   const [seeding, setSeeding] = useState(false);
+  const [view, setView] = useState<"grid" | "list">("grid");
+  const [filterCategory, setFilterCategory] = useState("All");
 
-  const load = useCallback(async () => {
+  const loadProjects = useCallback(async () => {
     setLoading(true);
     try {
       const res = await fetch("/api/cms/projects?all=true");
@@ -165,7 +224,7 @@ export default function ProjectsAdminPage() {
     }
   }, []);
 
-  useEffect(() => { load(); }, [load]);
+  useEffect(() => { loadProjects(); }, [loadProjects]);
 
   async function toggleVisible(project: CMSProject) {
     const next = !project.visible;
@@ -193,15 +252,12 @@ export default function ProjectsAdminPage() {
     const idx = sorted.findIndex((p) => p._id === project._id);
     const swapIdx = dir === "up" ? idx - 1 : idx + 1;
     if (swapIdx < 0 || swapIdx >= sorted.length) return;
-    const a = sorted[idx];
-    const b = sorted[swapIdx];
-    setProjects((prev) =>
-      prev.map((p) => {
-        if (p._id === a._id) return { ...p, order: b.order };
-        if (p._id === b._id) return { ...p, order: a.order };
-        return p;
-      })
-    );
+    const a = sorted[idx], b = sorted[swapIdx];
+    setProjects((prev) => prev.map((p) => {
+      if (p._id === a._id) return { ...p, order: b.order };
+      if (p._id === b._id) return { ...p, order: a.order };
+      return p;
+    }));
     await Promise.all([
       fetch(`/api/cms/projects/${a._id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ order: b.order }) }),
       fetch(`/api/cms/projects/${b._id}`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ order: a.order }) }),
@@ -220,10 +276,9 @@ export default function ProjectsAdminPage() {
       if (res.ok) {
         const { inserted } = await res.json();
         toast.success(`Seeded ${inserted} projects`);
-        load();
+        loadProjects();
       } else {
-        const err = await res.json();
-        toast.error(err.error || "Seed failed");
+        toast.error((await res.json()).error || "Seed failed");
       }
     } finally {
       setSeeding(false);
@@ -231,82 +286,166 @@ export default function ProjectsAdminPage() {
   }
 
   const sorted = [...projects].sort((a, b) => a.order - b.order);
+  const categories = ["All", ...Array.from(new Set(sorted.map((p) => p.category).filter(Boolean)))];
+  const displayed = filterCategory === "All" ? sorted : sorted.filter((p) => p.category === filterCategory);
   const visibleCount = sorted.filter((p) => p.visible).length;
+  const featuredCount = sorted.filter((p) => p.featured).length;
 
   return (
-    <div className="p-8 container mx-auto">
-      {/* Header */}
-      <div className="flex items-start justify-between mb-8">
-        <div>
-          <p className="text-[11px] uppercase tracking-[0.2em] text-slate-400 mb-1">Pages</p>
-          <h1 className="text-slate-900 font-bold text-xl" style={{ fontFamily: "Satoshi, sans-serif" }}>
-            Projects
-          </h1>
-          <p className="text-slate-500 text-xs mt-0.5">
-            {projects.length > 0
-              ? `${projects.length} total · ${visibleCount} visible`
-              : "Manage portfolio projects and case studies"}
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
-          {projects.length === 0 && !loading && (
+    <div className="min-h-screen bg-slate-50">
+      {/* Top bar */}
+      <div className="bg-white border-b border-slate-200 px-8 py-5">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-[10px] uppercase tracking-[0.2em] text-slate-400 mb-0.5">Pages</p>
+            <h1 className="text-xl font-bold text-slate-900 tracking-tight">Projects</h1>
+          </div>
+          <div className="flex items-center gap-2">
+            {projects.length === 0 && !loading && (
+              <button
+                onClick={handleSeed}
+                disabled={seeding}
+                className="flex items-center gap-2 text-slate-600 text-xs font-medium px-4 py-2 rounded-lg border border-slate-200 hover:border-slate-300 hover:bg-slate-50 transition-all disabled:opacity-40"
+              >
+                {seeding ? <Loader2 size={12} className="animate-spin" /> : <Database size={12} />}
+                {seeding ? "Seeding…" : "Seed Defaults"}
+              </button>
+            )}
             <button
-              onClick={handleSeed}
-              disabled={seeding}
-              className="flex items-center gap-2 text-slate-500 hover:text-white text-xs uppercase tracking-[0.12em] px-4 py-2.5 rounded-full border border-slate-200 hover:border-slate-300 transition-all disabled:opacity-40"
+              onClick={() => router.push("/admin/content/projects/new")}
+              className="flex items-center gap-2 text-black font-bold text-xs uppercase tracking-[0.12em] px-5 py-2.5 rounded-full transition-all hover:opacity-90"
+              style={{ background: "#d98629" }}
             >
-              {seeding ? <Loader2 size={12} className="animate-spin" /> : <Database size={12} />}
-              {seeding ? "Seeding…" : "Seed Defaults"}
+              <Plus size={12} /> Add Project
             </button>
-          )}
-          <button
-            onClick={() => router.push("/admin/content/projects/new")}
-            className="flex items-center gap-2 text-black font-bold text-xs uppercase tracking-[0.15em] px-5 py-2.5 rounded-full"
-            style={{ background: "#d98629" }}
-          >
-            <Plus size={12} />
-            Add Project
-          </button>
+          </div>
         </div>
       </div>
 
-      {/* States */}
-      {loading ? (
-        <div className="flex items-center justify-center h-64">
-          <Loader2 size={20} className="animate-spin text-slate-400" />
-        </div>
-      ) : projects.length === 0 ? (
-        <div className="bg-white border border-slate-200 rounded-xl p-16 text-center">
-          <FolderOpen size={32} className="text-slate-400 mx-auto mb-4" />
-          <p className="text-slate-500 text-sm mb-1">No projects yet</p>
-          <p className="text-slate-400 text-xs mb-6">Seed the 3 default projects or add your own</p>
-          <button
-            onClick={handleSeed}
-            disabled={seeding}
-            className="flex items-center gap-2 mx-auto text-black font-bold text-xs uppercase tracking-[0.15em] px-5 py-2.5 rounded-full"
-            style={{ background: "#d98629" }}
-          >
-            {seeding ? <Loader2 size={12} className="animate-spin" /> : <Database size={12} />}
-            {seeding ? "Seeding…" : "Seed 3 Defaults"}
-          </button>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-          {sorted.map((project, idx) => (
-            <ProjectCard
-              key={project._id}
-              project={project}
-              isFirst={idx === 0}
-              isLast={idx === sorted.length - 1}
-              onEdit={() => router.push(`/admin/content/projects/${project._id}`)}
-              onToggle={() => toggleVisible(project)}
-              onDelete={() => handleDelete(project)}
-              onMoveUp={() => move(project, "up")}
-              onMoveDown={() => move(project, "down")}
-            />
-          ))}
-        </div>
-      )}
+      <div className="px-8 py-6">
+
+        {/* Stats row */}
+        {projects.length > 0 && (
+          <div className="grid grid-cols-3 gap-3 mb-6">
+            {[
+              { label: "Total Projects", value: projects.length, color: "text-slate-700", bg: "bg-white" },
+              { label: "Live", value: visibleCount, color: "text-emerald-600", bg: "bg-emerald-50" },
+              { label: "Featured", value: featuredCount, color: "text-[#d98629]", bg: "bg-[#d98629]/5" },
+            ].map(({ label, value, color, bg }) => (
+              <div key={label} className={`${bg} border border-slate-200 rounded-xl px-5 py-4`}>
+                <p className={`text-2xl font-bold ${color}`}>{value}</p>
+                <p className="text-xs text-slate-400 mt-0.5">{label}</p>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Filter + view toggle bar */}
+        {projects.length > 0 && (
+          <div className="flex items-center justify-between mb-5">
+            {/* Category filter pills */}
+            <div className="flex items-center gap-1.5 flex-wrap">
+              {categories.map((cat) => (
+                <button
+                  key={cat}
+                  onClick={() => setFilterCategory(cat)}
+                  className={`px-3 py-1.5 text-xs rounded-lg font-medium transition-all ${
+                    filterCategory === cat
+                      ? "bg-slate-900 text-white"
+                      : "bg-white border border-slate-200 text-slate-500 hover:text-slate-700 hover:border-slate-300"
+                  }`}
+                >
+                  {cat}{cat !== "All" && ` (${sorted.filter(p => p.category === cat).length})`}
+                </button>
+              ))}
+            </div>
+
+            {/* View toggle */}
+            <div className="flex items-center bg-white border border-slate-200 rounded-lg p-1 gap-0.5">
+              <button
+                onClick={() => setView("grid")}
+                className={`p-1.5 rounded-md transition-all ${view === "grid" ? "bg-slate-900 text-white" : "text-slate-400 hover:text-slate-600"}`}
+              >
+                <LayoutGrid size={13} />
+              </button>
+              <button
+                onClick={() => setView("list")}
+                className={`p-1.5 rounded-md transition-all ${view === "list" ? "bg-slate-900 text-white" : "text-slate-400 hover:text-slate-600"}`}
+              >
+                <List size={13} />
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Content */}
+        {loading ? (
+          <div className="flex items-center justify-center h-64">
+            <Loader2 size={20} className="animate-spin text-slate-400" />
+          </div>
+        ) : projects.length === 0 ? (
+          <div className="bg-white border border-slate-200 rounded-2xl p-16 text-center">
+            <div className="w-16 h-16 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+              <FolderOpen size={28} className="text-slate-400" />
+            </div>
+            <p className="text-slate-700 text-sm font-semibold mb-1">No projects yet</p>
+            <p className="text-slate-400 text-xs mb-6">Seed the 3 default projects or create your own</p>
+            <div className="flex items-center justify-center gap-3">
+              <button
+                onClick={handleSeed}
+                disabled={seeding}
+                className="flex items-center gap-2 text-slate-600 text-xs font-medium px-4 py-2 rounded-lg border border-slate-200 hover:bg-slate-50 transition-all disabled:opacity-40"
+              >
+                {seeding ? <Loader2 size={12} className="animate-spin" /> : <Database size={12} />}
+                {seeding ? "Seeding…" : "Seed 3 Defaults"}
+              </button>
+              <button
+                onClick={() => router.push("/admin/content/projects/new")}
+                className="flex items-center gap-2 text-black font-bold text-xs uppercase tracking-[0.12em] px-5 py-2 rounded-full"
+                style={{ background: "#d98629" }}
+              >
+                <Plus size={12} /> Add Project
+              </button>
+            </div>
+          </div>
+        ) : displayed.length === 0 ? (
+          <div className="bg-white border border-slate-200 rounded-xl p-12 text-center">
+            <p className="text-slate-500 text-sm">No projects in this category</p>
+          </div>
+        ) : view === "grid" ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+            {displayed.map((project, idx) => (
+              <GridCard
+                key={project._id}
+                project={project}
+                isFirst={idx === 0}
+                isLast={idx === displayed.length - 1}
+                onEdit={() => router.push(`/admin/content/projects/${project._id}`)}
+                onToggle={() => toggleVisible(project)}
+                onDelete={() => handleDelete(project)}
+                onMoveUp={() => move(project, "up")}
+                onMoveDown={() => move(project, "down")}
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="space-y-2">
+            {displayed.map((project, idx) => (
+              <ListRow
+                key={project._id}
+                project={project}
+                isFirst={idx === 0}
+                isLast={idx === displayed.length - 1}
+                onEdit={() => router.push(`/admin/content/projects/${project._id}`)}
+                onToggle={() => toggleVisible(project)}
+                onDelete={() => handleDelete(project)}
+                onMoveUp={() => move(project, "up")}
+                onMoveDown={() => move(project, "down")}
+              />
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

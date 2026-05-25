@@ -1,7 +1,8 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { Upload, Loader2, CheckCircle2, X, Film, ImageIcon } from "lucide-react";
+import { Upload, Loader2, CheckCircle2, X, Film, ImageIcon, FolderOpen } from "lucide-react";
+import { MediaPickerModal } from "./MediaPickerModal";
 
 interface UploadResult {
   url: string;
@@ -15,20 +16,40 @@ interface Props {
   onUpload: (result: UploadResult) => void;
   label?: string;
   currentUrl?: string;
+  showLibraryPicker?: boolean;
 }
 
-export function CloudinaryUploader({ resourceType, folder = "movico", onUpload, label, currentUrl }: Props) {
+export function CloudinaryUploader({
+  resourceType,
+  folder = "movico",
+  onUpload,
+  label,
+  currentUrl,
+  showLibraryPicker = true,
+}: Props) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [status, setStatus] = useState<"idle" | "uploading" | "done" | "error">("idle");
   const [progress, setProgress] = useState(0);
   const [preview, setPreview] = useState<string | null>(currentUrl ?? null);
+  const [pickerOpen, setPickerOpen] = useState(false);
+
+  async function registerToLibrary(url: string, publicId: string) {
+    try {
+      await fetch("/api/cms/media", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: publicId, url, publicId, type: resourceType }),
+      });
+    } catch {
+      // non-blocking — upload already succeeded
+    }
+  }
 
   async function handleFile(file: File) {
     setStatus("uploading");
     setProgress(0);
 
     try {
-      // 1. Get signed upload params from our server
       const sigRes = await fetch("/api/cms/upload/signature", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -36,7 +57,6 @@ export function CloudinaryUploader({ resourceType, folder = "movico", onUpload, 
       });
       const { signature, timestamp, apiKey, cloudName } = await sigRes.json();
 
-      // 2. Upload directly to Cloudinary
       const form = new FormData();
       form.append("file", file);
       form.append("api_key", apiKey);
@@ -57,6 +77,7 @@ export function CloudinaryUploader({ resourceType, folder = "movico", onUpload, 
             setProgress(100);
             if (resourceType === "image") setPreview(data.secure_url);
             onUpload({ url: data.secure_url, publicId: data.public_id, resourceType });
+            registerToLibrary(data.secure_url, data.public_id);
             resolve();
           } else {
             reject(new Error("Upload failed"));
@@ -69,6 +90,12 @@ export function CloudinaryUploader({ resourceType, folder = "movico", onUpload, 
     } catch {
       setStatus("error");
     }
+  }
+
+  function handleLibrarySelect({ url, publicId }: { url: string; publicId: string }) {
+    setPreview(url);
+    setStatus("done");
+    onUpload({ url, publicId, resourceType });
   }
 
   const accept = resourceType === "video" ? "video/*" : "image/*";
@@ -135,6 +162,18 @@ export function CloudinaryUploader({ resourceType, folder = "movico", onUpload, 
         )}
       </button>
 
+      {/* Library picker link */}
+      {showLibraryPicker && (
+        <button
+          type="button"
+          onClick={() => setPickerOpen(true)}
+          className="w-full flex items-center justify-center gap-1.5 py-1.5 text-[11px] text-white/30 hover:text-[#d98629] transition-colors"
+        >
+          <FolderOpen size={11} />
+          Choose from Media Library
+        </button>
+      )}
+
       <input
         ref={inputRef}
         type="file"
@@ -145,6 +184,13 @@ export function CloudinaryUploader({ resourceType, folder = "movico", onUpload, 
           if (file) handleFile(file);
           e.target.value = "";
         }}
+      />
+
+      <MediaPickerModal
+        open={pickerOpen}
+        type={resourceType}
+        onSelect={handleLibrarySelect}
+        onClose={() => setPickerOpen(false)}
       />
     </div>
   );

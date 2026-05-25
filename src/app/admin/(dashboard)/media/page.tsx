@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { CloudinaryUploader } from "@/components/cms/CloudinaryUploader";
-import { Copy, CheckCircle2, Film, ImageIcon, Trash2 } from "lucide-react";
+import { Copy, CheckCircle2, Film, ImageIcon, Trash2, Loader2, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
 
 interface UploadedItem {
@@ -10,7 +10,7 @@ interface UploadedItem {
   url: string;
   publicId: string;
   type: "image" | "video";
-  uploadedAt: Date;
+  uploadedAt: string;
 }
 
 function CopyButton({ text }: { text: string }) {
@@ -22,9 +22,9 @@ function CopyButton({ text }: { text: string }) {
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
       }}
-      className="flex items-center gap-1 px-2 py-1 bg-white/[0.06] hover:bg-white/[0.12] rounded text-[10px] text-slate-500 hover:text-white transition-all"
+      className="flex items-center gap-1 px-2 py-1 bg-slate-100 hover:bg-slate-200 rounded text-[10px] text-slate-500 hover:text-slate-700 transition-all"
     >
-      {copied ? <CheckCircle2 size={10} className="text-green-400" /> : <Copy size={10} />}
+      {copied ? <CheckCircle2 size={10} className="text-green-500" /> : <Copy size={10} />}
       {copied ? "Copied" : "Copy URL"}
     </button>
   );
@@ -32,35 +32,73 @@ function CopyButton({ text }: { text: string }) {
 
 export default function MediaLibrary() {
   const [items, setItems] = useState<UploadedItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [filter, setFilter] = useState<"all" | "image" | "video">("all");
+  const [deleting, setDeleting] = useState<string | null>(null);
 
-  function addItem(url: string, publicId: string, type: "image" | "video") {
-    setItems((prev) => [
-      { id: publicId, url, publicId, type, uploadedAt: new Date() },
-      ...prev,
-    ]);
-    toast.success(`${type === "image" ? "Image" : "Video"} uploaded successfully`);
+  async function loadAssets() {
+    setLoading(true);
+    try {
+      const res = await fetch("/api/cms/media");
+      if (res.ok) setItems(await res.json());
+    } finally {
+      setLoading(false);
+    }
   }
+
+  useEffect(() => { loadAssets(); }, []);
+
+  function onUploaded(url: string, publicId: string, type: "image" | "video") {
+    // Optimistic prepend — the API also saves it via CloudinaryUploader
+    setItems((prev) => {
+      if (prev.some((i) => i.id === publicId)) return prev;
+      return [{ id: publicId, url, publicId, type, uploadedAt: new Date().toISOString() }, ...prev];
+    });
+    toast.success(`${type === "image" ? "Image" : "Video"} uploaded`);
+  }
+
+  async function handleDelete(id: string) {
+    setDeleting(id);
+    const res = await fetch(`/api/cms/media?id=${id}`, { method: "DELETE" });
+    if (res.ok) {
+      setItems((p) => p.filter((x) => x.id !== id));
+      toast.success("Asset removed");
+    } else {
+      toast.error("Failed to delete");
+    }
+    setDeleting(null);
+  }
+
+  const filtered = items.filter((i) => filter === "all" || i.type === filter);
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-50">
       {/* Header */}
-      <header className="h-14 border-b border-slate-200 flex items-center px-6 shrink-0">
-        <div>
+      <header className="h-14 border-b border-slate-200 bg-white flex items-center px-6 shrink-0">
+        <div className="flex-1">
           <h1 className="text-slate-900 font-semibold text-sm">Media Library</h1>
-          <p className="text-slate-400 text-[10px]">Upload images and videos to Cloudinary CDN</p>
+          <p className="text-slate-400 text-[10px]">All uploaded assets — reuse across any content field</p>
         </div>
+        <button
+          onClick={loadAssets}
+          className="flex items-center gap-1.5 text-xs text-slate-500 hover:text-slate-700 transition-colors"
+        >
+          <RefreshCw size={12} />
+          Refresh
+        </button>
       </header>
 
       <div className="flex-1 flex overflow-hidden">
         {/* Left — uploaders */}
-        <div className="w-80 shrink-0 border-r border-slate-200 p-5 space-y-6 overflow-y-auto">
+        <div className="w-72 shrink-0 border-r border-slate-200 p-5 space-y-6 overflow-y-auto bg-white">
           <div>
             <p className="text-[11px] uppercase tracking-[0.15em] text-slate-400 mb-3">Upload Image</p>
             <CloudinaryUploader
               resourceType="image"
               folder="movico/media"
-              label="Image"
-              onUpload={({ url, publicId }) => addItem(url, publicId, "image")}
+              label=""
+              showLibraryPicker={false}
+              onUpload={({ url, publicId }) => onUploaded(url, publicId, "image")}
             />
           </div>
 
@@ -69,64 +107,95 @@ export default function MediaLibrary() {
             <CloudinaryUploader
               resourceType="video"
               folder="movico/videos"
-              label="Video"
-              onUpload={({ url, publicId }) => addItem(url, publicId, "video")}
+              label=""
+              showLibraryPicker={false}
+              onUpload={({ url, publicId }) => onUploaded(url, publicId, "video")}
             />
           </div>
 
-          <div className="bg-white border border-slate-200 rounded-xl p-4 text-xs text-slate-400 space-y-1.5">
-            <p className="font-semibold text-slate-500 mb-2">How to use</p>
-            <p>1. Upload a file above</p>
-            <p>2. Copy the URL from the panel</p>
-            <p>3. Paste into the content editor (Video URL / Poster URL fields)</p>
-            <p className="text-slate-400 pt-1">Files are stored on Cloudinary CDN and served globally at full speed.</p>
+          <div className="border-t border-slate-200 pt-5">
+            <div className="bg-blue-50 border border-blue-100 rounded-xl p-4 text-xs text-slate-500 space-y-1.5">
+              <p className="font-semibold text-blue-700 mb-2">How to use</p>
+              <p>1. Upload a file here</p>
+              <p>2. It appears in every image/video field across the CMS</p>
+              <p>3. Click <strong>"Choose from Media Library"</strong> in any upload field to pick it</p>
+            </div>
           </div>
         </div>
 
-        {/* Right — uploaded items */}
+        {/* Right — asset grid */}
         <div className="flex-1 overflow-y-auto p-6">
-          {items.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-full gap-4 text-center">
-              <div className="w-16 h-16 rounded-2xl bg-white/[0.04] border border-slate-200 flex items-center justify-center">
+          {/* Filter tabs */}
+          <div className="flex items-center gap-1 mb-5">
+            {(["all", "image", "video"] as const).map((f) => (
+              <button
+                key={f}
+                onClick={() => setFilter(f)}
+                className={`px-3 py-1.5 text-xs rounded-lg font-medium transition-all ${
+                  filter === f
+                    ? "bg-slate-900 text-white"
+                    : "text-slate-500 hover:text-slate-700 hover:bg-slate-100"
+                }`}
+              >
+                {f === "all" ? `All (${items.length})` : f === "image" ? `Images (${items.filter(i => i.type === "image").length})` : `Videos (${items.filter(i => i.type === "video").length})`}
+              </button>
+            ))}
+          </div>
+
+          {loading ? (
+            <div className="flex flex-col items-center justify-center h-64 gap-3">
+              <Loader2 size={20} className="text-slate-400 animate-spin" />
+              <span className="text-sm text-slate-400">Loading assets…</span>
+            </div>
+          ) : filtered.length === 0 ? (
+            <div className="flex flex-col items-center justify-center h-64 gap-4 text-center">
+              <div className="w-16 h-16 rounded-2xl bg-slate-100 border border-slate-200 flex items-center justify-center">
                 <ImageIcon size={24} className="text-slate-400" />
               </div>
-              <p className="text-slate-400 text-sm">No uploads this session</p>
+              <p className="text-slate-500 text-sm">No assets yet</p>
               <p className="text-slate-400 text-xs max-w-xs">
-                Files you upload appear here. Copy their URLs to use them in the content editor or showreel manager.
+                Upload images or videos using the panel on the left. They'll appear here and become available in all content editors.
               </p>
             </div>
           ) : (
-            <div className="grid grid-cols-2 xl:grid-cols-3 gap-4">
-              {items.map((item) => (
-                <div key={item.id} className="bg-white border border-slate-200 rounded-xl overflow-hidden group">
+            <div className="grid grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4">
+              {filtered.map((item) => (
+                <div key={item.id} className="bg-white border border-slate-200 rounded-xl overflow-hidden group hover:border-slate-300 hover:shadow-sm transition-all">
                   {/* Preview */}
-                  <div className="aspect-video relative bg-slate-50">
+                  <div className="aspect-video relative bg-slate-100">
                     {item.type === "image" ? (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img src={item.url} alt={item.publicId} className="w-full h-full object-cover" />
                     ) : (
-                      <div className="w-full h-full flex flex-col items-center justify-center gap-2">
-                        <Film size={28} className="text-slate-400" />
-                        <span className="text-[10px] text-slate-400">Video uploaded</span>
+                      <div className="w-full h-full flex flex-col items-center justify-center gap-2 bg-slate-800">
+                        <Film size={24} className="text-slate-400" />
+                        <span className="text-[10px] text-slate-400">Video</span>
                       </div>
                     )}
-                    <span className={`absolute top-2 left-2 text-[9px] uppercase tracking-[0.15em] px-2 py-0.5 rounded-full ${
-                      item.type === "image" ? "bg-purple-500/20 text-purple-300" : "bg-blue-500/20 text-blue-300"
+                    <span className={`absolute top-2 left-2 text-[9px] uppercase tracking-[0.12em] px-2 py-0.5 rounded-full font-medium ${
+                      item.type === "image"
+                        ? "bg-purple-100 text-purple-600"
+                        : "bg-blue-100 text-blue-600"
                     }`}>
                       {item.type}
                     </span>
                   </div>
 
-                  {/* URL row */}
+                  {/* Meta + actions */}
                   <div className="p-3 space-y-2">
-                    <p className="text-[10px] text-slate-400 font-mono truncate">{item.publicId}</p>
+                    <p className="text-[10px] text-slate-400 font-mono truncate">{item.publicId.split("/").pop()}</p>
                     <div className="flex items-center gap-2">
                       <CopyButton text={item.url} />
                       <button
-                        onClick={() => setItems((p) => p.filter((x) => x.id !== item.id))}
-                        className="flex items-center gap-1 px-2 py-1 bg-red-500/[0.08] hover:bg-red-500/20 rounded text-[10px] text-red-400/60 hover:text-red-400 transition-all"
+                        disabled={deleting === item.id}
+                        onClick={() => handleDelete(item.id)}
+                        className="flex items-center gap-1 px-2 py-1 bg-red-50 hover:bg-red-100 rounded text-[10px] text-red-400 hover:text-red-600 transition-all disabled:opacity-50"
                       >
-                        <Trash2 size={10} /> Remove
+                        {deleting === item.id
+                          ? <Loader2 size={10} className="animate-spin" />
+                          : <Trash2 size={10} />
+                        }
+                        Remove
                       </button>
                     </div>
                   </div>
