@@ -94,7 +94,6 @@ export function HeroSection({ content = D }: { content?: HeroContent }) {
                   interval={3000}
                   className="text-[clamp(2.2rem,8vw,7rem)] leading-[0.85]"
                 />
-                <span className="text-white">.</span>
               </div>
             </div>
           </div>

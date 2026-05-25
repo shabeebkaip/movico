@@ -65,6 +65,11 @@ export function ScaledPreviewPane({ src, label, desktopWidth = 1280, iframeRef: 
             ref={iframeRef}
             src={src}
             title={label ?? "Preview"}
+            onLoad={(e) => {
+              try {
+                (e.target as HTMLIFrameElement).contentWindow?.scrollTo(0, 0);
+              } catch {}
+            }}
             style={{
               width: `${desktopWidth}px`,
               height: `${height / scale}px`,
