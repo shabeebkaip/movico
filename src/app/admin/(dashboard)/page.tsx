@@ -207,7 +207,7 @@ export default async function AdminDashboard() {
         </div>
       </div>
 
-      <div className="px-8 py-8 max-w-6xl space-y-8">
+      <div className="px-8 py-8 space-y-8">
 
         {/* Stats row */}
         <div className="grid grid-cols-4 gap-4">
