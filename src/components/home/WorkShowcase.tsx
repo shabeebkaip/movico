@@ -5,6 +5,10 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Image from "next/image";
 import Link from "next/link";
+import type { WorkShowcaseContent } from "@/lib/cms/types";
+import { defaultContent } from "@/lib/cms/types";
+
+const D = defaultContent.home.workShowcase;
 
 type Project = {
   id: number;
@@ -61,7 +65,7 @@ const projects: Project[] = [
   },
 ];
 
-export default function WorkShowcase() {
+export default function WorkShowcase({ content = D }: { content?: WorkShowcaseContent }) {
   const sectionRef = useRef<HTMLElement>(null);
   const headingRef = useRef<HTMLDivElement>(null);
   const gridRef = useRef<HTMLDivElement>(null);
@@ -109,10 +113,10 @@ export default function WorkShowcase() {
       >
         <div>
           <span className="uppercase tracking-[0.5em] text-[10px] text-white/40 block mb-3">
-            Selected Work
+            {content.label}
           </span>
           <h2 className="font-display text-4xl md:text-7xl xl:text-8xl uppercase text-white leading-none">
-            Our Work
+            {content.heading}
           </h2>
         </div>
         <Link

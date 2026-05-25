@@ -41,7 +41,7 @@ export default async function Page() {
         <SceneDivider tone="amberIndigo" from="center" spread={380} />
       )}
 
-      {s.workShowcase && <WorkShowcase />}
+      {s.workShowcase && <WorkShowcase content={content.home.workShowcase} />}
 
       {design.sceneDividers.enabled && s.workShowcase && (
         <SceneDivider tone="teal" from="left" spread={380} />

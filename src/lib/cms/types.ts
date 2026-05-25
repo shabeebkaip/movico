@@ -148,10 +148,16 @@ export interface PageHeroContent {
 
 // ─── Home Content ─────────────────────────────────────────────────────────────
 
+export interface WorkShowcaseContent {
+  label: string;
+  heading: string;
+}
+
 export interface HomeContent {
   hero: HeroContent;
   marquee: MarqueeContent;
   about: AboutContent;
+  workShowcase: WorkShowcaseContent;
   services: ServicesContent;
   process: ProcessContent;
   testimonials: TestimonialsContent;
@@ -338,6 +344,10 @@ export const defaultContent: CMSContent = {
     marquee: {
       row1: 'Cinematic Production Built For Impact',
       row2: 'Video That Moves Brands   •   Brand Films   •   Events   •   Social Content',
+    },
+    workShowcase: {
+      label: 'Selected Work',
+      heading: 'Our Work',
     },
     about: {
       label: 'Who We Are',

@@ -12,6 +12,7 @@ import {
   Quote,
   HelpCircle,
   Send,
+  Film,
   Plus,
   Trash2,
   ChevronDown,
@@ -129,6 +130,7 @@ interface CMSContent {
     hero: HeroContent;
     marquee: MarqueeContent;
     about: AboutContent;
+    workShowcase: { label: string; heading: string };
     services: ServicesContent;
     process: ProcessContent;
     testimonials: TestimonialsContent;
@@ -178,6 +180,10 @@ const defaultContent: CMSContent = {
         { value: 50, suffix: "+", label: "Clients" },
         { value: 8, suffix: "", label: "Years" },
       ],
+    },
+    workShowcase: {
+      label: "Selected Work",
+      heading: "Our Work",
     },
     services: {
       label: "What We Do",
@@ -229,7 +235,7 @@ const defaultContent: CMSContent = {
 
 // ─── Section definitions ──────────────────────────────────────────────────────
 
-type SectionId = "hero" | "marquee" | "about" | "services" | "process" | "testimonials" | "faq" | "cta";
+type SectionId = "hero" | "marquee" | "about" | "workShowcase" | "services" | "process" | "testimonials" | "faq" | "cta";
 
 const sectionDefs: {
   id: SectionId;
@@ -240,6 +246,7 @@ const sectionDefs: {
   { id: "hero", label: "Hero", description: "Headline, video, CTA", Icon: Clapperboard },
   { id: "marquee", label: "Marquee", description: "Ticker text", Icon: Repeat },
   { id: "about", label: "About", description: "Heading, stats", Icon: Users },
+  { id: "workShowcase", label: "Work", description: "Section heading", Icon: Film },
   { id: "services", label: "Services", description: "Service cards", Icon: Grid3x3 },
   { id: "process", label: "Process", description: "Workflow steps", Icon: GitBranch },
   { id: "testimonials", label: "Testimonials", description: "Client reviews", Icon: Quote },
@@ -251,6 +258,7 @@ const sectionAnchors: Record<SectionId, string> = {
   hero: "/",
   marquee: "/",
   about: "/#about",
+  workShowcase: "/#work",
   services: "/#services",
   process: "/#process",
   testimonials: "/#testimonials",
@@ -503,6 +511,30 @@ function AboutEditor({
           <Plus size={12} /> Add Stat
         </button>
       </div>
+    </div>
+  );
+}
+
+function WorkShowcaseEditor({
+  data,
+  update,
+}: {
+  data: { label: string; heading: string };
+  update: (path: string, value: unknown) => void;
+}) {
+  return (
+    <div className="space-y-4">
+      <div>
+        <label className="block text-[10px] uppercase tracking-[0.15em] text-slate-400 mb-1.5">Label</label>
+        <input className="bg-slate-50 border border-slate-200 rounded-lg px-3 py-2.5 text-slate-900 text-sm w-full focus:border-[#d98629]/50 focus:outline-none placeholder:text-slate-400 transition-colors duration-150" value={data.label} onChange={(e) => update("home.workShowcase.label", e.target.value)} />
+      </div>
+      <div>
+        <label className="block text-[10px] uppercase tracking-[0.15em] text-slate-400 mb-1.5">Heading</label>
+        <input className="bg-slate-50 border border-slate-200 rounded-lg px-3 py-2.5 text-slate-900 text-sm w-full focus:border-[#d98629]/50 focus:outline-none placeholder:text-slate-400 transition-colors duration-150" value={data.heading} onChange={(e) => update("home.workShowcase.heading", e.target.value)} />
+      </div>
+      <p className="text-[11px] text-slate-400 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2.5">
+        Project items are managed via <strong className="text-slate-600">Projects</strong> in the sidebar.
+      </p>
     </div>
   );
 }
@@ -1255,6 +1287,7 @@ export default function ContentPage() {
           {activeSection === "hero" && <HeroEditor data={h.hero} update={updateField} />}
           {activeSection === "marquee" && <MarqueeEditor data={h.marquee} update={updateField} />}
           {activeSection === "about" && <AboutEditor data={h.about} update={updateField} />}
+          {activeSection === "workShowcase" && <WorkShowcaseEditor data={h.workShowcase} update={updateField} />}
           {activeSection === "services" && <ServicesEditor data={h.services} update={updateField} />}
           {activeSection === "process" && <ProcessEditor data={h.process} update={updateField} />}
           {activeSection === "testimonials" && <TestimonialsEditor data={h.testimonials} update={updateField} />}
