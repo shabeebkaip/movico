@@ -18,9 +18,14 @@ export async function generateMetadata({
   try {
     const project = await getCMSProject(slug) ?? getStaticProject(slug);
     if (!project) return {};
+    const seoTitle = project.seo?.title || `${project.title} — ${project.client} | Movico`;
+    const seoDesc = project.seo?.description || project.shortDescription;
     return {
-      title: `${project.title} — ${project.client} | Movico`,
-      description: project.shortDescription,
+      title: seoTitle,
+      description: seoDesc,
+      robots: project.seo?.noindex ? { index: false, follow: false } : undefined,
+      alternates: project.seo?.canonical ? { canonical: project.seo.canonical } : undefined,
+      openGraph: project.seo?.ogImage ? { images: [{ url: project.seo.ogImage }] } : undefined,
     };
   } catch {
     const project = getStaticProject(slug);
@@ -42,7 +47,7 @@ export default async function ProjectDetailPage({
   let project: {
     slug: string; number: string; client: string; title: string; category: string;
     location: string; year: string; shortDescription: string; fullDescription: string;
-    result: string; tags: string[]; coverImage: string; images: string[]; featured: boolean;
+    result: string; tags: string[]; coverImage: string; coverAlt?: string; images: string[]; featured: boolean;
   } | null | undefined;
 
   let allProjects: { slug: string; title: string }[];
@@ -109,7 +114,7 @@ export default async function ProjectDetailPage({
         <div className="w-full aspect-[16/7] relative">
           <Image
             src={project.coverImage}
-            alt={project.title}
+            alt={project.coverAlt || project.title}
             fill
             className="object-cover"
             priority

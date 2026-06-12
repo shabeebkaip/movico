@@ -312,6 +312,128 @@ export interface CMSDesign {
   };
 }
 
+// ─── SEO ──────────────────────────────────────────────────────────────────────
+
+export interface SEOPageMeta {
+  title: string;
+  description: string;
+  ogImage: string;
+  noindex: boolean;
+  canonical: string;
+}
+
+export interface SEORedirect {
+  id: string;
+  from: string;
+  to: string;
+  code: 301 | 302;
+  enabled: boolean;
+}
+
+export interface CMSSeo {
+  global: {
+    titleTemplate: string;
+    defaultDescription: string;
+    defaultOgImage: string;
+    twitterHandle: string;
+    twitterCardType: 'summary' | 'summary_large_image';
+  };
+  pages: {
+    home: SEOPageMeta;
+    about: SEOPageMeta;
+    contact: SEOPageMeta;
+    studio: SEOPageMeta;
+    projects: SEOPageMeta;
+    services: SEOPageMeta;
+  };
+  schema: {
+    organization: {
+      name: string;
+      url: string;
+      logo: string;
+      description: string;
+      sameAs: string[];
+    };
+    localBusiness: {
+      enabled: boolean;
+      type: string;
+      name: string;
+      streetAddress: string;
+      city: string;
+      region: string;
+      country: string;
+      postalCode: string;
+      phone: string;
+      email: string;
+    };
+  };
+  analytics: {
+    ga4Id: string;
+    gtmId: string;
+  };
+  robots: {
+    customContent: string;
+    blockAIScrapers: boolean;
+  };
+  redirects: SEORedirect[];
+}
+
+const emptyPageMeta: SEOPageMeta = {
+  title: '',
+  description: '',
+  ogImage: '',
+  noindex: false,
+  canonical: '',
+};
+
+export const defaultSeo: CMSSeo = {
+  global: {
+    titleTemplate: '%s | Movico',
+    defaultDescription: "Riyadh's leading corporate video production company. Brand films, event coverage, corporate videos & media production across Saudi Arabia and the GCC.",
+    defaultOgImage: '',
+    twitterHandle: '',
+    twitterCardType: 'summary_large_image',
+  },
+  pages: {
+    home: { ...emptyPageMeta, title: 'Movico — Corporate Video Production Company Riyadh, Saudi Arabia' },
+    about: { ...emptyPageMeta, title: 'About Movico' },
+    contact: { ...emptyPageMeta, title: 'Contact Movico' },
+    studio: { ...emptyPageMeta, title: 'Movico Studio — Riyadh' },
+    projects: { ...emptyPageMeta, title: 'Our Projects' },
+    services: { ...emptyPageMeta, title: 'Our Services' },
+  },
+  schema: {
+    organization: {
+      name: 'Movico',
+      url: 'https://movicoksa.com',
+      logo: 'https://movicoksa.com/logo.webp',
+      description: "Riyadh's leading corporate video production company.",
+      sameAs: [],
+    },
+    localBusiness: {
+      enabled: true,
+      type: 'LocalBusiness',
+      name: 'Movico',
+      streetAddress: 'Wadi Laban',
+      city: 'Riyadh',
+      region: 'Riyadh Region',
+      country: 'SA',
+      postalCode: '',
+      phone: '+966536660125',
+      email: 'info@movicoksa.com',
+    },
+  },
+  analytics: {
+    ga4Id: '',
+    gtmId: '',
+  },
+  robots: {
+    customContent: 'User-agent: *\nAllow: /\n\nSitemap: https://movicoksa.com/sitemap.xml',
+    blockAIScrapers: false,
+  },
+  redirects: [],
+};
+
 // ─── Type-safe defaults ───────────────────────────────────────────────────────
 
 export const defaultContent: CMSContent = {

@@ -4,17 +4,16 @@ import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 import { listProjects } from "@/lib/cms/projects";
 import { PROJECTS } from "@/lib/projects-data";
+import { buildPageMetadata } from "@/lib/cms/seo-metadata";
 
-export const metadata: Metadata = {
-  title: "Our Work | Movico — Video Production & Event Coverage Riyadh",
-  description:
-    "Explore Movico's portfolio of corporate videos, event productions, and brand films for leading companies across Saudi Arabia and the GCC.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  return buildPageMetadata("projects");
+}
 
 export const dynamic = "force-dynamic";
 
 export default async function ProjectsPage() {
-  let projects: { slug: string; client: string; year: string; category: string; title: string; shortDescription: string; coverImage: string }[];
+  let projects: { slug: string; client: string; year: string; category: string; title: string; shortDescription: string; coverImage: string; coverAlt?: string }[];
 
   try {
     const cms = await listProjects();
@@ -58,7 +57,7 @@ export default async function ProjectsPage() {
               <div className="relative aspect-[4/3] rounded-2xl overflow-hidden mb-5">
                 <Image
                   src={project.coverImage}
-                  alt={project.title}
+                  alt={project.coverAlt || project.title}
                   fill
                   className="object-cover transition-transform duration-700 group-hover:scale-105"
                   sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"

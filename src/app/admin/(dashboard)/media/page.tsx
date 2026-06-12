@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { CloudinaryUploader } from "@/components/cms/CloudinaryUploader";
-import { Copy, CheckCircle2, Film, ImageIcon, Trash2, Loader2, RefreshCw } from "lucide-react";
+import { Copy, CheckCircle2, Film, ImageIcon, Trash2, Loader2, RefreshCw, AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
 
 interface UploadedItem {
@@ -10,7 +10,42 @@ interface UploadedItem {
   url: string;
   publicId: string;
   type: "image" | "video";
+  alt: string;
   uploadedAt: string;
+}
+
+function AltInput({ id, initial }: { id: string; initial: string }) {
+  const [value, setValue] = useState(initial);
+  const [saving, setSaving] = useState(false);
+
+  async function save() {
+    if (value === initial) return;
+    setSaving(true);
+    await fetch("/api/cms/media", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id, alt: value }),
+    });
+    setSaving(false);
+    toast.success("Alt text saved");
+  }
+
+  return (
+    <div className="space-y-1">
+      <div className="flex items-center justify-between">
+        <label className="text-[10px] uppercase tracking-[0.1em] text-slate-400 font-medium">Alt text</label>
+        {saving && <Loader2 size={9} className="text-slate-400 animate-spin" />}
+      </div>
+      <input
+        type="text"
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+        onBlur={save}
+        placeholder="Describe this image…"
+        className="w-full text-xs bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 text-slate-700 placeholder:text-slate-300 focus:outline-none focus:border-amber-400 focus:bg-white transition-colors"
+      />
+    </div>
+  );
 }
 
 function CopyButton({ text }: { text: string }) {
@@ -52,7 +87,7 @@ export default function MediaLibrary() {
     // Optimistic prepend — the API also saves it via CloudinaryUploader
     setItems((prev) => {
       if (prev.some((i) => i.id === publicId)) return prev;
-      return [{ id: publicId, url, publicId, type, uploadedAt: new Date().toISOString() }, ...prev];
+      return [{ id: publicId, url, publicId, type, alt: "", uploadedAt: new Date().toISOString() }, ...prev];
     });
     toast.success(`${type === "image" ? "Image" : "Video"} uploaded`);
   }
@@ -165,7 +200,7 @@ export default function MediaLibrary() {
                   <div className="aspect-video relative bg-slate-100">
                     {item.type === "image" ? (
                       // eslint-disable-next-line @next/next/no-img-element
-                      <img src={item.url} alt={item.publicId} className="w-full h-full object-cover" />
+                      <img src={item.url} alt={item.alt || item.publicId} className="w-full h-full object-cover" />
                     ) : (
                       <div className="w-full h-full flex flex-col items-center justify-center gap-2 bg-slate-800">
                         <Film size={24} className="text-slate-400" />
@@ -182,8 +217,21 @@ export default function MediaLibrary() {
                   </div>
 
                   {/* Meta + actions */}
-                  <div className="p-3 space-y-2">
-                    <p className="text-[10px] text-slate-400 font-mono truncate">{item.publicId.split("/").pop()}</p>
+                  <div className="p-3 space-y-2.5">
+                    <div className="flex items-center gap-2">
+                      <p className="text-[10px] text-slate-400 font-mono truncate flex-1">{item.publicId.split("/").pop()}</p>
+                      {item.type === "image" && !item.alt && (
+                        <span className="flex items-center gap-1 text-[9px] uppercase tracking-[0.1em] text-amber-600 bg-amber-50 border border-amber-200 px-1.5 py-0.5 rounded-full font-medium shrink-0">
+                          <AlertTriangle size={8} />
+                          No alt
+                        </span>
+                      )}
+                    </div>
+
+                    {item.type === "image" && (
+                      <AltInput id={item.id} initial={item.alt ?? ""} />
+                    )}
+
                     <div className="flex items-center gap-2">
                       <CopyButton text={item.url} />
                       <button

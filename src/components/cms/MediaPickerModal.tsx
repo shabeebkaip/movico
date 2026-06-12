@@ -8,13 +8,14 @@ interface MediaAsset {
   url: string;
   publicId: string;
   type: "image" | "video";
+  alt: string;
   uploadedAt: string;
 }
 
 interface Props {
   open: boolean;
   type?: "image" | "video" | "all";
-  onSelect: (asset: { url: string; publicId: string }) => void;
+  onSelect: (asset: { url: string; publicId: string; alt: string }) => void;
   onClose: () => void;
 }
 
@@ -114,7 +115,7 @@ export function MediaPickerModal({ open, type = "all", onSelect, onClose }: Prop
                 >
                   {asset.type === "image" ? (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img src={asset.url} alt={asset.publicId} className="w-full h-full object-cover" />
+                    <img src={asset.url} alt={asset.alt || asset.publicId} className="w-full h-full object-cover" />
                   ) : (
                     <div className="w-full h-full flex flex-col items-center justify-center gap-1.5 bg-slate-800">
                       <Film size={20} className="text-slate-400" />
@@ -168,7 +169,7 @@ export function MediaPickerModal({ open, type = "all", onSelect, onClose }: Prop
               disabled={!selected}
               onClick={() => {
                 const asset = assets.find((a) => a.id === selected);
-                if (asset) { onSelect({ url: asset.url, publicId: asset.publicId }); onClose(); }
+                if (asset) { onSelect({ url: asset.url, publicId: asset.publicId, alt: asset.alt ?? "" }); onClose(); }
               }}
               className="px-4 py-2 text-xs font-semibold text-white rounded-lg transition-all disabled:opacity-40 disabled:cursor-not-allowed"
               style={{ background: selected ? "#d98629" : undefined, backgroundColor: !selected ? "#94a3b8" : undefined }}

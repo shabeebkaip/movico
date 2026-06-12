@@ -6,6 +6,7 @@ export interface MediaAsset {
   url: string;
   publicId: string;
   type: 'image' | 'video';
+  alt: string;
   uploadedAt: string;
 }
 
@@ -26,6 +27,11 @@ export async function addMedia(asset: Omit<MediaAsset, 'uploadedAt'>): Promise<M
     { upsert: true }
   );
   return record;
+}
+
+export async function updateMediaAlt(id: string, alt: string): Promise<void> {
+  const db = await getDb();
+  await db.collection(COLLECTION).updateOne({ id }, { $set: { alt } });
 }
 
 export async function deleteMedia(id: string): Promise<void> {

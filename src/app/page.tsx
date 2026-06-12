@@ -1,4 +1,11 @@
+import type { Metadata } from "next";
 import { readContent, readDesign } from "@/lib/cms/store";
+import { buildPageMetadata } from "@/lib/cms/seo-metadata";
+
+export async function generateMetadata(): Promise<Metadata> {
+  return buildPageMetadata("home");
+}
+
 import { HeroSection } from "@/components/home/HeroSection";
 import { MarqueeText } from "@/components/home/MarqueeText";
 import ClientsSection from "@/components/home/Clients";

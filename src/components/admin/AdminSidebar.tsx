@@ -20,6 +20,8 @@ import {
   Clapperboard,
   PanelLeftClose,
   PanelLeft,
+  SearchCheck,
+  BookOpen,
 } from "lucide-react";
 import { useAdminLayout } from "@/contexts/AdminLayoutContext";
 
@@ -35,6 +37,7 @@ const navSections: { title: string; items: NavItem[] }[] = [
       { label: "Clients",  href: "/admin/content/clients",  icon: Users },
       { label: "Projects", href: "/admin/content/projects", icon: FolderOpen },
       { label: "Studio",   href: "/admin/content/studio",   icon: Clapperboard },
+      { label: "Blog",     href: "/admin/blog",              icon: BookOpen },
     ],
   },
   {
@@ -48,6 +51,12 @@ const navSections: { title: string; items: NavItem[] }[] = [
     items: [
       { label: "Showreel",      href: "/admin/showreel", icon: Film },
       { label: "Media Library", href: "/admin/media",    icon: ImageIcon },
+    ],
+  },
+  {
+    title: "SEO",
+    items: [
+      { label: "SEO Settings", href: "/admin/seo", icon: SearchCheck },
     ],
   },
   {

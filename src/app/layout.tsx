@@ -8,10 +8,11 @@ import { WhatsAppFloat } from "@/components/WhatsAppFloat";
 import Footer from "@/components/Footer";
 import CinematicAtmosphere from "@/components/CinematicAtmosphere";
 import { ScrollRestoration } from "@/components/ScrollRestoration";
-import { readDesign } from "@/lib/cms/store";
+import { readDesign, readSeo } from "@/lib/cms/store";
 import { defaultDesign } from "@/lib/cms/types";
 import { CMSProvider } from "@/components/cms/CMSContext";
 import { CMSAdminBar } from "@/components/cms/CMSAdminBar";
+import { JsonLd } from "@/components/seo/JsonLd";
 
 const kanit = Kanit({
   weight: ["300", "400", "500", "600", "700", "800"],
@@ -40,7 +41,10 @@ export default async function RootLayout({
   const pathname = headersList.get("x-pathname") ?? "";
   const isAdmin = pathname.startsWith("/admin");
 
-  const design = isAdmin ? defaultDesign : await readDesign();
+  const [design, seo] = isAdmin
+    ? [defaultDesign, null]
+    : await Promise.all([readDesign(), readSeo()]);
+
   const cssVars = {
     "--color-primary": design.colors.primary,
     "--color-primary-dark": design.colors.primaryDark,
@@ -62,10 +66,42 @@ export default async function RootLayout({
               as="video"
               type="video/mp4"
             />
+            {/* Google Tag Manager */}
+            {seo?.analytics.gtmId && (
+              <script
+                dangerouslySetInnerHTML={{
+                  __html: `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','${seo.analytics.gtmId}');`,
+                }}
+              />
+            )}
+            {/* Google Analytics 4 (standalone, without GTM) */}
+            {seo?.analytics.ga4Id && !seo?.analytics.gtmId && (
+              <>
+                <script async src={`https://www.googletagmanager.com/gtag/js?id=${seo.analytics.ga4Id}`} />
+                <script
+                  dangerouslySetInnerHTML={{
+                    __html: `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${seo.analytics.ga4Id}');`,
+                  }}
+                />
+              </>
+            )}
+            {/* JSON-LD Structured Data */}
+            {seo && <JsonLd seo={seo} />}
           </>
         )}
       </head>
       <body className={kanit.variable}>
+        {/* GTM noscript fallback */}
+        {!isAdmin && seo?.analytics.gtmId && (
+          <noscript>
+            <iframe
+              src={`https://www.googletagmanager.com/ns.html?id=${seo.analytics.gtmId}`}
+              height="0"
+              width="0"
+              style={{ display: 'none', visibility: 'hidden' }}
+            />
+          </noscript>
+        )}
         <Providers>
           <CMSProvider>
             {!isAdmin && <CMSAdminBar />}

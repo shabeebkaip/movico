@@ -11,8 +11,16 @@ export interface ProjectData {
   result: string;
   tags: string[];
   coverImage: string;
+  coverAlt?: string;
   images: string[];
   featured: boolean;
+  seo?: {
+    title: string;
+    description: string;
+    ogImage: string;
+    noindex: boolean;
+    canonical: string;
+  };
 }
 
 export const PROJECTS: ProjectData[] = [

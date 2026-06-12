@@ -8,6 +8,7 @@ interface UploadResult {
   url: string;
   publicId: string;
   resourceType: "image" | "video";
+  alt?: string;
 }
 
 interface Props {
@@ -38,7 +39,7 @@ export function CloudinaryUploader({
       await fetch("/api/cms/media", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id: publicId, url, publicId, type: resourceType }),
+        body: JSON.stringify({ id: publicId, url, publicId, type: resourceType, alt: "" }),
       });
     } catch {
       // non-blocking — upload already succeeded
@@ -92,10 +93,10 @@ export function CloudinaryUploader({
     }
   }
 
-  function handleLibrarySelect({ url, publicId }: { url: string; publicId: string }) {
+  function handleLibrarySelect({ url, publicId, alt }: { url: string; publicId: string; alt: string }) {
     setPreview(url);
     setStatus("done");
-    onUpload({ url, publicId, resourceType });
+    onUpload({ url, publicId, resourceType, alt });
   }
 
   const accept = resourceType === "video" ? "video/*" : "image/*";

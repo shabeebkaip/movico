@@ -149,7 +149,7 @@ export default function WorkShowcase({ content = D }: { content?: WorkShowcaseCo
             ) : (
               <Image
                 src={project.image!}
-                alt={project.client}
+                alt={`${project.client} — ${project.category} by Movico`}
                 fill
                 className="object-cover transition-transform duration-700 group-hover:scale-[1.03]"
                 sizes={

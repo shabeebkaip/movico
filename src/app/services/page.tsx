@@ -2,12 +2,11 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { SERVICES } from "@/lib/services-data";
+import { buildPageMetadata } from "@/lib/cms/seo-metadata";
 
-export const metadata: Metadata = {
-  title: "Our Services | Movico — Video & Creative Production Riyadh",
-  description:
-    "Premium video production, event production, brand identity, spatial design, interior design, and social media content — all under one roof in Riyadh, Saudi Arabia.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  return buildPageMetadata("services");
+}
 
 export default function ServicesPage() {
   return (

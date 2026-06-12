@@ -3,8 +3,16 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { ArrowLeft, Save, Check, Loader2, Trash2, ExternalLink } from "lucide-react";
+import { ArrowLeft, Save, Check, Loader2, Trash2, ExternalLink, ChevronDown } from "lucide-react";
 import { CloudinaryUploader } from "@/components/cms/CloudinaryUploader";
+
+interface SEOMeta {
+  title: string;
+  description: string;
+  ogImage: string;
+  noindex: boolean;
+  canonical: string;
+}
 
 interface CMSProject {
   _id?: string;
@@ -20,16 +28,21 @@ interface CMSProject {
   result: string;
   tags: string[];
   coverImage: string;
+  coverAlt: string;
   images: string[];
   featured: boolean;
   order: number;
   visible: boolean;
+  seo?: SEOMeta;
 }
+
+const BLANK_SEO: SEOMeta = { title: "", description: "", ogImage: "", noindex: false, canonical: "" };
 
 const BLANK: Omit<CMSProject, "_id"> = {
   slug: "", number: "", client: "", title: "", category: "", location: "",
   year: new Date().getFullYear().toString(), shortDescription: "", fullDescription: "",
-  result: "", tags: [], coverImage: "", images: [], featured: false, order: 0, visible: true,
+  result: "", tags: [], coverImage: "", coverAlt: "", images: [], featured: false, order: 0, visible: true,
+  seo: BLANK_SEO,
 };
 
 const inputCls =
@@ -71,13 +84,20 @@ export default function ProjectForm({ initialData, projectId }: { initialData?: 
     title: initialData.title, category: initialData.category, location: initialData.location,
     year: initialData.year, shortDescription: initialData.shortDescription,
     fullDescription: initialData.fullDescription, result: initialData.result,
-    tags: initialData.tags, coverImage: initialData.coverImage, images: initialData.images,
+    tags: initialData.tags, coverImage: initialData.coverImage, coverAlt: initialData.coverAlt ?? "", images: initialData.images,
     featured: initialData.featured, order: initialData.order, visible: initialData.visible,
+    seo: initialData.seo ?? BLANK_SEO,
   } : BLANK);
+  const [seo, setSeoState] = useState<SEOMeta>(initialData?.seo ?? BLANK_SEO);
   const [tagsInput, setTagsInput] = useState(initialData?.tags.join(", ") ?? "");
   const [imagesInput, setImagesInput] = useState(initialData?.images.join("\n") ?? "");
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [seoOpen, setSeoOpen] = useState(false);
+
+  function setSeo<K extends keyof SEOMeta>(key: K, value: SEOMeta[K]) {
+    setSeoState((prev) => ({ ...prev, [key]: value }));
+  }
 
   useEffect(() => {
     if (initialData) {
@@ -104,6 +124,7 @@ export default function ProjectForm({ initialData, projectId }: { initialData?: 
       ...form,
       tags: tagsInput.split(",").map((t) => t.trim()).filter(Boolean),
       images: imagesInput.split("\n").map((u) => u.trim()).filter(Boolean),
+      seo,
     };
     try {
       const res = isEdit
@@ -222,8 +243,17 @@ export default function ProjectForm({ initialData, projectId }: { initialData?: 
                     folder="movico/projects"
                     label="Upload from device"
                     currentUrl={undefined}
-                    onUpload={({ url }) => set("coverImage", url)}
+                    onUpload={({ url, alt }) => { set("coverImage", url); if (alt) set("coverAlt", alt); }}
                   />
+                  <div>
+                    <label className={labelCls}>Cover image alt text <span className="text-amber-500">*SEO</span></label>
+                    <input
+                      className={inputCls}
+                      value={form.coverAlt}
+                      onChange={(e) => set("coverAlt", e.target.value)}
+                      placeholder="e.g. LEAP Conference 2024 event coverage by Movico"
+                    />
+                  </div>
                 </div>
                 {form.coverImage && (
                   <div className="w-48 h-32 rounded-xl overflow-hidden bg-white/5 shrink-0 self-start">
@@ -312,6 +342,110 @@ export default function ProjectForm({ initialData, projectId }: { initialData?: 
                 />
               </div>
             </SectionCard>
+
+            {/* SEO */}
+            <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
+              <button
+                type="button"
+                onClick={() => setSeoOpen((v) => !v)}
+                className="w-full flex items-center justify-between px-6 py-4 text-left hover:bg-slate-50 transition-colors"
+              >
+                <div>
+                  <h3 className="text-slate-500 text-[11px] uppercase tracking-[0.2em] font-medium">SEO</h3>
+                  <p className="text-slate-400 text-xs mt-0.5">Override meta title, description &amp; OG image</p>
+                </div>
+                <ChevronDown size={14} className={`text-slate-400 transition-transform duration-200 ${seoOpen ? "rotate-180" : ""}`} />
+              </button>
+
+              {seoOpen && (
+                <div className="px-6 pb-6 space-y-4 border-t border-slate-100">
+                  {/* SERP Preview */}
+                  <div className="mt-4 bg-slate-950 border border-slate-700 rounded-xl p-4">
+                    <p className="text-[10px] uppercase tracking-[0.15em] text-slate-500 mb-3">Google Preview</p>
+                    <div className="space-y-0.5">
+                      <p className="text-[13px] leading-snug truncate" style={{ color: "#8ab4f8" }}>
+                        {seo.title || (form.title ? `${form.title} — ${form.client} | Movico` : "Page title will appear here")}
+                      </p>
+                      <p className="text-[11px]" style={{ color: "#bdc1c6" }}>
+                        movicoksa.com/projects/{form.slug || "slug"}
+                      </p>
+                      <p className="text-[12px] leading-relaxed line-clamp-2" style={{ color: "#bdc1c6", opacity: 0.75 }}>
+                        {seo.description || form.shortDescription || "Meta description will appear here…"}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className={labelCls}>
+                      SEO Title <span className={`ml-1 ${(seo.title || `${form.title} — ${form.client} | Movico`).length > 60 ? "text-red-400" : "text-slate-400"}`}>
+                        {(seo.title || `${form.title} — ${form.client} | Movico`).length}/60
+                      </span>
+                    </label>
+                    <input
+                      className={inputCls}
+                      value={seo.title}
+                      onChange={(e) => setSeo("title", e.target.value)}
+                      placeholder={form.title ? `${form.title} — ${form.client} | Movico` : "Leave blank to use default"}
+                    />
+                  </div>
+
+                  <div>
+                    <label className={labelCls}>
+                      Meta Description <span className={`ml-1 ${(seo.description || form.shortDescription).length > 160 ? "text-red-400" : "text-slate-400"}`}>
+                        {(seo.description || form.shortDescription).length}/160
+                      </span>
+                    </label>
+                    <textarea
+                      className={inputCls}
+                      rows={3}
+                      value={seo.description}
+                      onChange={(e) => setSeo("description", e.target.value)}
+                      placeholder={form.shortDescription || "Leave blank to use short description"}
+                    />
+                  </div>
+
+                  <div>
+                    <label className={labelCls}>OG Image URL</label>
+                    <input
+                      className={inputCls}
+                      value={seo.ogImage}
+                      onChange={(e) => setSeo("ogImage", e.target.value)}
+                      placeholder={form.coverImage || "Leave blank to use cover image"}
+                    />
+                    {(seo.ogImage || form.coverImage) && (
+                      <div className="mt-2 rounded-xl overflow-hidden border border-slate-200 aspect-[1200/630] max-w-xs">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={seo.ogImage || form.coverImage} alt="OG preview" className="w-full h-full object-cover" />
+                      </div>
+                    )}
+                  </div>
+
+                  <div>
+                    <label className={labelCls}>Canonical URL</label>
+                    <input
+                      className={inputCls}
+                      value={seo.canonical}
+                      onChange={(e) => setSeo("canonical", e.target.value)}
+                      placeholder={`https://movicoksa.com/projects/${form.slug || "slug"}`}
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-between py-2">
+                    <div>
+                      <p className="text-slate-900 text-sm font-medium">No-index</p>
+                      <p className="text-slate-400 text-xs mt-0.5">Hide this page from search engines</p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setSeo("noindex", !seo.noindex)}
+                      className={`relative w-10 h-5 rounded-full transition-all duration-200 ${seo.noindex ? "bg-[#d98629]" : "bg-slate-200"}`}
+                    >
+                      <span className={`absolute top-0.5 w-4 h-4 rounded-full bg-white shadow transition-all duration-200 ${seo.noindex ? "left-5" : "left-0.5"}`} />
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
 
             {/* Gallery */}
             <SectionCard title="Gallery Images">

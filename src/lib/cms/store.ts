@@ -1,7 +1,7 @@
 import 'server-only';
 import { cache } from 'react';
 import { getDb } from './db';
-import { CMSContent, CMSDesign, defaultContent, defaultDesign } from './types';
+import { CMSContent, CMSDesign, CMSSeo, defaultContent, defaultDesign, defaultSeo } from './types';
 
 const COLLECTION = 'cms_settings';
 const TTL = 30_000; // 30 seconds — cache DB reads in memory
@@ -13,6 +13,7 @@ interface Cached<T> { data: T; expires: number }
 const g = global as typeof globalThis & {
   _cmsContent?: Cached<CMSContent>;
   _cmsDesign?: Cached<CMSDesign>;
+  _cmsSeo?: Cached<CMSSeo>;
 };
 
 // ─── Deep merge ───────────────────────────────────────────────────────────────
@@ -92,4 +93,33 @@ export async function writeDesign(data: CMSDesign): Promise<void> {
     { upsert: true }
   );
   g._cmsDesign = { data, expires: Date.now() + TTL };
+}
+
+// ─── SEO ──────────────────────────────────────────────────────────────────────
+
+export const readSeo = cache(async (): Promise<CMSSeo> => {
+  if (g._cmsSeo && Date.now() < g._cmsSeo.expires) {
+    return g._cmsSeo.data;
+  }
+  try {
+    const db = await getDb();
+    const doc = await db.collection(COLLECTION).findOne({ _id: 'seo' as unknown });
+    const merged = doc
+      ? (() => { const { _id, ...rest } = doc; void _id; return deepMerge(defaultSeo, rest as Partial<CMSSeo>); })()
+      : defaultSeo;
+    g._cmsSeo = { data: merged, expires: Date.now() + TTL };
+    return merged;
+  } catch {
+    return defaultSeo;
+  }
+});
+
+export async function writeSeo(data: CMSSeo): Promise<void> {
+  const db = await getDb();
+  await db.collection(COLLECTION).replaceOne(
+    { _id: 'seo' as unknown },
+    { _id: 'seo', ...data },
+    { upsert: true }
+  );
+  g._cmsSeo = { data, expires: Date.now() + TTL };
 }

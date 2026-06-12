@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+import { listPosts } from "@/lib/cms/blog";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Blog & Insights | Movico — Video Production Riyadh",
@@ -9,7 +12,7 @@ export const metadata: Metadata = {
     "Insights on video production, event coverage, and media strategy from Movico — Saudi Arabia's leading corporate video production company based in Riyadh.",
 };
 
-const posts = [
+const STATIC_POSTS = [
   {
     slug: "why-cinematography-matters",
     category: "Production",
@@ -72,7 +75,25 @@ const posts = [
   },
 ];
 
-export default function BlogPage() {
+export default async function BlogPage() {
+  let cmsPosts: { slug: string; category: string; title: string; excerpt: string; coverImage: string; publishedAt: string; readTime: string }[] = [];
+  try {
+    cmsPosts = (await listPosts(true)).map((p) => ({
+      slug: p.slug, category: p.category, title: p.title,
+      excerpt: p.excerpt, coverImage: p.coverImage,
+      publishedAt: p.publishedAt, readTime: p.readTime,
+    }));
+  } catch { /* fall back to static */ }
+
+  const posts = cmsPosts.length > 0
+    ? cmsPosts.map((p) => ({
+        slug: p.slug, category: p.category, title: p.title, excerpt: p.excerpt,
+        image: p.coverImage,
+        date: p.publishedAt ? new Date(p.publishedAt).toLocaleDateString("en-GB", { month: "long", year: "numeric" }) : "",
+        readTime: p.readTime,
+      }))
+    : STATIC_POSTS;
+
   const [featured, ...rest] = posts;
 
   return (

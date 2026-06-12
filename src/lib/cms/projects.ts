@@ -16,10 +16,18 @@ export interface CMSProject {
   result: string;
   tags: string[];
   coverImage: string;
+  coverAlt: string;
   images: string[];
   featured: boolean;
   order: number;
   visible: boolean;
+  seo?: {
+    title: string;
+    description: string;
+    ogImage: string;
+    noindex: boolean;
+    canonical: string;
+  };
   createdAt: Date;
 }
 
