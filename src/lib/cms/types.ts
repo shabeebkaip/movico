@@ -460,8 +460,9 @@ export const defaultContent: CMSContent = {
       ctaPrimary: { text: 'Start a Project', href: '#contact' },
       ctaSecondary: { text: 'Watch Reel', href: '#showreel' },
       videoUrl:
-        'https://res.cloudinary.com/dm5c31z7w/video/upload/q_auto,f_auto/v1769938198/0201_loykmi.mp4',
-      posterUrl: 'https://movicoksa.com/wp-content/uploads/2024/10/6B2A6288-scaled.jpg',
+        'https://res.cloudinary.com/xzwm4mjt/video/upload/q_auto,f_auto,w_1920,c_limit/movico/videos/6a0eaff5ac6acf2f293bacb8.mp4',
+      posterUrl:
+        'https://res.cloudinary.com/xzwm4mjt/video/upload/so_auto,w_1920,h_1080,c_fill,q_auto/movico/videos/6a0eaff5ac6acf2f293bacb8.jpg',
     },
     marquee: {
       row1: 'Cinematic Production Built For Impact',
@@ -710,7 +711,7 @@ export const defaultContent: CMSContent = {
       satisfactionScore: '98%',
       satisfactionLabel: 'Would recommend us',
       ctaButtonText: 'Send Message',
-      videoUrl: 'https://res.cloudinary.com/dm5c31z7w/video/upload/v1769938198/0201_loykmi.mp4',
+      videoUrl: 'https://res.cloudinary.com/xzwm4mjt/video/upload/q_auto,f_auto,w_1920,c_limit/movico/videos/6a0eaff5ac6acf2f293bacb8.mp4',
     },
   },
   about: {

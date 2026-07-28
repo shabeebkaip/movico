@@ -59,7 +59,7 @@ const CTASection = ({ content = D }: { content?: CTAContent }) => {
         className="absolute inset-0 w-full h-full object-cover opacity-10"
       >
         <source
-          src="https://res.cloudinary.com/dm5c31z7w/video/upload/v1769938198/0201_loykmi.mp4"
+          src="https://res.cloudinary.com/xzwm4mjt/video/upload/q_auto,f_auto,w_1920,c_limit/movico/videos/6a0eaff5ac6acf2f293bacb8.mp4"
           type="video/mp4"
         />
       </video>

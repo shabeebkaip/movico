@@ -25,14 +25,14 @@ const projects: Project[] = [
     category: "Esports Film",
     year: "2025",
     span: "full",
-    video: "https://res.cloudinary.com/dm5c31z7w/video/upload/v1776032909/ESPORTS_2025_MOVICO_1_1_aetzgu.mp4",
+    video: "https://res.cloudinary.com/xzwm4mjt/video/upload/q_auto,f_auto,w_1920,c_limit/movico/videos/6a0eaff4ac6acf2f293bacb3.mp4",
   },
   {
     id: 2,
     client: "Riyadh Cityscape",
     category: "City Campaign",
     year: "2025",
-    video: "https://res.cloudinary.com/dm5c31z7w/video/upload/v1776032310/MOVICO_CITYSCAPE_1_i8rmfk.mp4",
+    video: "https://res.cloudinary.com/xzwm4mjt/video/upload/q_auto,f_auto,w_1920,c_limit/movico/videos/6a0eaff4ac6acf2f293bacb5.mp4",
   },
   {
     id: 3,
@@ -61,7 +61,7 @@ const projects: Project[] = [
     category: "Brand Showreel",
     year: "2024",
     span: "full",
-    video: "https://res.cloudinary.com/dm5c31z7w/video/upload/v1776034756/MOVICO_REElS_NEW_2024_V4_1_ov2p00.mp4",
+    video: "https://res.cloudinary.com/xzwm4mjt/video/upload/q_auto,f_auto,w_1920,c_limit/movico/videos/6a0eaff5ac6acf2f293bacb7.mp4",
   },
 ];
 

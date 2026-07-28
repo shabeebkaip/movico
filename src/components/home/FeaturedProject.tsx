@@ -67,7 +67,7 @@ export default function FeaturedProjects() {
             muted
           >
             <source
-              src="https://res.cloudinary.com/dm5c31z7w/video/upload/v1776032909/ESPORTS_2025_MOVICO_1_1_aetzgu.mp4"
+              src="https://res.cloudinary.com/xzwm4mjt/video/upload/q_auto,f_auto,w_1920,c_limit/movico/videos/6a0eaff4ac6acf2f293bacb3.mp4"
               type="video/mp4"
             />
           </video>

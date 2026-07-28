@@ -62,7 +62,7 @@ export default async function RootLayout({
             />
             <link
               rel="preload"
-              href="https://res.cloudinary.com/dm5c31z7w/video/upload/v1769938198/0201_loykmi.mp4"
+              href="https://res.cloudinary.com/xzwm4mjt/video/upload/q_auto,f_auto,w_1920,c_limit/movico/videos/6a0eaff5ac6acf2f293bacb8.mp4"
               as="video"
               type="video/mp4"
             />
