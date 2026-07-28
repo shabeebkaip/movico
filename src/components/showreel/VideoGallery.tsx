@@ -29,10 +29,26 @@ function VideoCard({
   onPlay: (v: VideoItem) => void;
 }) {
   const [imgFailed, setImgFailed] = useState(false);
+  const [hovering, setHovering] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const canPreview = video.source === "cloudinary" && !!video.cloudinaryVideoUrl;
+
+  useEffect(() => {
+    const el = videoRef.current;
+    if (!el) return;
+    if (hovering) {
+      el.currentTime = 0;
+      el.play().catch(() => {});
+    } else {
+      el.pause();
+    }
+  }, [hovering]);
 
   return (
     <button
       onClick={() => onPlay(video)}
+      onMouseEnter={() => setHovering(true)}
+      onMouseLeave={() => setHovering(false)}
       className="group/card shrink-0 relative w-[240px] md:w-[280px] xl:w-[320px] aspect-video overflow-hidden rounded-sm cursor-pointer focus:outline-none"
     >
       {/* Thumbnail */}
@@ -43,12 +59,29 @@ function VideoCard({
           alt={video.title}
           loading="lazy"
           onError={() => setImgFailed(true)}
-          className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover/card:scale-110"
+          className={`absolute inset-0 w-full h-full object-cover transition-all duration-500 group-hover/card:scale-110 ${
+            hovering && canPreview ? "opacity-0" : "opacity-100"
+          }`}
         />
       ) : (
         <div className="absolute inset-0 bg-gradient-to-br from-[#1a1a1a] to-[#0a0a0a] flex items-center justify-center transition-transform duration-500 group-hover/card:scale-105">
           <Play size={28} className="text-white/20" />
         </div>
+      )}
+
+      {/* Hover preview clip — Netflix-style */}
+      {canPreview && (
+        <video
+          ref={videoRef}
+          src={video.cloudinaryVideoUrl}
+          muted
+          loop
+          playsInline
+          preload="none"
+          className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${
+            hovering ? "opacity-100" : "opacity-0"
+          }`}
+        />
       )}
 
       {/* Always-on dark vignette */}
@@ -272,6 +305,7 @@ export default function VideoGallery({
   const close = useCallback(() => setActive(null), []);
 
   const featured = highlights[0];
+  const featuredCanPreview = featured.source === "cloudinary" && !!featured.cloudinaryVideoUrl;
   const categoryGroups = groupByCategory(works);
   const categoryOrder = ["Event", "Corporate", "Commercial", "Brand Film", "Documentary", "Sport"];
 
@@ -294,6 +328,18 @@ export default function VideoGallery({
         {/* Fallback gradient when thumbnail fails */}
         {heroImgFailed && (
           <div className="absolute inset-0 bg-gradient-to-br from-[#1a0f00] via-[#0a0a0a] to-[#000000]" />
+        )}
+
+        {/* Autoplaying background trailer — Netflix-style */}
+        {featuredCanPreview && (
+          <video
+            src={featured.cloudinaryVideoUrl}
+            autoPlay
+            muted
+            loop
+            playsInline
+            className="absolute inset-0 w-full h-full object-cover"
+          />
         )}
 
         {/* Left-to-right fade */}

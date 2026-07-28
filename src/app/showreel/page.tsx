@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { listVideos } from "@/lib/cms/videos";
 import { HIGHLIGHTS, VIDEO_WORKS } from "@/lib/showreel-data";
+import { cloudinaryVideoThumb } from "@/lib/cloudinary";
 import VideoGallery from "@/components/showreel/VideoGallery";
 import type { VideoItem } from "@/lib/showreel-data";
 
@@ -13,12 +14,16 @@ export const metadata: Metadata = {
 export const dynamic = "force-dynamic";
 
 function dbVideoToVideoItem(v: Awaited<ReturnType<typeof listVideos>>[0]): VideoItem {
+  const thumbnail =
+    v.source === "cloudinary" && v.cloudinaryVideoPublicId
+      ? cloudinaryVideoThumb(v.cloudinaryVideoPublicId)
+      : v.thumbnail;
   return {
     id: v.driveId ?? v.cloudinaryVideoPublicId ?? v._id!,
     title: v.title,
     client: v.client,
     category: v.category,
-    thumbnail: v.thumbnail,
+    thumbnail,
     cloudinaryVideoUrl: v.cloudinaryVideoUrl,
     source: v.source,
   };

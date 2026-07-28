@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import {
   Plus, Trash2, Edit2, Star, StarOff, Loader2,
   ChevronUp, ChevronDown, X, Save, Film, Database,
-  Play, Cloud, HardDrive, Link as LinkIcon,
+  Play, Cloud, HardDrive,
 } from "lucide-react";
 import { CloudinaryUploader } from "@/components/cms/CloudinaryUploader";
 
@@ -30,25 +30,18 @@ const CATEGORIES = [
 
 const blank: Omit<CMSVideo, "_id"> = {
   title: "", client: "", category: "Event", isHighlight: false, order: 0,
-  source: "drive", driveId: "", cloudinaryVideoPublicId: "", cloudinaryVideoUrl: "", thumbnail: "",
+  source: "cloudinary", cloudinaryVideoPublicId: "", cloudinaryVideoUrl: "", thumbnail: "",
 };
-
-function extractDriveId(input: string): string {
-  // Accept full URL or bare ID
-  const m = input.match(/\/d\/([a-zA-Z0-9_-]{10,})/);
-  if (m) return m[1];
-  // Also handle ?id= format
-  const m2 = input.match(/[?&]id=([a-zA-Z0-9_-]{10,})/);
-  if (m2) return m2[1];
-  return input.trim();
-}
 
 function thumb(v: CMSVideo) {
   if (v.thumbnail) return v.thumbnail;
   if (v.source === "drive" && v.driveId)
     return `https://drive.google.com/thumbnail?id=${v.driveId}&sz=w400-h225`;
-  if (v.source === "cloudinary" && v.cloudinaryVideoPublicId)
-    return `https://res.cloudinary.com/dm5c31z7w/video/upload/so_auto,w_400,h_225,c_fill,q_60/${v.cloudinaryVideoPublicId}.jpg`;
+  if (v.source === "cloudinary" && v.cloudinaryVideoUrl) {
+    return v.cloudinaryVideoUrl
+      .replace("/upload/", "/upload/so_auto,w_400,h_225,c_fill,q_60/")
+      .replace(/\.[a-zA-Z0-9]+(\?.*)?$/, ".jpg");
+  }
   return null;
 }
 
@@ -166,24 +159,9 @@ function VideoPanel({
   onClose: () => void;
   saving: boolean;
 }) {
-  const [form, setForm] = useState(initial);
-  // Store the raw URL input separately for Drive
-  const [driveUrlInput, setDriveUrlInput] = useState(
-    initial.driveId
-      ? `https://drive.google.com/file/d/${initial.driveId}/view`
-      : ""
-  );
+  const [form, setForm] = useState({ ...initial, source: "cloudinary" as const });
 
   const set = (k: string, v: unknown) => setForm((p) => ({ ...p, [k]: v }));
-
-  function handleDriveInput(raw: string) {
-    setDriveUrlInput(raw);
-    const id = extractDriveId(raw);
-    set("driveId", id);
-  }
-
-  const driveIdResolved = extractDriveId(driveUrlInput);
-  const driveValid = driveIdResolved.length >= 10;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-end">
@@ -253,81 +231,21 @@ function VideoPanel({
             </button>
           </div>
 
-          {/* Video source */}
+          {/* Video source — Cloudinary only */}
           <div>
-            <label className="block text-[10px] uppercase tracking-[0.15em] text-slate-400 mb-2">Where is the video hosted?</label>
-            <div className="grid grid-cols-2 gap-2 mb-4">
-              {[
-                { key: "drive",      label: "Google Drive", sub: "Share link from Drive",  Icon: HardDrive },
-                { key: "cloudinary", label: "Cloudinary",   sub: "Upload a video file",    Icon: Cloud     },
-              ].map(({ key, label, sub, Icon }) => (
-                <button
-                  key={key}
-                  type="button"
-                  onClick={() => set("source", key)}
-                  className={`flex flex-col items-start gap-1 px-3 py-3 rounded-xl border text-left transition-all ${
-                    form.source === key
-                      ? "border-[#d98629] bg-[#d98629]/8 text-slate-900"
-                      : "border-slate-200 text-slate-500 hover:border-slate-300 bg-slate-50"
-                  }`}
-                >
-                  <div className="flex items-center gap-2">
-                    <Icon size={13} className={form.source === key ? "text-[#d98629]" : "text-slate-400"} />
-                    <span className="text-sm font-medium">{label}</span>
-                  </div>
-                  <span className="text-[10px] text-slate-400 pl-5">{sub}</span>
-                </button>
-              ))}
-            </div>
-
-            {form.source === "drive" ? (
-              <div>
-                <label className="block text-[10px] uppercase tracking-[0.15em] text-slate-400 mb-1.5">
-                  Google Drive Share Link
-                </label>
-                <div className="relative">
-                  <LinkIcon size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-                  <input
-                    className={`w-full bg-slate-50 border rounded-lg pl-9 pr-3 py-2.5 text-slate-900 text-sm focus:outline-none transition-colors ${
-                      driveUrlInput && !driveValid
-                        ? "border-red-300 focus:border-red-400"
-                        : driveValid
-                        ? "border-emerald-300 focus:border-emerald-400"
-                        : "border-slate-200 focus:border-[#d98629]/60"
-                    }`}
-                    value={driveUrlInput}
-                    onChange={(e) => handleDriveInput(e.target.value)}
-                    placeholder="https://drive.google.com/file/d/.../view"
-                  />
-                </div>
-                {/* Guidance */}
-                <div className="mt-2 bg-blue-50 border border-blue-100 rounded-lg px-3 py-2.5">
-                  <p className="text-[11px] font-semibold text-blue-700 mb-1">How to get the link:</p>
-                  <ol className="text-[11px] text-blue-600 space-y-0.5 list-decimal list-inside">
-                    <li>Open your video in Google Drive</li>
-                    <li>Click the <strong>Share</strong> button → <strong>Copy link</strong></li>
-                    <li>Paste the link here — we&apos;ll do the rest</li>
-                  </ol>
-                </div>
-                {driveValid && (
-                  <div className="mt-2 flex items-center gap-1.5 text-[11px] text-emerald-600">
-                    <span className="w-3.5 h-3.5 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-500 font-bold text-[9px]">✓</span>
-                    Link recognised · ID: <span className="font-mono text-slate-500">{driveIdResolved.slice(0, 12)}…</span>
-                  </div>
-                )}
-              </div>
-            ) : (
-              <CloudinaryUploader
-                resourceType="video"
-                folder="movico/videos"
-                label="Upload Video"
-                currentUrl={form.cloudinaryVideoUrl}
-                onUpload={({ url, publicId }) => {
-                  set("cloudinaryVideoUrl", url);
-                  set("cloudinaryVideoPublicId", publicId);
-                }}
-              />
-            )}
+            <label className="flex items-center gap-1.5 text-[10px] uppercase tracking-[0.15em] text-slate-400 mb-2">
+              <Cloud size={11} /> Video file
+            </label>
+            <CloudinaryUploader
+              resourceType="video"
+              folder="movico/videos"
+              label="Upload Video"
+              currentUrl={form.cloudinaryVideoUrl}
+              onUpload={({ url, publicId }) => {
+                set("cloudinaryVideoUrl", url);
+                set("cloudinaryVideoPublicId", publicId);
+              }}
+            />
           </div>
 
           {/* Thumbnail */}
