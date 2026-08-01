@@ -1,5 +1,3 @@
-"use client";
-
 // Global cinematic atmosphere layer:
 // — animated film grain (fixed overlay, ~3% opacity)
 // — slow-drifting radial glow orbs (amber, indigo, crimson, teal)

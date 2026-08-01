@@ -13,11 +13,11 @@ const securityHeaders = [
       "default-src 'self'",
       "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com",
       "style-src 'self' 'unsafe-inline' https://api.fontshare.com",
-      "font-src 'self' https://api.fontshare.com https://fonts.gstatic.com",
+      "font-src 'self' https://api.fontshare.com https://cdn.fontshare.com https://fonts.gstatic.com",
       "img-src 'self' data: blob: https://res.cloudinary.com https://randomuser.me https://movicoksa.com",
       "media-src 'self' https://res.cloudinary.com",
       "connect-src 'self' https://www.google-analytics.com https://analytics.google.com https://www.googletagmanager.com https://api.cloudinary.com https://res.cloudinary.com",
-      "frame-src 'self' https://www.googletagmanager.com",
+      "frame-src 'self' https://www.googletagmanager.com https://www.google.com",
     ].join('; '),
   },
 ];

@@ -3,11 +3,18 @@
 import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import Image from "next/image";
 import { MagneticText } from "@/components/ui/morphing-cursor";
 import type { CTAContent } from "@/lib/cms/types";
 import { defaultContent } from "@/lib/cms/types";
 
 const D = defaultContent.home.cta;
+
+// Still frame from the same clip previously used as a background video (Cloudinary
+// video-to-image transform), purely decorative at opacity-10 so a static image is
+// visually identical to the looping video at a fraction of the network cost.
+const CTA_BG_IMAGE =
+  "https://res.cloudinary.com/xzwm4mjt/video/upload/so_auto,w_1920,q_auto/movico/videos/6a0eaff5ac6acf2f293bacb8.jpg";
 
 const CTASection = ({ content = D }: { content?: CTAContent }) => {
   const sectionRef = useRef<HTMLElement>(null);
@@ -50,19 +57,15 @@ const CTASection = ({ content = D }: { content?: CTAContent }) => {
       id="contact"
       className="relative bg-black text-white overflow-hidden py-20 xl:py-32"
     >
-      {/* Background video */}
-      <video
-        autoPlay
-        loop
-        muted
-        playsInline
-        className="absolute inset-0 w-full h-full object-cover opacity-10"
-      >
-        <source
-          src="https://res.cloudinary.com/xzwm4mjt/video/upload/q_auto,f_auto,w_1920,c_limit/movico/videos/6a0eaff5ac6acf2f293bacb8.mp4"
-          type="video/mp4"
-        />
-      </video>
+      {/* Background still (decorative, opacity-10 — no video download needed) */}
+      <Image
+        src={CTA_BG_IMAGE}
+        alt=""
+        aria-hidden="true"
+        fill
+        sizes="100vw"
+        className="object-cover opacity-10"
+      />
       <div className="absolute inset-0 bg-linear-to-b from-black via-black/80 to-black" />
 
       <div className="relative z-10 w-11/12 xl:w-10/12 mx-auto">

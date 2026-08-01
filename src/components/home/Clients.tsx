@@ -85,7 +85,6 @@ function MarqueeRow({
             <ClientLogo
               src={client.src}
               alt={client.alt}
-              removeWhiteBg
               className="h-14 w-auto max-w-36 object-contain"
             />
           </div>

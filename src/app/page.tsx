@@ -22,6 +22,15 @@ import { FAQSection } from "@/components/home/FAQSection";
 import CTASection from "@/components/home/CTASection";
 import SceneDivider from "@/components/SceneDivider";
 
+// ponytail: next/dynamic() was tried for these below-the-fold sections to
+// code-split them out of the initial bundle, but under this project's
+// Turbopack production build, dynamic() with the default ssr:true still
+// bundles the component into the same initial payload (no client-only defer
+// happens without ssr:false) — measured ~0 net byte reduction, only added
+// chunk-count overhead. Reverted. Real ssr:false lazy-loading would need
+// height-matched skeletons per section to avoid CLS regression — out of
+// scope for this pass; flag for a future, more surgical attempt if needed.
+
 export default async function Page() {
   const [content, design] = await Promise.all([readContent(), readDesign()]);
   const s = design.sections.home;

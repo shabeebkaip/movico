@@ -11,8 +11,9 @@ import { ScrollRestoration } from "@/components/ScrollRestoration";
 import { readDesign, readSeo } from "@/lib/cms/store";
 import { defaultDesign } from "@/lib/cms/types";
 import { CMSProvider } from "@/components/cms/CMSContext";
-import { CMSAdminBar } from "@/components/cms/CMSAdminBar";
+import { CMSAdminBarGate } from "@/components/cms/CMSAdminBarGate";
 import { JsonLd } from "@/components/seo/JsonLd";
+import { hasAdminSession } from "@/lib/auth";
 
 const kanit = Kanit({
   weight: ["300", "400", "500", "600", "700", "800"],
@@ -41,9 +42,9 @@ export default async function RootLayout({
   const pathname = headersList.get("x-pathname") ?? "";
   const isAdmin = pathname.startsWith("/admin");
 
-  const [design, seo] = isAdmin
-    ? [defaultDesign, null]
-    : await Promise.all([readDesign(), readSeo()]);
+  const [design, seo, hasAdminCookie] = isAdmin
+    ? [defaultDesign, null, false]
+    : await Promise.all([readDesign(), readSeo(), hasAdminSession()]);
 
   const cssVars = {
     "--color-primary": design.colors.primary,
@@ -56,16 +57,30 @@ export default async function RootLayout({
         {!isAdmin && (
           <>
             <link rel="preconnect" href="https://api.fontshare.com" />
-            <link
-              rel="stylesheet"
-              href="https://api.fontshare.com/v2/css?f[]=satoshi@900,700,500,400&display=swap"
-            />
+            {/* Non-blocking load of the Satoshi stylesheet (loadCSS pattern): preload
+                as style, then swap to stylesheet on load so it never blocks first paint. */}
             <link
               rel="preload"
-              href="https://res.cloudinary.com/xzwm4mjt/video/upload/q_auto,f_auto,w_1920,c_limit/movico/videos/6a0eaff5ac6acf2f293bacb8.mp4"
-              as="video"
-              type="video/mp4"
+              as="style"
+              href="https://api.fontshare.com/v2/css?f[]=satoshi@900,700,500,400&display=swap"
+              id="satoshi-font-preload"
             />
+            <script
+              dangerouslySetInnerHTML={{
+                __html:
+                  "(function(){var l=document.getElementById('satoshi-font-preload');if(l){l.onload=function(){l.onload=null;l.rel='stylesheet';};}})();",
+              }}
+            />
+            <noscript>
+              <link
+                rel="stylesheet"
+                href="https://api.fontshare.com/v2/css?f[]=satoshi@900,700,500,400&display=swap"
+              />
+            </noscript>
+            {/* Removed document-level video preload: it competed with the font
+                stylesheet for bandwidth during the critical LCP window. The
+                <video preload="metadata" poster=...> element in HeroSection
+                already fetches only metadata until playback starts. */}
             {/* Google Tag Manager */}
             {seo?.analytics.gtmId && (
               <script
@@ -104,7 +119,7 @@ export default async function RootLayout({
         )}
         <Providers>
           <CMSProvider>
-            {!isAdmin && <CMSAdminBar />}
+            {!isAdmin && hasAdminCookie && <CMSAdminBarGate />}
             {!isAdmin && <ScrollRestoration />}
             {!isAdmin && <CinematicAtmosphere />}
             {!isAdmin && <Header />}

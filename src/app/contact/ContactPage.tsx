@@ -78,9 +78,12 @@ export default function ContactPage() {
   }, []);
 
   useEffect(() => {
-    gsap.from(headingRef.current, { y: 70, opacity: 0, duration: 1.2, ease: "power3.out" });
-    gsap.from(formRef.current,    { y: 50, opacity: 0, duration: 1, delay: 0.2, ease: "power3.out" });
-    gsap.from(infoRef.current,    { y: 50, opacity: 0, duration: 1, delay: 0.35, ease: "power3.out" });
+    const ctx = gsap.context(() => {
+      gsap.from(headingRef.current, { y: 70, opacity: 0, duration: 1.2, ease: "power3.out" });
+      gsap.from(formRef.current,    { y: 50, opacity: 0, duration: 1, delay: 0.2, ease: "power3.out" });
+      gsap.from(infoRef.current,    { y: 50, opacity: 0, duration: 1, delay: 0.35, ease: "power3.out" });
+    }, sectionRef);
+    return () => ctx.revert();
   }, []);
 
   function animateStep() {
@@ -403,6 +406,19 @@ export default function ContactPage() {
                 <p className="text-[10px] uppercase tracking-[0.4em] text-white/30 mb-2">Business Hours</p>
                 <p className="text-white/60 text-sm">{cms.info.hours}</p>
               </div>
+            </div>
+
+            <div className="border border-white/10 rounded-2xl overflow-hidden">
+              <iframe
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3626.6525640645505!2d46.545607800000006!3d24.635656899999997!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3e2f1f2e7891882b%3A0xf2aa0cfedc2b7b5d!2sMovico%20Marketing%20and%20Production%20Riyadh!5e0!3m2!1sen!2ssa!4v1785589395592!5m2!1sen!2ssa"
+                width="100%"
+                height="280"
+                style={{ border: 0, display: "block" }}
+                allowFullScreen
+                loading="lazy"
+                referrerPolicy="strict-origin-when-cross-origin"
+                title="Movico location on Google Maps"
+              />
             </div>
 
             {(cms.social.instagram !== "#" || cms.social.linkedin !== "#" || cms.social.youtube !== "#") && (

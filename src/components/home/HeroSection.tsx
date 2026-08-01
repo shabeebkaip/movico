@@ -23,11 +23,11 @@ export function HeroSection({ content = D }: { content?: HeroContent }) {
     const ctx = gsap.context(() => {
       const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
 
-      tl.from(labelRef.current, { y: 20, opacity: 0, duration: 0.8 }, 0.3)
-        .from(line1Ref.current, { y: 110, opacity: 0, duration: 1.1 }, 0.5)
-        .from(line2Ref.current, { y: 110, opacity: 0, duration: 1.1 }, 0.65)
-        .from(subRef.current, { y: 30, opacity: 0, duration: 0.9 }, 0.85)
-        .from(ctaRef.current, { y: 20, opacity: 0, duration: 0.8 }, 0.95);
+      tl.from(labelRef.current, { y: 20, duration: 0.8 }, 0.3)
+        .from(line1Ref.current, { y: 110, duration: 1.1 }, 0.5)
+        .from(line2Ref.current, { y: 110, duration: 1.1 }, 0.65)
+        .from(subRef.current, { y: 30, duration: 0.9 }, 0.85)
+        .from(ctaRef.current, { y: 20, duration: 0.8 }, 0.95);
 
       gsap.to(scrollRef.current, {
         y: 12,

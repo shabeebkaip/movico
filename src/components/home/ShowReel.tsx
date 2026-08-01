@@ -5,6 +5,10 @@ import { motion, AnimatePresence } from "framer-motion";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Play, X } from "lucide-react";
+import LazyVideo from "./LazyVideo";
+
+const SHOWREEL_SRC =
+  "https://res.cloudinary.com/xzwm4mjt/video/upload/q_auto,f_auto,w_1920,c_limit/movico/videos/6a0eaff5ac6acf2f293bacb8.mp4";
 
 const ShowReel = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -43,18 +47,10 @@ const ShowReel = () => {
         <div className="w-11/12 xl:w-10/12 mx-auto relative h-[60vh] xl:h-[75vh] rounded-3xl xl:rounded-[3rem] overflow-hidden group cursor-pointer"
           onClick={() => setIsOpen(true)}
         >
-          <video
-            autoPlay
-            muted
-            loop
-            playsInline
+          <LazyVideo
+            src={SHOWREEL_SRC}
             className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-          >
-            <source
-              src="https://res.cloudinary.com/xzwm4mjt/video/upload/q_auto,f_auto,w_1920,c_limit/movico/videos/6a0eaff5ac6acf2f293bacb8.mp4"
-              type="video/mp4"
-            />
-          </video>
+          />
 
           {/* Overlay */}
           <div className="absolute inset-0 bg-black/50 group-hover:bg-black/40 transition-colors duration-500" />

@@ -7,6 +7,7 @@ import Image from "next/image";
 import Link from "next/link";
 import type { WorkShowcaseContent } from "@/lib/cms/types";
 import { defaultContent } from "@/lib/cms/types";
+import LazyVideo from "./LazyVideo";
 
 const D = defaultContent.home.workShowcase;
 
@@ -138,12 +139,8 @@ export default function WorkShowcase({ content = D }: { content?: WorkShowcaseCo
           >
             {/* Media */}
             {project.video ? (
-              <video
+              <LazyVideo
                 src={project.video}
-                autoPlay
-                loop
-                muted
-                playsInline
                 className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
               />
             ) : (
