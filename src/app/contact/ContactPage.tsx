@@ -35,17 +35,8 @@ const SERVICES = [
   { id: "not-sure",        label: "Not Sure Yet",      emoji: "✨", desc: "Let's explore together" },
 ];
 
-const BUDGETS = [
-  { id: "under-20k",    label: "Under SAR 20K",           desc: "Starter projects" },
-  { id: "20k-50k",      label: "SAR 20K – 50K",           desc: "Mid-size productions" },
-  { id: "50k-150k",     label: "SAR 50K – 150K",          desc: "Full-scale campaigns" },
-  { id: "150k-plus",    label: "SAR 150K+",                desc: "Enterprise & flagship" },
-  { id: "lets-discuss", label: "Let's Discuss",            desc: "Custom scope" },
-];
-
 interface FormData {
   service: string;
-  budget: string;
   name: string;
   email: string;
   phone: string;
@@ -53,7 +44,7 @@ interface FormData {
   message: string;
 }
 
-const STEPS = ["Service", "Budget", "You", "Details"];
+const STEPS = ["Service", "You", "Details"];
 
 export default function ContactPage() {
   const [step, setStep] = useState(0);
@@ -61,7 +52,7 @@ export default function ContactPage() {
   const [loading, setLoading] = useState(false);
   const [cms, setCms] = useState<ContactCMS>(DEFAULT_CMS);
   const [form, setForm] = useState<FormData>({
-    service: "", budget: "", name: "", email: "", phone: "", company: "", message: "",
+    service: "", name: "", email: "", phone: "", company: "", message: "",
   });
 
   const sectionRef = useRef<HTMLElement>(null);
@@ -79,9 +70,9 @@ export default function ContactPage() {
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      gsap.from(headingRef.current, { y: 70, opacity: 0, duration: 1.2, ease: "power3.out" });
-      gsap.from(formRef.current,    { y: 50, opacity: 0, duration: 1, delay: 0.2, ease: "power3.out" });
-      gsap.from(infoRef.current,    { y: 50, opacity: 0, duration: 1, delay: 0.35, ease: "power3.out" });
+      gsap.from(headingRef.current, { y: 70, duration: 1.2, ease: "power3.out" });
+      gsap.from(formRef.current,    { y: 50, duration: 1, delay: 0.2, ease: "power3.out" });
+      gsap.from(infoRef.current,    { y: 50, duration: 1, delay: 0.35, ease: "power3.out" });
     }, sectionRef);
     return () => ctx.revert();
   }, []);
@@ -111,7 +102,6 @@ export default function ContactPage() {
           phone: form.phone || undefined,
           company: form.company || undefined,
           service: SERVICES.find((s) => s.id === form.service)?.label ?? form.service,
-          budget: BUDGETS.find((b) => b.id === form.budget)?.label ?? form.budget,
           message: form.message || undefined,
         }),
       });
@@ -171,10 +161,6 @@ export default function ContactPage() {
                     <span className="text-white">{SERVICES.find((s) => s.id === form.service)?.label}</span>
                   </div>
                   <div className="flex justify-between text-sm">
-                    <span className="text-white/40">Budget</span>
-                    <span className="text-white">{BUDGETS.find((b) => b.id === form.budget)?.label}</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
                     <span className="text-white/40">Name</span>
                     <span className="text-white">{form.name}</span>
                   </div>
@@ -208,7 +194,7 @@ export default function ContactPage() {
                   {/* Step 0 — Service */}
                   {step === 0 && (
                     <div>
-                      <p className="text-[10px] uppercase tracking-[0.5em] text-white/30 mb-3">Step 1 of 4</p>
+                      <p className="text-[10px] uppercase tracking-[0.5em] text-white/30 mb-3">Step 1 of 3</p>
                       <h2 className="font-display font-black text-3xl xl:text-4xl uppercase leading-tight mb-2">
                         What are you<br /><span className="text-primary">looking to create?</span>
                       </h2>
@@ -233,43 +219,10 @@ export default function ContactPage() {
                     </div>
                   )}
 
-                  {/* Step 1 — Budget */}
+                  {/* Step 1 — Contact details */}
                   {step === 1 && (
                     <div>
-                      <p className="text-[10px] uppercase tracking-[0.5em] text-white/30 mb-3">Step 2 of 4</p>
-                      <h2 className="font-display font-black text-3xl xl:text-4xl uppercase leading-tight mb-2">
-                        What&apos;s your<br /><span className="text-primary">approximate budget?</span>
-                      </h2>
-                      <p className="text-white/40 text-sm mb-8">This helps us tailor the right solution for you.</p>
-                      <div className="space-y-3">
-                        {BUDGETS.map((b) => (
-                          <button
-                            key={b.id}
-                            onClick={() => { setForm((f) => ({ ...f, budget: b.id })); setTimeout(next, 200); }}
-                            className={`w-full flex items-center justify-between p-4 rounded-2xl border transition-all duration-200 hover:scale-[1.01] active:scale-[0.99] ${
-                              form.budget === b.id
-                                ? "bg-primary/15 border-primary"
-                                : "bg-white/[0.03] border-white/10 hover:border-white/25 hover:bg-white/[0.06]"
-                            }`}
-                          >
-                            <div className="text-left">
-                              <p className="font-bold text-sm text-white">{b.label}</p>
-                              <p className="text-[11px] text-white/40 mt-0.5">{b.desc}</p>
-                            </div>
-                            <ArrowRight size={14} className="text-white/20" />
-                          </button>
-                        ))}
-                      </div>
-                      <button onClick={back} className="mt-6 flex items-center gap-2 text-xs text-white/30 hover:text-white/60 transition-colors">
-                        <ChevronLeft size={13} /> Back
-                      </button>
-                    </div>
-                  )}
-
-                  {/* Step 2 — Contact details */}
-                  {step === 2 && (
-                    <div>
-                      <p className="text-[10px] uppercase tracking-[0.5em] text-white/30 mb-3">Step 3 of 4</p>
+                      <p className="text-[10px] uppercase tracking-[0.5em] text-white/30 mb-3">Step 2 of 3</p>
                       <h2 className="font-display font-black text-3xl xl:text-4xl uppercase leading-tight mb-2">
                         Tell us<br /><span className="text-primary">who you are.</span>
                       </h2>
@@ -334,10 +287,10 @@ export default function ContactPage() {
                     </div>
                   )}
 
-                  {/* Step 3 — Message + submit */}
-                  {step === 3 && (
+                  {/* Step 2 — Message + submit */}
+                  {step === 2 && (
                     <div>
-                      <p className="text-[10px] uppercase tracking-[0.5em] text-white/30 mb-3">Step 4 of 4</p>
+                      <p className="text-[10px] uppercase tracking-[0.5em] text-white/30 mb-3">Step 3 of 3</p>
                       <h2 className="font-display font-black text-3xl xl:text-4xl uppercase leading-tight mb-2">
                         Anything<br /><span className="text-primary">else to share?</span>
                       </h2>
@@ -347,7 +300,6 @@ export default function ContactPage() {
                       <div className="flex flex-wrap gap-2 mb-6">
                         {[
                           SERVICES.find((s) => s.id === form.service)?.label,
-                          BUDGETS.find((b) => b.id === form.budget)?.label,
                         ].filter(Boolean).map((label) => (
                           <span key={label} className="bg-primary/15 text-primary text-xs px-3 py-1.5 rounded-full border border-primary/25 font-medium">
                             {label}
