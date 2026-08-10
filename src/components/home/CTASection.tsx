@@ -10,11 +10,12 @@ import { defaultContent } from "@/lib/cms/types";
 
 const D = defaultContent.home.cta;
 
-// Still frame from the same clip previously used as a background video (Cloudinary
-// video-to-image transform), purely decorative at opacity-10 so a static image is
-// visually identical to the looping video at a fraction of the network cost.
+// Still frame from the same clip previously used as a background video, purely
+// decorative at opacity-10 so a static image is visually identical to the
+// looping video at a fraction of the network cost. Bunny Stream thumbnail for
+// the migrated "Movico Reel V7" video (T4.2).
 const CTA_BG_IMAGE =
-  "https://res.cloudinary.com/xzwm4mjt/video/upload/so_auto,w_1920,q_auto/movico/videos/6a0eaff5ac6acf2f293bacb8.jpg";
+  "https://vz-77191ad4-50a.b-cdn.net/34d823c8-1925-46b4-aeb8-f33c6eba6739/thumbnail.jpg";
 
 const CTASection = ({ content = D }: { content?: CTAContent }) => {
   const sectionRef = useRef<HTMLElement>(null);

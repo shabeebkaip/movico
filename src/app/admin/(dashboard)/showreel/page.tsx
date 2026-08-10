@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { toast } from "sonner";
 import {
   Plus, Trash2, Edit2, Star, StarOff, Loader2,
-  ChevronUp, ChevronDown, X, Save, Film, Database,
-  Play, Cloud, HardDrive,
+  ChevronUp, ChevronDown, X, Save, Film,
+  Play, Cloud, Zap,
 } from "lucide-react";
 import { CloudinaryUploader } from "@/components/cms/CloudinaryUploader";
 
@@ -16,10 +16,9 @@ interface CMSVideo {
   category: string;
   isHighlight: boolean;
   order: number;
-  source: "drive" | "cloudinary";
-  driveId?: string;
   cloudinaryVideoPublicId?: string;
   cloudinaryVideoUrl?: string;
+  bunnyVideoId?: string;
   thumbnail?: string;
 }
 
@@ -30,14 +29,12 @@ const CATEGORIES = [
 
 const blank: Omit<CMSVideo, "_id"> = {
   title: "", client: "", category: "Event", isHighlight: false, order: 0,
-  source: "cloudinary", cloudinaryVideoPublicId: "", cloudinaryVideoUrl: "", thumbnail: "",
+  cloudinaryVideoPublicId: "", cloudinaryVideoUrl: "", thumbnail: "",
 };
 
 function thumb(v: CMSVideo) {
   if (v.thumbnail) return v.thumbnail;
-  if (v.source === "drive" && v.driveId)
-    return `https://drive.google.com/thumbnail?id=${v.driveId}&sz=w400-h225`;
-  if (v.source === "cloudinary" && v.cloudinaryVideoUrl) {
+  if (v.cloudinaryVideoUrl) {
     return v.cloudinaryVideoUrl
       .replace("/upload/", "/upload/so_auto,w_400,h_225,c_fill,q_60/")
       .replace(/\.[a-zA-Z0-9]+(\?.*)?$/, ".jpg");
@@ -57,20 +54,45 @@ function VideoCard({
   isFirst: boolean;
   isLast: boolean;
 }) {
-  const [imgFailed, setImgFailed] = useState(false);
+  const MAX_THUMB_RETRIES = 8; // backoff caps at 8s/retry, well under the 90s test window
+  const [thumbRetry, setThumbRetry] = useState(0);
+  const [thumbFailed, setThumbFailed] = useState(false);
+  const retryTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
   const t = thumb(video);
+
+  useEffect(() => {
+    return () => {
+      if (retryTimeout.current) clearTimeout(retryTimeout.current);
+    };
+  }, []);
+
+  const handleThumbError = () => {
+    // functional update reads the latest retry count, avoiding a stale
+    // closure if multiple onError events fire in quick succession
+    setThumbRetry((n) => {
+      if (n >= MAX_THUMB_RETRIES) {
+        setThumbFailed(true);
+        return n;
+      }
+      const delay = Math.min(2000 * 2 ** n, 8000);
+      retryTimeout.current = setTimeout(() => setThumbRetry((cur) => cur + 1), delay);
+      return n;
+    });
+  };
+
+  const thumbSrc = t ? `${t}${t.includes("?") ? "&" : "?"}r=${thumbRetry}` : null;
 
   return (
     <div className="group bg-white border border-slate-200 rounded-xl overflow-hidden hover:border-slate-300 hover:shadow-sm transition-all duration-200 flex flex-col">
       {/* Thumbnail */}
       <div className="aspect-video relative bg-[#0f172a] overflow-hidden">
-        {t && !imgFailed ? (
+        {thumbSrc && !thumbFailed ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
-            src={t}
+            src={thumbSrc}
             alt={video.title}
             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-            onError={() => setImgFailed(true)}
+            onError={handleThumbError}
           />
         ) : (
           <div className="w-full h-full flex flex-col items-center justify-center gap-2 bg-gradient-to-br from-slate-800 to-slate-900">
@@ -83,11 +105,8 @@ function VideoCard({
         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors duration-200" />
 
         {/* Source badge */}
-        <div className={`absolute top-2.5 left-2.5 flex items-center gap-1 text-[9px] uppercase tracking-[0.15em] font-semibold px-2 py-0.5 rounded-full ${
-          video.source === "cloudinary" ? "bg-blue-500/90 text-white" : "bg-emerald-500/90 text-white"
-        }`}>
-          {video.source === "cloudinary" ? <Cloud size={8} /> : <HardDrive size={8} />}
-          {video.source === "cloudinary" ? "Cloud" : "Drive"}
+        <div className={`absolute top-2.5 left-2.5 flex items-center gap-1 text-[9px] uppercase tracking-[0.15em] font-semibold px-2 py-0.5 rounded-full text-white ${video.bunnyVideoId ? "bg-orange-500/90" : "bg-blue-500/90"}`}>
+          {video.bunnyVideoId ? <><Zap size={8} /> Bunny</> : <><Cloud size={8} /> Cloud</>}
         </div>
 
         {/* Highlight star */}
@@ -159,7 +178,8 @@ function VideoPanel({
   onClose: () => void;
   saving: boolean;
 }) {
-  const [form, setForm] = useState({ ...initial, source: "cloudinary" as const });
+  const [form, setForm] = useState(initial);
+  const [videoUploadStatus, setVideoUploadStatus] = useState<"idle" | "uploading" | "done" | "error">("idle");
 
   const set = (k: string, v: unknown) => setForm((p) => ({ ...p, [k]: v }));
 
@@ -231,19 +251,25 @@ function VideoPanel({
             </button>
           </div>
 
-          {/* Video source — Cloudinary only */}
+          {/* Video source — new uploads go to Bunny Stream */}
           <div>
             <label className="flex items-center gap-1.5 text-[10px] uppercase tracking-[0.15em] text-slate-400 mb-2">
-              <Cloud size={11} /> Video file
+              <Zap size={11} /> Video file
             </label>
             <CloudinaryUploader
               resourceType="video"
               folder="movico/videos"
               label="Upload Video"
               currentUrl={form.cloudinaryVideoUrl}
-              onUpload={({ url, publicId }) => {
-                set("cloudinaryVideoUrl", url);
-                set("cloudinaryVideoPublicId", publicId);
+              onStatusChange={setVideoUploadStatus}
+              onUpload={({ bunnyVideoId, thumbnailUrl }) => {
+                // New video uploads land on Bunny only (no dual-write) — clear
+                // any stale Cloudinary pointers so the record's source of truth
+                // is unambiguous.
+                set("bunnyVideoId", bunnyVideoId);
+                set("cloudinaryVideoUrl", "");
+                set("cloudinaryVideoPublicId", "");
+                setForm((prev) => (prev.thumbnail ? prev : { ...prev, thumbnail: thumbnailUrl ?? prev.thumbnail }));
               }}
             />
           </div>
@@ -272,11 +298,12 @@ function VideoPanel({
           </button>
           <button
             onClick={() => onSave(form)}
-            disabled={saving || !form.title.trim()}
+            disabled={saving || !form.title.trim() || videoUploadStatus === "uploading"}
+            title={videoUploadStatus === "uploading" ? "Wait for the video upload to finish" : undefined}
             className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-[#d98629] hover:bg-[#c4771e] disabled:opacity-40 disabled:cursor-not-allowed rounded-xl text-black font-bold text-sm transition-colors"
           >
             {saving ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />}
-            {saving ? "Saving…" : "Save Video"}
+            {saving ? "Saving…" : videoUploadStatus === "uploading" ? "Uploading video…" : "Save Video"}
           </button>
         </div>
       </div>
@@ -288,7 +315,6 @@ function VideoPanel({
 export default function ShowreelAdmin() {
   const [videos, setVideos]       = useState<CMSVideo[]>([]);
   const [loading, setLoading]     = useState(true);
-  const [seeding, setSeeding]     = useState(false);
   const [panelOpen, setPanelOpen] = useState(false);
   const [editing, setEditing]     = useState<(Omit<CMSVideo, "_id"> & { _id?: string }) | null>(null);
   const [saving, setSaving]       = useState(false);
@@ -325,16 +351,6 @@ export default function ShowreelAdmin() {
     if (activeFilter === "featured") return videos.filter((v) => v.isHighlight).sort((a, b) => a.order - b.order);
     return videos.filter((v) => v.category === activeFilter).sort((a, b) => a.order - b.order);
   }, [videos, activeFilter]);
-
-  async function handleSeed() {
-    if (!confirm("Import all static videos into MongoDB? Only runs if DB is empty.")) return;
-    setSeeding(true);
-    const res  = await fetch("/api/cms/seed-videos", { method: "POST" });
-    const data = await res.json();
-    if (data.skipped) toast.info(data.message);
-    else { toast.success(`Seeded ${data.seeded} videos`); await load(); }
-    setSeeding(false);
-  }
 
   async function handleSave(form: Omit<CMSVideo, "_id"> & { _id?: string }) {
     setSaving(true);
@@ -404,13 +420,6 @@ export default function ShowreelAdmin() {
           </div>
         </div>
         <button
-          onClick={handleSeed} disabled={seeding}
-          className="flex items-center gap-2 text-slate-500 hover:text-slate-900 border border-slate-200 hover:border-slate-300 text-xs px-3 py-2 rounded-lg transition-all disabled:opacity-40"
-        >
-          {seeding ? <Loader2 size={12} className="animate-spin" /> : <Database size={12} />}
-          Seed from code
-        </button>
-        <button
           onClick={() => { setEditing({ ...blank }); setPanelOpen(true); }}
           className="flex items-center gap-2 bg-[#d98629] hover:bg-[#c4771e] text-black font-bold text-xs px-4 py-2.5 rounded-lg transition-colors"
         >
@@ -459,7 +468,7 @@ export default function ShowreelAdmin() {
             <div>
               <p className="text-slate-600 font-semibold text-sm">No videos{activeFilter !== "all" ? ` in "${activeFilter}"` : " yet"}</p>
               <p className="text-slate-400 text-xs mt-1 max-w-xs">
-                {videos.length === 0 ? 'Click "Seed from code" to import, or add one manually.' : "Add a video or change the filter."}
+                {videos.length === 0 ? "Add your first video to get started." : "Add a video or change the filter."}
               </p>
             </div>
             {videos.length === 0 && (

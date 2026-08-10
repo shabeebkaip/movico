@@ -47,7 +47,8 @@ export default async function ProjectDetailPage({
   let project: {
     slug: string; number: string; client: string; title: string; category: string;
     location: string; year: string; shortDescription: string; fullDescription: string;
-    result: string; tags: string[]; coverImage: string; coverAlt?: string; images: string[]; featured: boolean;
+    result: string; tags: string[]; coverImage: string; coverAlt?: string; images: string[];
+    video?: string; featured: boolean;
   } | null | undefined;
 
   let allProjects: { slug: string; title: string }[];
@@ -110,16 +111,27 @@ export default async function ProjectDetailPage({
           </div>
         </div>
 
-        {/* Cover Image */}
+        {/* Cover Media */}
         <div className="w-full aspect-[16/7] relative">
-          <Image
-            src={project.coverImage}
-            alt={project.coverAlt || project.title}
-            fill
-            className="object-cover"
-            priority
-            sizes="100vw"
-          />
+          {project.video ? (
+            <video
+              src={project.video}
+              autoPlay
+              muted
+              loop
+              playsInline
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <Image
+              src={project.coverImage}
+              alt={project.coverAlt || project.title}
+              fill
+              className="object-cover"
+              priority
+              sizes="100vw"
+            />
+          )}
           <div className="absolute inset-0 bg-black/30" />
         </div>
       </section>

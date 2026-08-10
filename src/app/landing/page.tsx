@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, CheckCircle, Play } from "lucide-react";
 import { SERVICES } from "@/lib/services-data";
 import StartBookingForm from "./StartBookingForm";
+import ClientsSection from "@/components/home/Clients";
 
 export const metadata: Metadata = {
   title: "Book a Discovery Call | Movico — Video Production Company Riyadh, Saudi Arabia",
@@ -24,16 +24,6 @@ const stats = [
   { value: "98%", label: "Client Satisfaction" },
   { value: "7+", label: "Enterprise Clients" },
   { value: "5+", label: "Years in KSA" },
-];
-
-const clients = [
-  { src: "/clients/Nokia.svg", alt: "Nokia" },
-  { src: "/clients/aramco.jpg", alt: "Saudi Aramco" },
-  { src: "/clients/philips.png", alt: "Philips" },
-  { src: "/clients/alfanar.png", alt: "Alfanar" },
-  { src: "/clients/elm.jpg", alt: "Elm" },
-  { src: "/clients/ford.png", alt: "Ford", noInvert: true },
-  { src: "/clients/leap.jpg", alt: "Leap" },
 ];
 
 const faqs = [
@@ -96,26 +86,7 @@ export default function StartPage() {
         </div>
       </section>
 
-      {/* Client Trust Bar */}
-      <section className="border-t border-b border-white/8 py-10 px-6 md:px-12 xl:px-20">
-        <div className="w-11/12 xl:w-10/12 mx-auto">
-          <p className="text-center text-[10px] uppercase tracking-[0.5em] text-white/25 mb-8">
-            Trusted By
-          </p>
-          <div className="flex flex-wrap items-center justify-center gap-10 xl:gap-16">
-            {clients.map((client) => (
-              <Image
-                key={client.alt}
-                src={client.src}
-                alt={client.alt}
-                width={100}
-                height={48}
-                className={`h-8 w-auto object-contain opacity-50 hover:opacity-100 transition-opacity duration-300 ${"noInvert" in client && client.noInvert ? "" : "brightness-0 invert"}`}
-              />
-            ))}
-          </div>
-        </div>
-      </section>
+      <ClientsSection />
 
       {/* Stats */}
       <section className="py-20 xl:py-24 px-6 md:px-12 xl:px-20">

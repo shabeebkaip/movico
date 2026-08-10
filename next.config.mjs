@@ -14,9 +14,9 @@ const securityHeaders = [
       "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com",
       "style-src 'self' 'unsafe-inline' https://api.fontshare.com",
       "font-src 'self' https://api.fontshare.com https://cdn.fontshare.com https://fonts.gstatic.com",
-      "img-src 'self' data: blob: https://res.cloudinary.com https://randomuser.me https://movicoksa.com",
-      "media-src 'self' https://res.cloudinary.com",
-      "connect-src 'self' https://www.google-analytics.com https://analytics.google.com https://www.googletagmanager.com https://api.cloudinary.com https://res.cloudinary.com",
+      "img-src 'self' data: blob: https://res.cloudinary.com https://randomuser.me https://movicoksa.com https://*.b-cdn.net",
+      "media-src 'self' https://res.cloudinary.com https://*.b-cdn.net",
+      "connect-src 'self' https://www.google-analytics.com https://analytics.google.com https://www.googletagmanager.com https://api.cloudinary.com https://res.cloudinary.com https://video.bunnycdn.com https://*.b-cdn.net",
       "frame-src 'self' https://www.googletagmanager.com https://www.google.com",
     ].join('; '),
   },
@@ -44,6 +44,14 @@ const nextConfig = {
       {
         protocol: 'https',
         hostname: 'randomuser.me',
+      },
+      {
+        protocol: 'https',
+        hostname: 'drive.google.com',
+      },
+      {
+        protocol: 'https',
+        hostname: '*.b-cdn.net',
       },
     ],
   },

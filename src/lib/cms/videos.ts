@@ -9,10 +9,9 @@ export interface CMSVideo {
   category: string;
   isHighlight: boolean;
   order: number;
-  source: 'drive' | 'cloudinary';
-  driveId?: string;
   cloudinaryVideoPublicId?: string;
   cloudinaryVideoUrl?: string;
+  bunnyVideoId?: string;
   thumbnail?: string;
   createdAt: Date;
 }

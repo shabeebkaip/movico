@@ -1,15 +1,24 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { Upload, Loader2, CheckCircle2, X, Film, ImageIcon, FolderOpen } from "lucide-react";
+import { Loader2, CheckCircle2, X, Film, ImageIcon, FolderOpen } from "lucide-react";
+import { Upload as TusUpload } from "tus-js-client";
 import { MediaPickerModal } from "./MediaPickerModal";
+import { bunnyVideoUrl, bunnyThumbnailUrl } from "@/lib/bunny-video";
 
 interface UploadResult {
   url: string;
   publicId: string;
   resourceType: "image" | "video";
   alt?: string;
+  // Video (Bunny) only — bunnyVideoId is the source of truth for playback;
+  // thumbnailUrl is a ready-made poster so callers can pre-fill a thumbnail
+  // field without doing their own Bunny URL plumbing.
+  bunnyVideoId?: string;
+  thumbnailUrl?: string;
 }
+
+type UploadStatus = "idle" | "uploading" | "done" | "error";
 
 interface Props {
   resourceType: "image" | "video";
@@ -18,6 +27,11 @@ interface Props {
   label?: string;
   currentUrl?: string;
   showLibraryPicker?: boolean;
+  // Lets a parent form (e.g. the showreel VideoPanel) gate its own Save
+  // button on the upload actually finishing, instead of just tracking its
+  // own `saving` flag — otherwise Save-while-still-uploading persists a
+  // record with no bunnyVideoId/thumbnail.
+  onStatusChange?: (status: UploadStatus) => void;
 }
 
 export function CloudinaryUploader({
@@ -27,9 +41,14 @@ export function CloudinaryUploader({
   label,
   currentUrl,
   showLibraryPicker = true,
+  onStatusChange,
 }: Props) {
   const inputRef = useRef<HTMLInputElement>(null);
-  const [status, setStatus] = useState<"idle" | "uploading" | "done" | "error">("idle");
+  const [status, setStatusRaw] = useState<UploadStatus>("idle");
+  const setStatus = (next: UploadStatus) => {
+    setStatusRaw(next);
+    onStatusChange?.(next);
+  };
   const [progress, setProgress] = useState(0);
   const [preview, setPreview] = useState<string | null>(currentUrl ?? null);
   const [pickerOpen, setPickerOpen] = useState(false);
@@ -46,9 +65,73 @@ export function CloudinaryUploader({
     }
   }
 
+  // A TUS byte-upload failure (network drop, browser closed mid-upload, CSP
+  // block, etc.) still leaves the video shell created on Bunny by the
+  // /api/cms/upload/bunny POST above — clean it up so it doesn't pile up as
+  // an orphan zero-byte video in the library.
+  function cleanupOrphanBunnyVideo(videoId: string) {
+    fetch(`/api/cms/upload/bunny?videoId=${videoId}`, { method: "DELETE" }).catch(() => {
+      // non-blocking — the shell is at worst harmless clutter, not corrupt data
+    });
+  }
+
+  async function handleVideoFile(file: File) {
+    try {
+      const credRes = await fetch("/api/cms/upload/bunny", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title: file.name.replace(/\.[^./]+$/, "") }),
+      });
+      if (!credRes.ok) throw new Error("Failed to get upload credentials");
+      const { videoId, libraryId, signature, expirationTime, tusEndpoint, pullZone } = await credRes.json();
+
+      await new Promise<void>((resolve, reject) => {
+        const tusUpload = new TusUpload(file, {
+          endpoint: tusEndpoint,
+          retryDelays: [0, 3000, 5000, 10000, 20000],
+          // Bunny TUS auth contract (docs.bunny.net/reference/tus-resumable-uploads):
+          // these four go as headers, not metadata.
+          headers: {
+            AuthorizationSignature: signature,
+            AuthorizationExpire: String(expirationTime),
+            VideoId: videoId,
+            LibraryId: libraryId,
+          },
+          metadata: {
+            filetype: file.type,
+            title: file.name,
+          },
+          onError: (error) => {
+            cleanupOrphanBunnyVideo(videoId);
+            reject(error);
+          },
+          onProgress: (bytesUploaded, bytesTotal) => {
+            if (bytesTotal) setProgress(Math.round((bytesUploaded / bytesTotal) * 100));
+          },
+          onSuccess: () => resolve(),
+        });
+        tusUpload.start();
+      });
+
+      const url = bunnyVideoUrl(videoId, pullZone, "1080p");
+      const thumbnailUrl = bunnyThumbnailUrl(videoId, pullZone);
+      setStatus("done");
+      setProgress(100);
+      onUpload({ url, publicId: videoId, resourceType: "video", bunnyVideoId: videoId, thumbnailUrl });
+      registerToLibrary(url, videoId);
+    } catch {
+      setStatus("error");
+    }
+  }
+
   async function handleFile(file: File) {
     setStatus("uploading");
     setProgress(0);
+
+    if (resourceType === "video") {
+      await handleVideoFile(file);
+      return;
+    }
 
     try {
       const sigRes = await fetch("/api/cms/upload/signature", {

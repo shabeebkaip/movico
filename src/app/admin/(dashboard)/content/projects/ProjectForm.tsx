@@ -532,8 +532,8 @@ export default function ProjectForm({ initialData, projectId }: { initialData?: 
               <Toggle
                 on={form.featured}
                 onToggle={() => set("featured", !form.featured)}
-                label="Featured"
-                sub="Highlight in case study sections"
+                label="Show on Homepage"
+                sub="Include this project in the homepage work showcase"
               />
             </SectionCard>
 

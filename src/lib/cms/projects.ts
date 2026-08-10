@@ -18,6 +18,7 @@ export interface CMSProject {
   coverImage: string;
   coverAlt: string;
   images: string[];
+  video?: string;
   featured: boolean;
   order: number;
   visible: boolean;

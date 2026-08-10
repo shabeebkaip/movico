@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { listVideos, createVideo } from '@/lib/cms/videos';
 import { isAuthorised } from '@/lib/auth';
 
@@ -12,5 +13,6 @@ export async function POST(req: NextRequest) {
   if (!isAuthorised(req)) return NextResponse.json({ error: 'Unauthorised' }, { status: 401 });
   const body = await req.json();
   const video = await createVideo(body);
+  revalidatePath('/showreel');
   return NextResponse.json(video, { status: 201 });
 }

@@ -7,66 +7,20 @@ import Image from "next/image";
 import Link from "next/link";
 import type { WorkShowcaseContent } from "@/lib/cms/types";
 import { defaultContent } from "@/lib/cms/types";
+import type { ProjectData } from "@/lib/projects-data";
+import { PROJECTS } from "@/lib/projects-data";
 import LazyVideo from "./LazyVideo";
+import { cloudinaryVideoDelivery } from "@/lib/video-delivery";
 
 const D = defaultContent.home.workShowcase;
 
-type Project = {
-  id: number;
-  client: string;
-  category: string;
-  year: string;
-  span?: "full";
-} & ({ video: string; image?: never } | { image: string; video?: never });
-
-const projects: Project[] = [
-  {
-    id: 1,
-    client: "Esports 2025",
-    category: "Esports Film",
-    year: "2025",
-    span: "full",
-    video: "https://res.cloudinary.com/xzwm4mjt/video/upload/q_auto,f_auto,w_1920,c_limit/movico/videos/6a0eaff4ac6acf2f293bacb3.mp4",
-  },
-  {
-    id: 2,
-    client: "Riyadh Cityscape",
-    category: "City Campaign",
-    year: "2025",
-    video: "https://res.cloudinary.com/xzwm4mjt/video/upload/q_auto,f_auto,w_1920,c_limit/movico/videos/6a0eaff4ac6acf2f293bacb5.mp4",
-  },
-  {
-    id: 3,
-    client: "World Defense Show",
-    category: "Event Coverage",
-    year: "2024",
-    image: "https://movicoksa.com/wp-content/uploads/2024/10/SNIL2230-scaled.jpg",
-  },
-  {
-    id: 4,
-    client: "Leap Conference",
-    category: "Corporate Production",
-    year: "2024",
-    image: "https://movicoksa.com/wp-content/uploads/2024/10/DSC09438-scaled.jpg",
-  },
-  {
-    id: 5,
-    client: "Aramco",
-    category: "Promotional Video",
-    year: "2023",
-    image: "https://movicoksa.com/wp-content/uploads/2024/10/6B2A6288-scaled.jpg",
-  },
-  {
-    id: 6,
-    client: "Movico Reels",
-    category: "Brand Showreel",
-    year: "2024",
-    span: "full",
-    video: "https://res.cloudinary.com/xzwm4mjt/video/upload/q_auto,f_auto,w_1920,c_limit/movico/videos/6a0eaff5ac6acf2f293bacb7.mp4",
-  },
-];
-
-export default function WorkShowcase({ content = D }: { content?: WorkShowcaseContent }) {
+export default function WorkShowcase({
+  content = D,
+  projects = PROJECTS,
+}: {
+  content?: WorkShowcaseContent;
+  projects?: ProjectData[];
+}) {
   const sectionRef = useRef<HTMLElement>(null);
   const headingRef = useRef<HTMLDivElement>(null);
   const gridRef = useRef<HTMLDivElement>(null);
@@ -121,39 +75,37 @@ export default function WorkShowcase({ content = D }: { content?: WorkShowcaseCo
           </h2>
         </div>
         <Link
-          href="/work"
+          href="/projects"
           className="hidden md:flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-white/40 hover:text-primary transition-colors duration-300"
         >
           View All <span>→</span>
         </Link>
       </div>
 
-      {/* Full-bleed 2-column grid */}
-      <div ref={gridRef} className="grid grid-cols-2 gap-[2px]">
+      {/*
+        Flex-wrap instead of a fixed-column grid: any number of projects
+        (admin can show/hide/add freely) always fills the full row width —
+        a lone trailing card grows to 100% instead of leaving a dead cell.
+      */}
+      <div ref={gridRef} className="flex flex-wrap gap-[2px]">
         {projects.map((project) => (
-          <div
-            key={project.id}
-            className={`work-cell group relative overflow-hidden cursor-pointer${
-              project.span === "full" ? " col-span-2 aspect-[16/7]" : " aspect-[4/3]"
-            }`}
+          <Link
+            key={project.slug}
+            href={`/projects/${project.slug}`}
+            className="work-cell group relative overflow-hidden block flex-1 basis-[380px] aspect-[4/3]"
           >
-            {/* Media */}
             {project.video ? (
               <LazyVideo
-                src={project.video}
+                src={cloudinaryVideoDelivery(project.video, 640) ?? project.video}
                 className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
               />
             ) : (
               <Image
-                src={project.image!}
-                alt={`${project.client} — ${project.category} by Movico`}
+                src={project.coverImage}
+                alt={project.coverAlt || `${project.client} — ${project.category} by Movico`}
                 fill
                 className="object-cover transition-transform duration-700 group-hover:scale-[1.03]"
-                sizes={
-                  project.span === "full"
-                    ? "100vw"
-                    : "(max-width: 768px) 50vw, 50vw"
-                }
+                sizes="(max-width: 768px) 100vw, 33vw"
               />
             )}
 
@@ -179,7 +131,7 @@ export default function WorkShowcase({ content = D }: { content?: WorkShowcaseCo
                 View Project →
               </span>
             </div>
-          </div>
+          </Link>
         ))}
       </div>
     </section>

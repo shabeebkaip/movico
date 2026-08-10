@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useCallback, useEffect } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import {
   Play,
@@ -10,7 +11,8 @@ import {
   ChevronRight,
   Info,
 } from "lucide-react";
-import { type VideoItem, driveThumb, driveEmbed } from "@/lib/showreel-data";
+import { type VideoItem } from "@/lib/showreel-data";
+import { cloudinaryVideoDelivery } from "@/lib/video-delivery";
 
 /* ─── helpers ───────────────────────────────────────── */
 function groupByCategory(videos: VideoItem[]) {
@@ -31,7 +33,7 @@ function VideoCard({
   const [imgFailed, setImgFailed] = useState(false);
   const [hovering, setHovering] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
-  const canPreview = video.source === "cloudinary" && !!video.cloudinaryVideoUrl;
+  const canPreview = !!video.cloudinaryVideoUrl;
 
   useEffect(() => {
     const el = videoRef.current;
@@ -52,14 +54,15 @@ function VideoCard({
       className="group/card shrink-0 relative w-[240px] md:w-[280px] xl:w-[320px] aspect-video overflow-hidden rounded-sm cursor-pointer focus:outline-none"
     >
       {/* Thumbnail */}
-      {!imgFailed ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src={driveThumb(video)}
+      {!imgFailed && video.thumbnail ? (
+        <Image
+          src={video.thumbnail}
           alt={video.title}
+          fill
           loading="lazy"
+          sizes="(max-width: 768px) 240px, (max-width: 1280px) 280px, 320px"
           onError={() => setImgFailed(true)}
-          className={`absolute inset-0 w-full h-full object-cover transition-all duration-500 group-hover/card:scale-110 ${
+          className={`object-cover transition-all duration-500 group-hover/card:scale-110 ${
             hovering && canPreview ? "opacity-0" : "opacity-100"
           }`}
         />
@@ -69,11 +72,13 @@ function VideoCard({
         </div>
       )}
 
-      {/* Hover preview clip — Netflix-style */}
+      {/* Hover preview clip — Netflix-style. Capped to card size and
+          trimmed to 8s: this is a taste, not full playback, and the raw
+          source was streaming at full resolution into a 240-320px box. */}
       {canPreview && (
         <video
           ref={videoRef}
-          src={video.cloudinaryVideoUrl}
+          src={cloudinaryVideoDelivery(video.cloudinaryVideoUrl, 480, 8)}
           muted
           loop
           playsInline
@@ -251,22 +256,14 @@ function VideoModal({
           <div className="absolute bottom-0 left-0 w-8 h-8 border-b-2 border-l-2 border-primary/60 z-10 pointer-events-none" />
           <div className="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-primary/60 z-10 pointer-events-none" />
 
-          {video.source === "cloudinary" && video.cloudinaryVideoUrl ? (
-            <video
-              src={video.cloudinaryVideoUrl}
-              className="absolute inset-0 w-full h-full"
-              autoPlay
-              controls
-              playsInline
-            />
-          ) : (
-            <iframe
-              src={`${driveEmbed(video.id)}?autoplay=1`}
-              className="absolute inset-0 w-full h-full"
-              allow="autoplay; fullscreen"
-              allowFullScreen
-            />
-          )}
+          <video
+            src={cloudinaryVideoDelivery(video.cloudinaryVideoUrl, 1920)}
+            poster={video.thumbnail}
+            className="absolute inset-0 w-full h-full"
+            autoPlay
+            controls
+            playsInline
+          />
         </div>
 
         {/* CTA strip */}
@@ -305,9 +302,20 @@ export default function VideoGallery({
   const close = useCallback(() => setActive(null), []);
 
   const featured = highlights[0];
-  const featuredCanPreview = featured.source === "cloudinary" && !!featured.cloudinaryVideoUrl;
+  const featuredCanPreview = !!featured?.cloudinaryVideoUrl;
   const categoryGroups = groupByCategory(works);
   const categoryOrder = ["Event", "Corporate", "Commercial", "Brand Film", "Documentary", "Sport"];
+
+  if (!featured) {
+    return (
+      <div className="min-h-[60vh] flex flex-col items-center justify-center text-center px-6 pt-32">
+        <p className="text-white/50 text-sm uppercase tracking-[0.3em] mb-3">No videos yet</p>
+        <p className="text-white/30 text-xs max-w-sm">
+          Add videos from the admin showreel panel to populate this page.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -315,29 +323,36 @@ export default function VideoGallery({
           HERO — full-bleed featured film
       ══════════════════════════════════════════════ */}
       <section className="relative w-full h-[75vh] xl:h-[85vh] overflow-hidden bg-[#0a0a0a]">
-        {/* Hero thumbnail — hidden when Drive isn't accessible */}
-        {!heroImgFailed && (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={driveThumb(featured)}
+        {/* Hero thumbnail — this is the page's LCP element, so it loads
+            eagerly at high priority. */}
+        {!heroImgFailed && featured.thumbnail && (
+          <Image
+            src={featured.thumbnail}
             alt={featured.title}
+            fill
+            priority
+            sizes="100vw"
             onError={() => setHeroImgFailed(true)}
-            className="absolute inset-0 w-full h-full object-cover"
+            className="object-cover"
           />
         )}
-        {/* Fallback gradient when thumbnail fails */}
-        {heroImgFailed && (
+        {/* Fallback gradient when there's no thumbnail (or it failed to load) */}
+        {(heroImgFailed || !featured.thumbnail) && (
           <div className="absolute inset-0 bg-gradient-to-br from-[#1a0f00] via-[#0a0a0a] to-[#000000]" />
         )}
 
-        {/* Autoplaying background trailer — Netflix-style */}
+        {/* Autoplaying background trailer — Netflix-style. Poster avoids a
+            black flash while the clip buffers; metadata-only preload keeps
+            it from competing with the initial paint for bandwidth. */}
         {featuredCanPreview && (
           <video
-            src={featured.cloudinaryVideoUrl}
+            src={cloudinaryVideoDelivery(featured.cloudinaryVideoUrl, 1280)}
+            poster={featured.thumbnail}
             autoPlay
             muted
             loop
             playsInline
+            preload="metadata"
             className="absolute inset-0 w-full h-full object-cover"
           />
         )}

@@ -30,10 +30,10 @@ interface CMSProject {
 
 function GridCard({
   project, isFirst, isLast,
-  onEdit, onToggle, onDelete, onMoveUp, onMoveDown,
+  onEdit, onToggle, onToggleFeatured, onDelete, onMoveUp, onMoveDown,
 }: {
   project: CMSProject; isFirst: boolean; isLast: boolean;
-  onEdit: () => void; onToggle: () => void; onDelete: () => void;
+  onEdit: () => void; onToggle: () => void; onToggleFeatured: () => void; onDelete: () => void;
   onMoveUp: () => void; onMoveDown: () => void;
 }) {
   return (
@@ -70,11 +70,17 @@ function GridCard({
           <span className="text-[10px] font-mono bg-black/50 text-white/80 px-2 py-0.5 rounded-full backdrop-blur-sm">
             #{project.number}
           </span>
-          {project.featured && (
-            <span className="flex items-center gap-1 text-[10px] bg-[#d98629] text-black font-bold px-2 py-0.5 rounded-full">
-              <Star size={8} fill="currentColor" /> Featured
-            </span>
-          )}
+          <button
+            onClick={(e) => { e.stopPropagation(); onToggleFeatured(); }}
+            title={project.featured ? "Shown on homepage — click to remove" : "Not on homepage — click to show"}
+            className={`flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full transition-colors ${
+              project.featured
+                ? "bg-[#d98629] text-black"
+                : "bg-black/50 text-white/60 hover:text-white backdrop-blur-sm"
+            }`}
+          >
+            <Star size={8} fill={project.featured ? "currentColor" : "none"} /> Homepage
+          </button>
         </div>
 
         {/* Top-right reorder */}
@@ -129,10 +135,10 @@ function GridCard({
 
 function ListRow({
   project, isFirst, isLast,
-  onEdit, onToggle, onDelete, onMoveUp, onMoveDown,
+  onEdit, onToggle, onToggleFeatured, onDelete, onMoveUp, onMoveDown,
 }: {
   project: CMSProject; isFirst: boolean; isLast: boolean;
-  onEdit: () => void; onToggle: () => void; onDelete: () => void;
+  onEdit: () => void; onToggle: () => void; onToggleFeatured: () => void; onDelete: () => void;
   onMoveUp: () => void; onMoveDown: () => void;
 }) {
   return (
@@ -151,11 +157,17 @@ function ListRow({
       <div className="flex-1 min-w-0 cursor-pointer" onClick={onEdit}>
         <div className="flex items-center gap-2">
           <p className="text-sm font-semibold text-slate-800 truncate">{project.title}</p>
-          {project.featured && (
-            <span className="shrink-0 flex items-center gap-1 text-[9px] bg-[#d98629]/10 text-[#d98629] font-bold px-1.5 py-0.5 rounded-full">
-              <Star size={7} fill="currentColor" /> Featured
-            </span>
-          )}
+          <button
+            onClick={(e) => { e.stopPropagation(); onToggleFeatured(); }}
+            title={project.featured ? "Shown on homepage — click to remove" : "Not on homepage — click to show"}
+            className={`shrink-0 flex items-center gap-1 text-[9px] font-bold px-1.5 py-0.5 rounded-full transition-colors ${
+              project.featured
+                ? "bg-[#d98629]/10 text-[#d98629]"
+                : "bg-slate-100 text-slate-400 hover:text-slate-600"
+            }`}
+          >
+            <Star size={7} fill={project.featured ? "currentColor" : "none"} /> Homepage
+          </button>
         </div>
         <div className="flex items-center gap-3 mt-0.5">
           <span className="flex items-center gap-1 text-[11px] text-slate-400"><Tag size={9} />{project.category}</span>
@@ -233,6 +245,16 @@ export default function ProjectsAdminPage() {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ visible: next }),
+    });
+  }
+
+  async function toggleFeatured(project: CMSProject) {
+    const next = !project.featured;
+    setProjects((prev) => prev.map((p) => p._id === project._id ? { ...p, featured: next } : p));
+    await fetch(`/api/cms/projects/${project._id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ featured: next }),
     });
   }
 
@@ -330,7 +352,7 @@ export default function ProjectsAdminPage() {
             {[
               { label: "Total Projects", value: projects.length, color: "text-slate-700", bg: "bg-white" },
               { label: "Live", value: visibleCount, color: "text-emerald-600", bg: "bg-emerald-50" },
-              { label: "Featured", value: featuredCount, color: "text-[#d98629]", bg: "bg-[#d98629]/5" },
+              { label: "On Homepage", value: featuredCount, color: "text-[#d98629]", bg: "bg-[#d98629]/5" },
             ].map(({ label, value, color, bg }) => (
               <div key={label} className={`${bg} border border-slate-200 rounded-xl px-5 py-4`}>
                 <p className={`text-2xl font-bold ${color}`}>{value}</p>
@@ -422,6 +444,7 @@ export default function ProjectsAdminPage() {
                 isLast={idx === displayed.length - 1}
                 onEdit={() => router.push(`/admin/content/projects/${project._id}`)}
                 onToggle={() => toggleVisible(project)}
+                onToggleFeatured={() => toggleFeatured(project)}
                 onDelete={() => handleDelete(project)}
                 onMoveUp={() => move(project, "up")}
                 onMoveDown={() => move(project, "down")}
@@ -438,6 +461,7 @@ export default function ProjectsAdminPage() {
                 isLast={idx === displayed.length - 1}
                 onEdit={() => router.push(`/admin/content/projects/${project._id}`)}
                 onToggle={() => toggleVisible(project)}
+                onToggleFeatured={() => toggleFeatured(project)}
                 onDelete={() => handleDelete(project)}
                 onMoveUp={() => move(project, "up")}
                 onMoveDown={() => move(project, "down")}

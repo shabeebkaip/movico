@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { readContent, readDesign } from "@/lib/cms/store";
 import { buildPageMetadata } from "@/lib/cms/seo-metadata";
+import { listProjects } from "@/lib/cms/projects";
+import { PROJECTS } from "@/lib/projects-data";
 
 export async function generateMetadata(): Promise<Metadata> {
   return buildPageMetadata("home");
@@ -35,6 +37,17 @@ export default async function Page() {
   const [content, design] = await Promise.all([readContent(), readDesign()]);
   const s = design.sections.home;
 
+  let projects: typeof PROJECTS;
+  try {
+    const cms = await listProjects();
+    projects = cms.length > 0 ? cms : PROJECTS;
+  } catch {
+    projects = PROJECTS;
+  }
+
+  const featuredProjects = projects.filter((p) => p.featured);
+  const homeProjects = featuredProjects.length > 0 ? featuredProjects : projects.slice(0, 3);
+
   return (
     <main className="min-h-screen bg-black">
       {s.hero && <HeroSection content={content.home.hero} />}
@@ -57,7 +70,7 @@ export default async function Page() {
         <SceneDivider tone="amberIndigo" from="center" spread={380} />
       )}
 
-      {s.workShowcase && <WorkShowcase content={content.home.workShowcase} />}
+      {s.workShowcase && <WorkShowcase content={content.home.workShowcase} projects={homeProjects} />}
 
       {design.sceneDividers.enabled && s.workShowcase && (
         <SceneDivider tone="teal" from="left" spread={380} />

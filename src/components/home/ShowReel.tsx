@@ -8,7 +8,7 @@ import { Play, X } from "lucide-react";
 import LazyVideo from "./LazyVideo";
 
 const SHOWREEL_SRC =
-  "https://res.cloudinary.com/xzwm4mjt/video/upload/q_auto,f_auto,w_1920,c_limit/movico/videos/6a0eaff5ac6acf2f293bacb8.mp4";
+  "https://vz-77191ad4-50a.b-cdn.net/34d823c8-1925-46b4-aeb8-f33c6eba6739/play_1080p.mp4";
 
 const ShowReel = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -115,7 +115,7 @@ const ShowReel = () => {
               className="w-[95%] max-w-6xl rounded-2xl"
             >
               <source
-                src="https://res.cloudinary.com/xzwm4mjt/video/upload/q_auto,f_auto,w_1920,c_limit/movico/videos/6a0eaff5ac6acf2f293bacb8.mp4"
+                src="https://vz-77191ad4-50a.b-cdn.net/34d823c8-1925-46b4-aeb8-f33c6eba6739/play_1080p.mp4"
                 type="video/mp4"
               />
             </motion.video>
