@@ -28,6 +28,48 @@ export default function StudioPage() {
       .catch(() => {});
   }, []);
 
+  // Don't rely on the browser/router's native hash scroll-into-view — it's
+  // unreliable here (async Satoshi font swap + whileInView mounts can still
+  // shift layout after paint). Wait until the target's position stops moving
+  // for a few reads, then scroll to it ourselves. Bounded so it can't hang.
+  //
+  // ponytail: setTimeout, not requestAnimationFrame — rAF is throttled/fully
+  // paused in backgrounded/hidden tabs (e.g. cmd-click opening this link in a
+  // new background tab), which would silently strand this poll forever.
+  // setTimeout keeps firing (just coarser) in hidden tabs, so this completes
+  // regardless of tab focus.
+  useEffect(() => {
+    if (!window.location.hash) return;
+    const id = window.location.hash.slice(1);
+    let timer = 0;
+    let lastTop = NaN;
+    let stableReads = 0;
+    let attempt = 0;
+    const INTERVAL_MS = 80;
+    const MAX_ATTEMPTS = 20; // ~1.6s ceiling
+
+    const tick = () => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      const top = el.getBoundingClientRect().top;
+      stableReads = top === lastTop ? stableReads + 1 : 0;
+      lastTop = top;
+      attempt++;
+      if (stableReads >= 3 || attempt >= MAX_ATTEMPTS) {
+        // Explicit "instant", not "smooth"/"auto" — the global CSS sets
+        // `scroll-behavior: smooth` (src/index.css), and smooth-scroll
+        // animation is gated by the same rendering pipeline as
+        // requestAnimationFrame, so it silently never completes in a
+        // hidden/backgrounded tab. "instant" bypasses that entirely.
+        el.scrollIntoView({ behavior: "instant", block: "start" });
+        return;
+      }
+      timer = window.setTimeout(tick, INTERVAL_MS);
+    };
+    timer = window.setTimeout(tick, INTERVAL_MS);
+    return () => window.clearTimeout(timer);
+  }, []);
+
   const heroRef = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
   const imgY     = useTransform(scrollYProgress, [0, 1], ["0%", "18%"]);
