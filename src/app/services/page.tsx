@@ -1,14 +1,17 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import { SERVICES } from "@/lib/services-data";
+import { listServices } from "@/lib/cms/services";
 import { buildPageMetadata } from "@/lib/cms/seo-metadata";
+
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata(): Promise<Metadata> {
   return buildPageMetadata("services");
 }
 
-export default function ServicesPage() {
+export default async function ServicesPage() {
+  const services = await listServices();
   return (
     <main className="min-h-screen bg-black text-white">
       {/* Hero */}
@@ -35,7 +38,7 @@ export default function ServicesPage() {
 
       {/* Services List */}
       <section className="py-0">
-        {SERVICES.map((service) => (
+        {services.map((service) => (
           <Link
             key={service.slug}
             href={`/services/${service.slug}`}

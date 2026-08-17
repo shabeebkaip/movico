@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { readContent, readDesign } from "@/lib/cms/store";
 import { buildPageMetadata } from "@/lib/cms/seo-metadata";
 import { listProjects } from "@/lib/cms/projects";
+import { listServices } from "@/lib/cms/services";
 import { PROJECTS } from "@/lib/projects-data";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -48,6 +49,19 @@ export default async function Page() {
   const featuredProjects = projects.filter((p) => p.featured);
   const homeProjects = featuredProjects.length > 0 ? featuredProjects : projects.slice(0, 3);
 
+  const services = await listServices();
+  const servicesContent = {
+    ...content.home.services,
+    items: services.map((svc) => ({
+      number: svc.number,
+      icon: svc.icon,
+      title: svc.title,
+      description: svc.shortDescription,
+      tags: svc.tags,
+      href: `/services/${svc.slug}`,
+    })),
+  };
+
   return (
     <main className="min-h-screen bg-black">
       {s.hero && <HeroSection content={content.home.hero} />}
@@ -70,7 +84,13 @@ export default async function Page() {
         <SceneDivider tone="amberIndigo" from="center" spread={380} />
       )}
 
-      {s.workShowcase && <WorkShowcase content={content.home.workShowcase} projects={homeProjects} />}
+      {s.workShowcase && (
+        <WorkShowcase
+          content={content.home.workShowcase}
+          projects={homeProjects}
+          pullZone={process.env.BUNNY_STREAM_PULL_ZONE}
+        />
+      )}
 
       {design.sceneDividers.enabled && s.workShowcase && (
         <SceneDivider tone="teal" from="left" spread={380} />
@@ -78,7 +98,7 @@ export default async function Page() {
 
       {s.services && (
         <ServicesSection
-          content={content.home.services}
+          content={servicesContent}
           columns={design.layout.servicesColumns as 2 | 3 | 4}
         />
       )}

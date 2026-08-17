@@ -1,27 +1,4 @@
-export interface ServiceOffering {
-  title: string;
-  description: string;
-}
-
-export interface ServiceData {
-  slug: string;
-  number: string;
-  title: string;
-  shortDescription: string;
-  longDescription: string;
-  tags: string[];
-  heroTagline: string;
-  heroImage?: string;
-  overview: string;
-  offerings: ServiceOffering[];
-  process: { step: string; title: string; description: string }[];
-  stats?: { value: string; label: string }[];
-  gallery?: string[];
-  showreelPoster?: string;
-  showreelUrl?: string;
-}
-
-export const SERVICES: ServiceData[] = [
+export const DEFAULT_SERVICES = [
   {
     slug: "video-production",
     number: "01",
@@ -103,6 +80,9 @@ export const SERVICES: ServiceData[] = [
           "Final edit, colour grade, sound design, and delivery in every format your campaign needs.",
       },
     ],
+    icon: "Video",
+    order: 0,
+    visible: true,
   },
   {
     slug: "event-production",
@@ -203,6 +183,9 @@ export const SERVICES: ServiceData[] = [
           "On-the-day direction and live production — seamless, controlled, and cinematic.",
       },
     ],
+    icon: "CalendarDays",
+    order: 1,
+    visible: true,
   },
   {
     slug: "brand-identity",
@@ -269,6 +252,9 @@ export const SERVICES: ServiceData[] = [
           "Brand rollout planning, guidelines delivery, and activation across all channels.",
       },
     ],
+    icon: "Layers",
+    order: 2,
+    visible: true,
   },
   {
     slug: "spatial-booth",
@@ -335,6 +321,9 @@ export const SERVICES: ServiceData[] = [
           "On-site installation, dressing, and digital content deployment — ready for day one.",
       },
     ],
+    icon: "LayoutGrid",
+    order: 3,
+    visible: true,
   },
   {
     slug: "interior-design",
@@ -401,6 +390,9 @@ export const SERVICES: ServiceData[] = [
           "Fitout coordination, site supervision, and final handover walkthrough.",
       },
     ],
+    icon: "Sofa",
+    order: 4,
+    visible: true,
   },
   {
     slug: "social-digital",
@@ -467,9 +459,8 @@ export const SERVICES: ServiceData[] = [
           "Monthly performance reviews and strategy adjustments based on what the data tells us.",
       },
     ],
+    icon: "Share2",
+    order: 5,
+    visible: true,
   },
 ];
-
-export function getServiceBySlug(slug: string): ServiceData | undefined {
-  return SERVICES.find((s) => s.slug === slug);
-}

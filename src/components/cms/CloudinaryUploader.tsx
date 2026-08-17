@@ -6,7 +6,7 @@ import { Upload as TusUpload } from "tus-js-client";
 import { MediaPickerModal } from "./MediaPickerModal";
 import { bunnyVideoUrl, bunnyThumbnailUrl } from "@/lib/bunny-video";
 
-interface UploadResult {
+export interface UploadResult {
   url: string;
   publicId: string;
   resourceType: "image" | "video";
@@ -16,6 +16,10 @@ interface UploadResult {
   // field without doing their own Bunny URL plumbing.
   bunnyVideoId?: string;
   thumbnailUrl?: string;
+  // Cloudinary backup copy of a video (best-effort — uploaded automatically
+  // after the Bunny upload succeeds; may be undefined if the backup failed).
+  cloudinaryVideoUrl?: string;
+  cloudinaryPublicId?: string;
 }
 
 type UploadStatus = "idle" | "uploading" | "done" | "error";
@@ -75,6 +79,64 @@ export function CloudinaryUploader({
     });
   }
 
+  // Shared signed-upload-to-Cloudinary helper — same signature/XHR pattern
+  // the image path already uses in handleFile below. Reused for the video
+  // backup-copy upload too.
+  async function uploadToCloudinary(
+    file: File,
+    uploadResourceType: "image" | "video",
+    onProgress?: (pct: number) => void
+  ): Promise<{ url: string; publicId: string }> {
+    const sigRes = await fetch("/api/cms/upload/signature", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ folder, resource_type: uploadResourceType }),
+    });
+    const { signature, timestamp, apiKey, cloudName } = await sigRes.json();
+
+    const form = new FormData();
+    form.append("file", file);
+    form.append("api_key", apiKey);
+    form.append("timestamp", String(timestamp));
+    form.append("signature", signature);
+    form.append("folder", folder);
+
+    const xhr = new XMLHttpRequest();
+    xhr.upload.onprogress = (e) => {
+      if (e.lengthComputable) onProgress?.(Math.round((e.loaded / e.total) * 100));
+    };
+
+    return new Promise((resolve, reject) => {
+      xhr.onload = () => {
+        if (xhr.status === 200) {
+          const data = JSON.parse(xhr.responseText);
+          resolve({ url: data.secure_url, publicId: data.public_id });
+        } else {
+          reject(new Error("Upload failed"));
+        }
+      };
+      xhr.onerror = () => reject(new Error("Network error"));
+      xhr.open("POST", `https://api.cloudinary.com/v1_1/${cloudName}/${uploadResourceType}/upload`);
+      xhr.send(form);
+    });
+  }
+
+  // Best-effort Cloudinary backup of an already-Bunny-uploaded video, per
+  // the dual-storage requirement (Bunny = primary, Cloudinary = fallback if
+  // Bunny's account balance runs dry). Fire-and-forget: never blocks or
+  // fails the caller's already-successful Bunny upload.
+  async function backupVideoToCloudinary(
+    file: File,
+    bunnyResult: { url: string; publicId: string; resourceType: "video"; bunnyVideoId: string; thumbnailUrl: string }
+  ) {
+    try {
+      const { url, publicId } = await uploadToCloudinary(file, "video");
+      onUpload({ ...bunnyResult, cloudinaryVideoUrl: url, cloudinaryPublicId: publicId });
+    } catch {
+      // non-blocking — Bunny copy is already usable without the backup
+    }
+  }
+
   async function handleVideoFile(file: File) {
     try {
       const credRes = await fetch("/api/cms/upload/bunny", {
@@ -115,10 +177,12 @@ export function CloudinaryUploader({
 
       const url = bunnyVideoUrl(videoId, pullZone, "1080p");
       const thumbnailUrl = bunnyThumbnailUrl(videoId, pullZone);
+      const result = { url, publicId: videoId, resourceType: "video" as const, bunnyVideoId: videoId, thumbnailUrl };
       setStatus("done");
       setProgress(100);
-      onUpload({ url, publicId: videoId, resourceType: "video", bunnyVideoId: videoId, thumbnailUrl });
+      onUpload(result);
       registerToLibrary(url, videoId);
+      backupVideoToCloudinary(file, result);
     } catch {
       setStatus("error");
     }
@@ -134,43 +198,12 @@ export function CloudinaryUploader({
     }
 
     try {
-      const sigRes = await fetch("/api/cms/upload/signature", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ folder, resource_type: resourceType }),
-      });
-      const { signature, timestamp, apiKey, cloudName } = await sigRes.json();
-
-      const form = new FormData();
-      form.append("file", file);
-      form.append("api_key", apiKey);
-      form.append("timestamp", String(timestamp));
-      form.append("signature", signature);
-      form.append("folder", folder);
-
-      const xhr = new XMLHttpRequest();
-      xhr.upload.onprogress = (e) => {
-        if (e.lengthComputable) setProgress(Math.round((e.loaded / e.total) * 100));
-      };
-
-      await new Promise<void>((resolve, reject) => {
-        xhr.onload = () => {
-          if (xhr.status === 200) {
-            const data = JSON.parse(xhr.responseText);
-            setStatus("done");
-            setProgress(100);
-            if (resourceType === "image") setPreview(data.secure_url);
-            onUpload({ url: data.secure_url, publicId: data.public_id, resourceType });
-            registerToLibrary(data.secure_url, data.public_id);
-            resolve();
-          } else {
-            reject(new Error("Upload failed"));
-          }
-        };
-        xhr.onerror = () => reject(new Error("Network error"));
-        xhr.open("POST", `https://api.cloudinary.com/v1_1/${cloudName}/${resourceType}/upload`);
-        xhr.send(form);
-      });
+      const { url, publicId } = await uploadToCloudinary(file, resourceType, setProgress);
+      setStatus("done");
+      setProgress(100);
+      if (resourceType === "image") setPreview(url);
+      onUpload({ url, publicId, resourceType });
+      registerToLibrary(url, publicId);
     } catch {
       setStatus("error");
     }

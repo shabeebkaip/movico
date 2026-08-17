@@ -2,9 +2,12 @@
 
 import { useState } from "react";
 import { ArrowRight, CheckCircle } from "lucide-react";
-import { SERVICES } from "@/lib/services-data";
 
-export default function StartBookingForm() {
+export default function StartBookingForm({
+  services,
+}: {
+  services: { slug: string; title: string }[];
+}) {
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -89,7 +92,7 @@ export default function StartBookingForm() {
           <option value="" disabled className="bg-black text-white/60">
             Service of Interest
           </option>
-          {SERVICES.map((s) => (
+          {services.map((s) => (
             <option key={s.slug} value={s.slug} className="bg-black text-white">
               {s.title}
             </option>

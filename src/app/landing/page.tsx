@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, CheckCircle, Play } from "lucide-react";
-import { SERVICES } from "@/lib/services-data";
+import { listServices } from "@/lib/cms/services";
 import StartBookingForm from "./StartBookingForm";
 import ClientsSection from "@/components/home/Clients";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Book a Discovery Call | Movico — Video Production Company Riyadh, Saudi Arabia",
@@ -49,7 +51,8 @@ const faqs = [
   },
 ];
 
-export default function StartPage() {
+export default async function StartPage() {
+  const services = await listServices();
   return (
     <main className="min-h-screen bg-black text-white">
       {/* Hero */}
@@ -175,7 +178,7 @@ export default function StartPage() {
             </h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-            {SERVICES.map((service) => (
+            {services.map((service) => (
               <Link
                 key={service.slug}
                 href={`/services/${service.slug}`}
@@ -231,7 +234,7 @@ export default function StartPage() {
               ))}
             </div>
           </div>
-          <StartBookingForm />
+          <StartBookingForm services={services.map((s) => ({ slug: s.slug, title: s.title }))} />
         </div>
       </section>
 

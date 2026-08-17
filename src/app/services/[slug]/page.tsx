@@ -3,12 +3,17 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight, CheckCircle, Play } from "lucide-react";
-import { SERVICES, getServiceBySlug } from "@/lib/services-data";
+import { getServiceBySlug, listServices } from "@/lib/cms/services";
 import { Breadcrumb } from "@/components/Breadcrumb";
+import PhotoGallery from "@/components/services/PhotoGallery";
+import { ShowreelVideo } from "@/components/services/ShowreelVideo";
+import { bunnyVideoUrl } from "@/lib/bunny-video";
 
-export function generateStaticParams() {
-  return SERVICES.map((s) => ({ slug: s.slug }));
-}
+export const dynamic = "force-dynamic";
+
+// Pull zone is a public CDN hostname, not a secret — same pattern as
+// showreel/page.tsx.
+const PULL_ZONE = process.env.BUNNY_STREAM_PULL_ZONE;
 
 export async function generateMetadata({
   params,
@@ -16,7 +21,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const service = getServiceBySlug(slug);
+  const service = await getServiceBySlug(slug);
   if (!service) return {};
   return {
     title: `${service.title} | Movico — Riyadh, Saudi Arabia`,
@@ -30,11 +35,14 @@ export default async function ServiceDetailPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const service = getServiceBySlug(slug);
+  const [service, allServices] = await Promise.all([
+    getServiceBySlug(slug),
+    listServices(),
+  ]);
   if (!service) notFound();
 
-  const currentIndex = SERVICES.findIndex((s) => s.slug === slug);
-  const nextService = SERVICES[(currentIndex + 1) % SERVICES.length];
+  const currentIndex = allServices.findIndex((s) => s.slug === slug);
+  const nextService = allServices[(currentIndex + 1) % allServices.length];
 
   return (
     <main className="min-h-screen bg-black text-white">
@@ -151,25 +159,7 @@ export default async function ServiceDetailPage({
               </h2>
             </div>
 
-            <div className="grid grid-cols-2 xl:grid-cols-3 gap-2">
-              {service.gallery.map((src, i) => (
-                <div
-                  key={i}
-                  className={`relative overflow-hidden group ${
-                    i === 0 ? "col-span-2 xl:col-span-2 aspect-[16/9]" : "aspect-[4/3]"
-                  }`}
-                >
-                  <Image
-                    src={src}
-                    alt=""
-                    fill
-                    className="object-cover group-hover:scale-105 transition-transform duration-700"
-                    sizes="(max-width: 768px) 100vw, 50vw"
-                  />
-                  <div className="absolute inset-0 bg-black/20 group-hover:bg-black/0 transition-colors duration-500" />
-                </div>
-              ))}
-            </div>
+            <PhotoGallery items={service.gallery} />
           </div>
         </section>
       )}
@@ -211,7 +201,7 @@ export default async function ServiceDetailPage({
       </section>
 
       {/* Showreel */}
-      {service.showreelPoster && (
+      {(service.showreelBunnyVideoId || service.showreelUrl || service.showreelPoster) && (
         <section className="py-20 xl:py-32 px-6 md:px-12 xl:px-20">
           <div className="w-11/12 xl:w-10/12 mx-auto">
             <div className="mb-12">
@@ -223,7 +213,13 @@ export default async function ServiceDetailPage({
               </h2>
             </div>
 
-            {service.showreelUrl ? (
+            {service.showreelBunnyVideoId && PULL_ZONE ? (
+              <ShowreelVideo
+                bunnyUrl={bunnyVideoUrl(service.showreelBunnyVideoId, PULL_ZONE, "1080p")}
+                poster={service.showreelPoster}
+                cloudinaryVideoUrl={service.showreelCloudinaryVideoUrl}
+              />
+            ) : service.showreelUrl ? (
               <div className="relative w-full aspect-video rounded-sm overflow-hidden">
                 <iframe
                   src={service.showreelUrl}
@@ -235,7 +231,7 @@ export default async function ServiceDetailPage({
             ) : (
               <div className="relative w-full aspect-video overflow-hidden rounded-sm group cursor-pointer">
                 <Image
-                  src={service.showreelPoster}
+                  src={service.showreelPoster!}
                   alt="Showreel"
                   fill
                   className="object-cover group-hover:scale-105 transition-transform duration-700"
