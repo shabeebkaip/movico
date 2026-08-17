@@ -25,11 +25,6 @@ interface CMSService {
   process: { step: string; title: string; description: string }[];
   stats?: { value: string; label: string }[];
   gallery?: GalleryItem[];
-  showreelPoster?: string;
-  showreelUrl?: string;
-  showreelBunnyVideoId?: string;
-  showreelCloudinaryVideoUrl?: string;
-  showreelCloudinaryPublicId?: string;
   icon: string;
   order: number;
   visible: boolean;
@@ -40,8 +35,7 @@ const ICON_OPTIONS = ["Video", "CalendarDays", "Layers", "LayoutGrid", "Sofa", "
 const BLANK: Omit<CMSService, "_id"> = {
   slug: "", number: "", title: "", shortDescription: "", longDescription: "",
   tags: [], heroTagline: "", heroImage: "", overview: "", offerings: [], process: [],
-  stats: [], gallery: [], showreelPoster: "", showreelUrl: "",
-  showreelBunnyVideoId: "", showreelCloudinaryVideoUrl: "", showreelCloudinaryPublicId: "",
+  stats: [], gallery: [],
   icon: ICON_OPTIONS[0], order: 0, visible: true,
 };
 
@@ -89,10 +83,6 @@ export default function ServiceForm({ initialData, serviceId, defaultOrder }: { 
     tags: initialData.tags, heroTagline: initialData.heroTagline, heroImage: initialData.heroImage ?? "",
     overview: initialData.overview, offerings: initialData.offerings, process: initialData.process,
     stats: initialData.stats ?? [], gallery: initialData.gallery ?? [],
-    showreelPoster: initialData.showreelPoster ?? "", showreelUrl: initialData.showreelUrl ?? "",
-    showreelBunnyVideoId: initialData.showreelBunnyVideoId ?? "",
-    showreelCloudinaryVideoUrl: initialData.showreelCloudinaryVideoUrl ?? "",
-    showreelCloudinaryPublicId: initialData.showreelCloudinaryPublicId ?? "",
     icon: initialData.icon, order: initialData.order, visible: initialData.visible,
   } : { ...BLANK, order: defaultOrder ?? BLANK.order });
   const [tagsInput, setTagsInput] = useState(initialData?.tags.join(", ") ?? "");
@@ -134,18 +124,6 @@ export default function ServiceForm({ initialData, serviceId, defaultOrder }: { 
       };
       return { ...prev, gallery: [...gallery, item] };
     });
-  }
-
-  // Same two-callback contract, single field instead of an array — no
-  // "find" needed, just merge whatever's new into the existing showreel
-  // video fields.
-  function handleShowreelVideoUpload(result: UploadResult) {
-    setForm((prev) => ({
-      ...prev,
-      showreelBunnyVideoId: result.bunnyVideoId ?? prev.showreelBunnyVideoId,
-      showreelCloudinaryVideoUrl: result.cloudinaryVideoUrl ?? prev.showreelCloudinaryVideoUrl,
-      showreelCloudinaryPublicId: result.cloudinaryPublicId ?? prev.showreelCloudinaryPublicId,
-    }));
   }
 
   function autoSlug(title: string) {
@@ -609,44 +587,6 @@ export default function ServiceForm({ initialData, serviceId, defaultOrder }: { 
                   })}
                 </div>
               )}
-            </SectionCard>
-
-            {/* Showreel */}
-            <SectionCard title="Showreel" sub="Three independent options — upload a video, paste an external embed, and/or set a static poster.">
-              <div>
-                <label className={labelCls}>Upload Showreel Video</label>
-                <CloudinaryUploader
-                  resourceType="video"
-                  folder="movico/services"
-                  currentUrl={undefined}
-                  onUpload={handleShowreelVideoUpload}
-                />
-                {form.showreelBunnyVideoId && (
-                  <p className="text-[11px] text-green-600 mt-1.5">
-                    Video uploaded{form.showreelCloudinaryVideoUrl ? " (Cloudinary backup ready)" : ""}
-                  </p>
-                )}
-              </div>
-              <div className="text-center text-slate-400 text-xs uppercase tracking-[0.15em]">or</div>
-              <div>
-                <label className={labelCls}>External Showreel URL (embed)</label>
-                <input
-                  className={inputCls}
-                  value={form.showreelUrl}
-                  onChange={(e) => set("showreelUrl", e.target.value)}
-                  placeholder="https://…"
-                />
-              </div>
-              <div>
-                <label className={labelCls}>Showreel Poster</label>
-                <CloudinaryUploader
-                  resourceType="image"
-                  folder="movico/services"
-                  label="Upload poster image"
-                  currentUrl={form.showreelPoster || undefined}
-                  onUpload={({ url }) => set("showreelPoster", url)}
-                />
-              </div>
             </SectionCard>
           </div>
 

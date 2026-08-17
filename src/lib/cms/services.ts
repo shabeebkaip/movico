@@ -28,11 +28,6 @@ export interface CMSService {
   process: { step: string; title: string; description: string }[];
   stats?: { value: string; label: string }[];
   gallery?: GalleryItem[];
-  showreelPoster?: string;
-  showreelUrl?: string;
-  showreelBunnyVideoId?: string;
-  showreelCloudinaryVideoUrl?: string;
-  showreelCloudinaryPublicId?: string;
   icon: string;
   order: number;
   visible: boolean;

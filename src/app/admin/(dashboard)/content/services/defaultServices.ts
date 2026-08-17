@@ -24,7 +24,6 @@ export const DEFAULT_SERVICES = [
       "/studio/DSC00364.jpg",
       "/studio/DSC00336.jpg",
     ],
-    showreelPoster: "/hero-poster.jpg",
     overview:
       "We approach video production as a discipline of storytelling first, technology second. Our team of directors, cinematographers, and editors work as one cohesive unit — translating your brand's values into visual narratives that audiences feel as much as watch. We operate across Saudi Arabia and the wider GCC region.",
     offerings: [

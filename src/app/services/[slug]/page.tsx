@@ -2,18 +2,12 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight, CheckCircle, Play } from "lucide-react";
+import { ArrowRight, CheckCircle } from "lucide-react";
 import { getServiceBySlug, listServices } from "@/lib/cms/services";
 import { Breadcrumb } from "@/components/Breadcrumb";
 import PhotoGallery from "@/components/services/PhotoGallery";
-import { ShowreelVideo } from "@/components/services/ShowreelVideo";
-import { bunnyVideoUrl } from "@/lib/bunny-video";
 
 export const dynamic = "force-dynamic";
-
-// Pull zone is a public CDN hostname, not a secret — same pattern as
-// showreel/page.tsx.
-const PULL_ZONE = process.env.BUNNY_STREAM_PULL_ZONE;
 
 export async function generateMetadata({
   params,
@@ -199,59 +193,6 @@ export default async function ServiceDetailPage({
           </div>
         </div>
       </section>
-
-      {/* Showreel */}
-      {(service.showreelBunnyVideoId || service.showreelUrl || service.showreelPoster) && (
-        <section className="py-20 xl:py-32 px-6 md:px-12 xl:px-20">
-          <div className="w-11/12 xl:w-10/12 mx-auto">
-            <div className="mb-12">
-              <span className="uppercase tracking-[0.5em] text-[10px] text-white/30 block mb-4">
-                Showreel
-              </span>
-              <h2 className="font-display font-black text-3xl md:text-4xl xl:text-5xl uppercase leading-tight text-white">
-                Watch Us <span className="text-primary">Work</span>
-              </h2>
-            </div>
-
-            {service.showreelBunnyVideoId && PULL_ZONE ? (
-              <ShowreelVideo
-                bunnyUrl={bunnyVideoUrl(service.showreelBunnyVideoId, PULL_ZONE, "1080p")}
-                poster={service.showreelPoster}
-                cloudinaryVideoUrl={service.showreelCloudinaryVideoUrl}
-              />
-            ) : service.showreelUrl ? (
-              <div className="relative w-full aspect-video rounded-sm overflow-hidden">
-                <iframe
-                  src={service.showreelUrl}
-                  className="absolute inset-0 w-full h-full"
-                  allow="autoplay; fullscreen; picture-in-picture"
-                  allowFullScreen
-                />
-              </div>
-            ) : (
-              <div className="relative w-full aspect-video overflow-hidden rounded-sm group cursor-pointer">
-                <Image
-                  src={service.showreelPoster!}
-                  alt="Showreel"
-                  fill
-                  className="object-cover group-hover:scale-105 transition-transform duration-700"
-                />
-                <div className="absolute inset-0 bg-black/50 group-hover:bg-black/40 transition-colors duration-300 flex flex-col items-center justify-center gap-6">
-                  <div className="w-20 h-20 xl:w-24 xl:h-24 rounded-full bg-primary flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-[0_0_60px_rgba(217,134,41,0.5)]">
-                    <Play size={32} className="text-white ml-1" fill="white" />
-                  </div>
-                  <Link
-                    href={`/contact?service=${service.slug}`}
-                    className="text-white/60 text-xs uppercase tracking-[0.3em] hover:text-primary transition-colors duration-300"
-                  >
-                    Enquire about a project instead →
-                  </Link>
-                </div>
-              </div>
-            )}
-          </div>
-        </section>
-      )}
 
       {/* Our Process */}
       <section className="py-20 xl:py-32 px-6 md:px-12 xl:px-20">
