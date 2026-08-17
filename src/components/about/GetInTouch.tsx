@@ -39,8 +39,8 @@ const GetInTouch = ({ ctaRef, ctaInView }) => {
             </h2>
 
             <p className="text-lg lg:text-xl text-muted-foreground mb-12 max-w-2xl mx-auto leading-relaxed">
-              Discover how OCX's integrated approach can unlock new
-              possibilities for your business.
+              Discover how Movico's integrated production approach can bring
+              your brand's next story to life.
             </p>
 
             <motion.a

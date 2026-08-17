@@ -40,19 +40,19 @@ const WhoWeAre = ({whoWeAreRef, whoWeAreInView}) => {
               >
                 <div className="space-y-6 text-base lg:text-lg text-muted-foreground leading-relaxed">
                   <p>
-                    OCX LLC is a consultancy firm headquartered in the UAE with
-                    operations across Saudi Arabia, dedicated to helping
-                    businesses grow, stay compliant, and thrive in competitive
-                    markets. What sets us apart is our unique ability to integrate
-                    multiple disciplines—<span className="text-foreground font-semibold">Accounting, Taxation, Investment
-                    Consultancy, Recruitment, and Digital Marketing</span>—under one
-                    roof.
+                    Movico is a media production studio headquartered in
+                    Riyadh, Saudi Arabia, dedicated to helping brands tell
+                    stories that command attention and drive results. What
+                    sets us apart is our ability to handle every discipline a
+                    production needs—<span className="text-foreground font-semibold">Corporate Video, Event Production,
+                    Brand Identity, and Social &amp; Digital Content</span>—under
+                    one roof.
                   </p>
                   <p>
-                    We believe that sustainable business growth requires more than
-                    isolated solutions. It demands a strategic partner who
-                    understands how finance, marketing, talent, and operations
-                    intersect to create real value.
+                    We believe that sustainable brand growth requires more than
+                    a single great shot. It demands a creative partner who
+                    understands how story, craft, and strategy intersect to
+                    create work that actually moves your audience.
                   </p>
                 </div>
               </motion.div>

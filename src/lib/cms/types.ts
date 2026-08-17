@@ -457,7 +457,7 @@ export const defaultContent: CMSContent = {
       cyclePhrases: ['Media Production', 'Event Coverage', 'Brand Films', 'Photography'],
       subtitle:
         "Riyadh's leading corporate video company — brand films, event coverage & media production across Saudi Arabia and the GCC.",
-      ctaPrimary: { text: 'Start a Project', href: '#contact' },
+      ctaPrimary: { text: 'Start a Project', href: '/contact' },
       ctaSecondary: { text: 'Watch Reel', href: '#showreel' },
       videoUrl:
         'https://vz-77191ad4-50a.b-cdn.net/34d823c8-1925-46b4-aeb8-f33c6eba6739/play_1080p.mp4',

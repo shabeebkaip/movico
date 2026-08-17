@@ -8,7 +8,7 @@ const Hero = ({heroRef, heroInView, heroY, heroOpacity}) => {
       <div className="absolute inset-0 z-0">
         <img
           src="/about-hero.jpg"
-          alt="About OCX"
+          alt="About Movico"
           className="w-full h-full object-cover object-center"
         />
         {/* Dark overlay for contrast */}
@@ -50,7 +50,7 @@ const Hero = ({heroRef, heroInView, heroY, heroOpacity}) => {
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-black/40 border border-white/20 backdrop-blur-md">
               <Sparkles className="w-4 h-4 text-foreground" />
               <span className="text-xs font-semibold tracking-wider uppercase text-foreground">
-                About OCX
+                About Movico
               </span>
             </div>
           </motion.div>
@@ -61,9 +61,9 @@ const Hero = ({heroRef, heroInView, heroY, heroOpacity}) => {
             transition={{ delay: 0.2, duration: 0.8, ease: [0.23, 1, 0.32, 1] }}
             className="font-display text-5xl sm:text-6xl lg:text-7xl xl:text-8xl font-bold tracking-tighter leading-[0.95] mb-8 drop-shadow-2xl"
           >
-            Where Strategy
+            Where Vision
             <br />
-            Meets <span className="text-gradient-silver">Execution</span>
+            Meets <span className="text-gradient-silver">Production</span>
           </motion.h1>
 
           <motion.p
@@ -72,8 +72,8 @@ const Hero = ({heroRef, heroInView, heroY, heroOpacity}) => {
             transition={{ delay: 0.4, duration: 0.6 }}
             className="text-lg lg:text-xl text-foreground/90 leading-relaxed max-w-3xl mx-auto drop-shadow-lg"
           >
-            Combining global standards with regional expertise to deliver
-            integrated business solutions.
+            Cinematic storytelling and production craft, built for Saudi
+            Arabia's most ambitious brands.
           </motion.p>
         </div>
       </motion.div>

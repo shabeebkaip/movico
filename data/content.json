@@ -18,7 +18,7 @@
       "headlineLine1": "Corporate Video &",
       "cyclePhrases": ["Media Production", "Event Coverage", "Brand Films", "Photography"],
       "subtitle": "Riyadh's leading corporate video company — brand films, event coverage & media production across Saudi Arabia and the GCC.",
-      "ctaPrimary": { "text": "Start a Project", "href": "#contact" },
+      "ctaPrimary": { "text": "Start a Project", "href": "/contact" },
       "ctaSecondary": { "text": "Watch Reel", "href": "#showreel" },
       "videoUrl": "https://res.cloudinary.com/dm5c31z7w/video/upload/q_auto,f_auto/v1769938198/0201_loykmi.mp4",
       "posterUrl": "https://movicoksa.com/wp-content/uploads/2024/10/6B2A6288-scaled.jpg"

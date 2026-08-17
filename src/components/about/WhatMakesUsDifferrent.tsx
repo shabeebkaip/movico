@@ -5,27 +5,27 @@ import { Sparkles } from "lucide-react";
 const WhatMakesUsDifferrent = ({ differenceInView, differenceRef }) => {
   const differentiators = [
     {
-      title: "Holistic Perspective",
+      title: "Full-Service Production",
       description:
-        "We see your business as an interconnected system. Our multi-domain expertise allows us to identify opportunities and solve challenges that single-service providers might miss.",
+        "We see every project as an interconnected story. From concept to final delivery, our multi-discipline crew handles the parts a single-service provider would have to outsource.",
       number: "01",
     },
     {
       title: "Regional Knowledge, Global Standards",
       description:
-        "Our team brings international best practices combined with deep understanding of UAE and Saudi Arabian business environments, regulations, and market dynamics.",
+        "Our team brings international production quality combined with deep understanding of the Saudi Arabian and GCC market, culture, and audience.",
       number: "02",
     },
     {
       title: "Seamless Integration",
       description:
-        "Working with multiple consultancies creates coordination challenges. With OCX, you get consistent strategy, unified execution, and a single point of accountability.",
+        "Working with multiple vendors creates coordination headaches. With Movico, you get one creative vision, one production team, and a single point of accountability.",
       number: "03",
     },
     {
       title: "Practical Excellence",
       description:
-        "We're not just theorists. Our team has hands-on experience building and growing businesses, giving us the practical insight to deliver solutions that work in the real world.",
+        "We're not just creatives. Our team has hands-on experience delivering under real production pressure, giving us the practical instinct to make work that ships on time and looks exceptional.",
       number: "04",
     },
   ];
@@ -56,7 +56,7 @@ const WhatMakesUsDifferrent = ({ differenceInView, differenceRef }) => {
               <span className="text-gradient-silver">Different</span>
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Our integrated approach sets us apart in the consultancy landscape
+              Our integrated approach sets us apart in the production landscape
             </p>
           </motion.div>
 

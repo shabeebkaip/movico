@@ -33,18 +33,6 @@ const Footer = () => {
               Cinematic production and brand storytelling engineered
               for impact across the region.
             </p>
-
-            <div className="flex flex-wrap gap-6 text-sm text-white/50 uppercase tracking-widest">
-              <a href="#" className="hover:text-primary transition-colors">
-                Instagram
-              </a>
-              <a href="#" className="hover:text-primary transition-colors">
-                LinkedIn
-              </a>
-              <a href="#" className="hover:text-primary transition-colors">
-                YouTube
-              </a>
-            </div>
           </div>
 
           {/* Navigation */}
@@ -55,7 +43,7 @@ const Footer = () => {
 
             <div className="space-y-5 text-white/70 text-base flex flex-col">
               <Link href="/">Home</Link>
-              <Link href="/#about">Studio</Link>
+              <Link href="/studio">Studio</Link>
               <Link href="/services">Services</Link>
               <Link href="/#work">Work</Link>
               <Link href="/contact">Contact</Link>

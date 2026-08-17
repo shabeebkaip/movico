@@ -1,10 +1,9 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { MessageCircle } from "lucide-react";
 
 export function WhatsAppFloat() {
-  const phoneNumber = "971522235795"; // UAE number without + or spaces
+  const phoneNumber = "966536660125"; // Saudi (Riyadh) number without + or spaces
   const message = "Hello! I'd like to inquire about your services.";
   const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
 
