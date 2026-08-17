@@ -64,6 +64,7 @@ const CTASection = ({ content = D }: { content?: CTAContent }) => {
         alt=""
         aria-hidden="true"
         fill
+        unoptimized
         sizes="100vw"
         className="object-cover opacity-10"
       />

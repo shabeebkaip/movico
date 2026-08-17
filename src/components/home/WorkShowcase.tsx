@@ -11,15 +11,18 @@ import type { ProjectData } from "@/lib/projects-data";
 import { PROJECTS } from "@/lib/projects-data";
 import LazyVideo from "./LazyVideo";
 import { cloudinaryVideoDelivery } from "@/lib/video-delivery";
+import { bunnyVideoUrl, withBunnyResolution } from "@/lib/bunny-video";
 
 const D = defaultContent.home.workShowcase;
 
 export default function WorkShowcase({
   content = D,
   projects = PROJECTS,
+  pullZone,
 }: {
   content?: WorkShowcaseContent;
   projects?: ProjectData[];
+  pullZone?: string;
 }) {
   const sectionRef = useRef<HTMLElement>(null);
   const headingRef = useRef<HTMLDivElement>(null);
@@ -96,7 +99,13 @@ export default function WorkShowcase({
           >
             {project.video ? (
               <LazyVideo
-                src={cloudinaryVideoDelivery(project.video, 640) ?? project.video}
+                src={
+                  project.bunnyVideoId && pullZone
+                    ? bunnyVideoUrl(project.bunnyVideoId, pullZone, "480p")
+                    : withBunnyResolution(project.video, "480p") ??
+                      cloudinaryVideoDelivery(project.video, 640) ??
+                      project.video
+                }
                 className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
               />
             ) : (

@@ -14,6 +14,7 @@ export interface ProjectData {
   coverAlt?: string;
   images: string[];
   video?: string;
+  bunnyVideoId?: string;
   featured: boolean;
   seo?: {
     title: string;

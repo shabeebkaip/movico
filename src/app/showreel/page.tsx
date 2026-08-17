@@ -1,8 +1,11 @@
 import type { Metadata } from "next";
 import { listVideos } from "@/lib/cms/videos";
 import { cloudinaryVideoThumb } from "@/lib/cloudinary";
+import { bunnyThumbnailUrl } from "@/lib/bunny-video";
 import VideoGallery from "@/components/showreel/VideoGallery";
 import type { VideoItem } from "@/lib/showreel-data";
+
+const PULL_ZONE = process.env.BUNNY_STREAM_PULL_ZONE;
 
 export const metadata: Metadata = {
   title: "Showreel & Portfolio | Movico — Video Production Riyadh",
@@ -16,7 +19,13 @@ export const metadata: Metadata = {
 export const revalidate = 3600;
 
 function dbVideoToVideoItem(v: Awaited<ReturnType<typeof listVideos>>[0]): VideoItem {
-  const thumbnail = v.thumbnail || (v.cloudinaryVideoPublicId ? cloudinaryVideoThumb(v.cloudinaryVideoPublicId) : undefined);
+  const thumbnail =
+    v.thumbnail ||
+    (v.bunnyVideoId && PULL_ZONE
+      ? bunnyThumbnailUrl(v.bunnyVideoId, PULL_ZONE)
+      : v.cloudinaryVideoPublicId
+      ? cloudinaryVideoThumb(v.cloudinaryVideoPublicId)
+      : undefined);
   return {
     id: v._id!,
     title: v.title,
@@ -24,6 +33,7 @@ function dbVideoToVideoItem(v: Awaited<ReturnType<typeof listVideos>>[0]): Video
     category: v.category,
     thumbnail,
     cloudinaryVideoUrl: v.cloudinaryVideoUrl,
+    bunnyVideoId: v.bunnyVideoId,
   };
 }
 
@@ -41,7 +51,7 @@ export default async function ShowreelPage() {
 
   return (
     <main className="min-h-screen bg-black text-white overflow-x-hidden">
-      <VideoGallery highlights={highlights} works={works} />
+      <VideoGallery highlights={highlights} works={works} pullZone={PULL_ZONE} />
     </main>
   );
 }

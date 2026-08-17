@@ -6,8 +6,11 @@ import { ArrowRight } from "lucide-react";
 import { getProjectBySlug as getCMSProject, listProjects } from "@/lib/cms/projects";
 import { PROJECTS, getProjectBySlug as getStaticProject } from "@/lib/projects-data";
 import { Breadcrumb } from "@/components/Breadcrumb";
+import { bunnyVideoUrl, withBunnyResolution } from "@/lib/bunny-video";
 
 export const dynamic = "force-dynamic";
+
+const PULL_ZONE = process.env.BUNNY_STREAM_PULL_ZONE;
 
 export async function generateMetadata({
   params,
@@ -48,7 +51,7 @@ export default async function ProjectDetailPage({
     slug: string; number: string; client: string; title: string; category: string;
     location: string; year: string; shortDescription: string; fullDescription: string;
     result: string; tags: string[]; coverImage: string; coverAlt?: string; images: string[];
-    video?: string; featured: boolean;
+    video?: string; bunnyVideoId?: string; featured: boolean;
   } | null | undefined;
 
   let allProjects: { slug: string; title: string }[];
@@ -115,7 +118,11 @@ export default async function ProjectDetailPage({
         <div className="w-full aspect-[16/7] relative">
           {project.video ? (
             <video
-              src={project.video}
+              src={
+                project.bunnyVideoId && PULL_ZONE
+                  ? bunnyVideoUrl(project.bunnyVideoId, PULL_ZONE, "1080p")
+                  : withBunnyResolution(project.video, "1080p") ?? project.video
+              }
               autoPlay
               muted
               loop

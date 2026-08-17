@@ -19,6 +19,7 @@ export interface CMSProject {
   coverAlt: string;
   images: string[];
   video?: string;
+  bunnyVideoId?: string;
   featured: boolean;
   order: number;
   visible: boolean;

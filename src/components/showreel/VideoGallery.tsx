@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { type VideoItem } from "@/lib/showreel-data";
 import { cloudinaryVideoDelivery } from "@/lib/video-delivery";
+import { bunnyVideoUrl, isBunnyPullZoneUrl, type BunnyResolution } from "@/lib/bunny-video";
 
 /* ─── helpers ───────────────────────────────────────── */
 function groupByCategory(videos: VideoItem[]) {
@@ -22,18 +23,38 @@ function groupByCategory(videos: VideoItem[]) {
   }, {});
 }
 
+// Prefers a migrated Bunny record over the legacy Cloudinary path (safe
+// dual-path during the migration — see docs/VIDEO_MIGRATION_PLAN.md T3.1).
+// Bunny renditions are fixed files (no arbitrary trim), so trimSeconds only
+// applies to the Cloudinary fallback.
+function resolveVideoSrc(
+  video: VideoItem,
+  pullZone: string | undefined,
+  resolution: BunnyResolution,
+  cloudinaryWidth: number,
+  trimSeconds?: number
+): string | undefined {
+  if (video.bunnyVideoId && pullZone) {
+    return bunnyVideoUrl(video.bunnyVideoId, pullZone, resolution);
+  }
+  return cloudinaryVideoDelivery(video.cloudinaryVideoUrl, cloudinaryWidth, trimSeconds);
+}
+
 /* ─── VideoCard ─────────────────────────────────────── */
 function VideoCard({
   video,
   onPlay,
+  pullZone,
 }: {
   video: VideoItem;
   onPlay: (v: VideoItem) => void;
+  pullZone: string | undefined;
 }) {
   const [imgFailed, setImgFailed] = useState(false);
   const [hovering, setHovering] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
-  const canPreview = !!video.cloudinaryVideoUrl;
+  const previewSrc = resolveVideoSrc(video, pullZone, "480p", 480, 8);
+  const canPreview = !!previewSrc;
 
   useEffect(() => {
     const el = videoRef.current;
@@ -60,6 +81,7 @@ function VideoCard({
           alt={video.title}
           fill
           loading="lazy"
+          unoptimized={isBunnyPullZoneUrl(video.thumbnail, pullZone)}
           sizes="(max-width: 768px) 240px, (max-width: 1280px) 280px, 320px"
           onError={() => setImgFailed(true)}
           className={`object-cover transition-all duration-500 group-hover/card:scale-110 ${
@@ -78,7 +100,7 @@ function VideoCard({
       {canPreview && (
         <video
           ref={videoRef}
-          src={cloudinaryVideoDelivery(video.cloudinaryVideoUrl, 480, 8)}
+          src={previewSrc}
           muted
           loop
           playsInline
@@ -132,10 +154,12 @@ function ScrollRow({
   title,
   videos,
   onPlay,
+  pullZone,
 }: {
   title: string;
   videos: VideoItem[];
   onPlay: (v: VideoItem) => void;
+  pullZone: string | undefined;
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const scroll = (dir: "left" | "right") =>
@@ -169,7 +193,7 @@ function ScrollRow({
           className="flex gap-2 overflow-x-auto no-scrollbar px-4 md:px-8 xl:px-14 pb-1"
         >
           {videos.map((v) => (
-            <VideoCard key={v.id} video={v} onPlay={onPlay} />
+            <VideoCard key={v.id} video={v} onPlay={onPlay} pullZone={pullZone} />
           ))}
         </div>
 
@@ -190,9 +214,11 @@ function ScrollRow({
 function VideoModal({
   video,
   onClose,
+  pullZone,
 }: {
   video: VideoItem;
   onClose: () => void;
+  pullZone: string | undefined;
 }) {
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
@@ -257,7 +283,7 @@ function VideoModal({
           <div className="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-primary/60 z-10 pointer-events-none" />
 
           <video
-            src={cloudinaryVideoDelivery(video.cloudinaryVideoUrl, 1920)}
+            src={resolveVideoSrc(video, pullZone, "1080p", 1920)}
             poster={video.thumbnail}
             className="absolute inset-0 w-full h-full"
             autoPlay
@@ -293,16 +319,19 @@ function VideoModal({
 export default function VideoGallery({
   highlights,
   works,
+  pullZone,
 }: {
   highlights: VideoItem[];
   works: VideoItem[];
+  pullZone?: string;
 }) {
   const [active, setActive] = useState<VideoItem | null>(null);
   const [heroImgFailed, setHeroImgFailed] = useState(false);
   const close = useCallback(() => setActive(null), []);
 
   const featured = highlights[0];
-  const featuredCanPreview = !!featured?.cloudinaryVideoUrl;
+  const featuredSrc = featured ? resolveVideoSrc(featured, pullZone, "1080p", 1280) : undefined;
+  const featuredCanPreview = !!featuredSrc;
   const categoryGroups = groupByCategory(works);
   const categoryOrder = ["Event", "Corporate", "Commercial", "Brand Film", "Documentary", "Sport"];
 
@@ -331,6 +360,7 @@ export default function VideoGallery({
             alt={featured.title}
             fill
             priority
+            unoptimized={isBunnyPullZoneUrl(featured.thumbnail, pullZone)}
             sizes="100vw"
             onError={() => setHeroImgFailed(true)}
             className="object-cover"
@@ -346,7 +376,7 @@ export default function VideoGallery({
             it from competing with the initial paint for bandwidth. */}
         {featuredCanPreview && (
           <video
-            src={cloudinaryVideoDelivery(featured.cloudinaryVideoUrl, 1280)}
+            src={featuredSrc}
             poster={featured.thumbnail}
             autoPlay
             muted
@@ -409,6 +439,7 @@ export default function VideoGallery({
             title="✦ Highlights"
             videos={highlights}
             onPlay={setActive}
+            pullZone={pullZone}
           />
         </div>
 
@@ -441,6 +472,7 @@ export default function VideoGallery({
               title={cat}
               videos={vids}
               onPlay={setActive}
+              pullZone={pullZone}
             />
           );
         })}
@@ -449,7 +481,7 @@ export default function VideoGallery({
         {Object.entries(categoryGroups)
           .filter(([cat]) => !categoryOrder.includes(cat))
           .map(([cat, vids]) => (
-            <ScrollRow key={cat} title={cat} videos={vids} onPlay={setActive} />
+            <ScrollRow key={cat} title={cat} videos={vids} onPlay={setActive} pullZone={pullZone} />
           ))}
 
         {/* ── Final CTA ── */}
@@ -478,7 +510,7 @@ export default function VideoGallery({
       </div>
 
       {/* Modal */}
-      {active && <VideoModal video={active} onClose={close} />}
+      {active && <VideoModal video={active} onClose={close} pullZone={pullZone} />}
     </>
   );
 }
