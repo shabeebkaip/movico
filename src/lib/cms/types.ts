@@ -220,9 +220,7 @@ export interface StudioContent {
     headingLine2: string;
     description: string;
     stats: Array<{ value: string; label: string }>;
-    heroImage: string;
-    smallImage: string;
-    bottomImages: Array<{ src: string; label: string }>;
+    photos: Array<{ src: string; label: string }>;
   };
   work: {
     heading: string;
@@ -766,9 +764,9 @@ export const defaultContent: CMSContent = {
         { value: '4K',  label: 'Camera Capability' },
         { value: '∞',   label: 'Creative Setups' },
       ],
-      heroImage: '/studio/1776759672085.jpg',
-      smallImage: '/studio/1776759672394.jpg',
-      bottomImages: [
+      photos: [
+        { src: '/studio/1776759672085.jpg', label: 'Main Studio Floor' },
+        { src: '/studio/1776759672394.jpg', label: 'Studio Lounge' },
         { src: '/studio/1776759672182.jpg', label: 'Lighting Corner' },
         { src: '/studio/1776759672064.jpg', label: 'Cyclorama Floor' },
         { src: '/studio/1776759672332.jpg', label: 'Backdrop Zone' },

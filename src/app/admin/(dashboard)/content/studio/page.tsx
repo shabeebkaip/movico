@@ -113,25 +113,26 @@ function SpaceEditor({ data, update }: { data: StudioContent["space"]; update: (
         </div>
       </div>
       <div className={divCls} />
-      <Field label="Left Hero Image">
-        <CloudinaryUploader resourceType="image" folder="movico/studio" label="Large Left Image" currentUrl={data.heroImage} onUpload={({ url }) => set("heroImage", url)} />
-      </Field>
-      <Field label="Right Small Image">
-        <CloudinaryUploader resourceType="image" folder="movico/studio" label="Small Right Image" currentUrl={data.smallImage} onUpload={({ url }) => set("smallImage", url)} />
-      </Field>
-      <div className={divCls} />
       <div>
-        <label className={labelCls}>Bottom 3 Images</label>
+        <label className={labelCls}>Photos ({data.photos.length}) — masonry gallery, add as many as you like</label>
         <div className="space-y-4">
-          {data.bottomImages.map((img, i) => (
+          {data.photos.map((img, i) => (
             <div key={i} className="space-y-2 bg-slate-50 border border-slate-200 rounded-lg p-3">
-              <Field label={`Image ${i + 1} Label`}>
-                <input className={inputCls} value={img.label} onChange={(e) => { const n = [...data.bottomImages]; n[i] = { ...n[i], label: e.target.value }; set("bottomImages", n); }} />
-              </Field>
-              <CloudinaryUploader resourceType="image" folder="movico/studio" label={`Upload Image ${i + 1}`} currentUrl={img.src} onUpload={({ url }) => { const n = [...data.bottomImages]; n[i] = { ...n[i], src: url }; set("bottomImages", n); }} />
+              <div className="flex items-center gap-2">
+                <Field label={`Photo ${i + 1} Label`}>
+                  <input className={inputCls} value={img.label} onChange={(e) => { const n = [...data.photos]; n[i] = { ...n[i], label: e.target.value }; set("photos", n); }} />
+                </Field>
+                <button type="button" onClick={() => set("photos", data.photos.filter((_, idx) => idx !== i))} className="text-slate-300 hover:text-red-400 transition-colors mt-4 shrink-0">
+                  <Trash2 size={13} />
+                </button>
+              </div>
+              <CloudinaryUploader resourceType="image" folder="movico/studio" label={`Upload Photo ${i + 1}`} currentUrl={img.src} onUpload={({ url }) => { const n = [...data.photos]; n[i] = { ...n[i], src: url }; set("photos", n); }} />
             </div>
           ))}
         </div>
+        <button onClick={() => set("photos", [...data.photos, { src: "", label: "" }])} className={addBtnCls}>
+          <Plus size={12} /> Add Photo
+        </button>
       </div>
     </div>
   );
@@ -282,15 +283,23 @@ function FinalCTAEditor({ data, update }: { data: StudioContent["finalCTA"]; upd
       <CTAFields label="Secondary CTA" value={data.ctaSecondary} onChange={(v) => set("ctaSecondary", v)} />
       <div className={divCls} />
       <div>
-        <label className={labelCls}>Collage Images (3 total)</label>
+        <label className={labelCls}>Photos ({data.images.length}) — masonry gallery, add as many as you like</label>
         <div className="space-y-3">
-          {["Large image (top, spans 2 cols)", "Small image — left", "Small image — right"].map((lbl, i) => (
-            <div key={i}>
-              <p className="text-[10px] text-slate-400 mb-1">{lbl}</p>
-              <CloudinaryUploader resourceType="image" folder="movico/studio" label={`Image ${i + 1}`} currentUrl={data.images[i]} onUpload={({ url }) => { const n = [...data.images]; n[i] = url; set("images", n); }} />
+          {data.images.map((src, i) => (
+            <div key={i} className="flex items-end gap-2">
+              <div className="flex-1">
+                <p className="text-[10px] text-slate-400 mb-1">Photo {i + 1}</p>
+                <CloudinaryUploader resourceType="image" folder="movico/studio" label={`Photo ${i + 1}`} currentUrl={src} onUpload={({ url }) => { const n = [...data.images]; n[i] = url; set("images", n); }} />
+              </div>
+              <button type="button" onClick={() => set("images", data.images.filter((_, idx) => idx !== i))} className="text-slate-300 hover:text-red-400 transition-colors mb-2 shrink-0">
+                <Trash2 size={13} />
+              </button>
             </div>
           ))}
         </div>
+        <button onClick={() => set("images", [...data.images, ""])} className={addBtnCls}>
+          <Plus size={12} /> Add Photo
+        </button>
       </div>
     </div>
   );

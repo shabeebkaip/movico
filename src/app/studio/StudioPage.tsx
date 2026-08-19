@@ -18,6 +18,54 @@ const fadeUp = {
   show:   { opacity: 1, y: 0, transition: { duration: 0.8, ease: easing } },
 };
 
+// CSS `columns` only *estimates* a balanced height per column — with few,
+// uneven-aspect-ratio images that estimate is often wrong and leaves whole
+// columns empty. True masonry (each item goes to the currently-shortest
+// column) isn't natively supported by stable browsers, so we round-robin
+// items into N explicit flex columns instead — deterministic, never leaves
+// a gap, since each column is just its own items stacked top to bottom.
+function useColumnCount(breakpoints: { base: number; sm?: number; lg?: number; xl?: number }) {
+  const [count, setCount] = useState(breakpoints.base);
+  useEffect(() => {
+    const compute = () => {
+      const w = window.innerWidth;
+      if (breakpoints.xl && w >= 1280) return setCount(breakpoints.xl);
+      if (breakpoints.lg && w >= 1024) return setCount(breakpoints.lg);
+      if (breakpoints.sm && w >= 640) return setCount(breakpoints.sm);
+      setCount(breakpoints.base);
+    };
+    compute();
+    window.addEventListener("resize", compute);
+    return () => window.removeEventListener("resize", compute);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  return count;
+}
+
+function MasonryGrid<T>({
+  items,
+  columns,
+  gapClassName,
+  renderItem,
+}: {
+  items: T[];
+  columns: number;
+  gapClassName: string;
+  renderItem: (item: T, index: number) => React.ReactNode;
+}) {
+  const cols: T[][] = Array.from({ length: columns }, () => []);
+  items.forEach((item, i) => cols[i % columns].push(item));
+  return (
+    <div className={`flex ${gapClassName}`}>
+      {cols.map((col, ci) => (
+        <div key={ci} className={`flex-1 flex flex-col ${gapClassName}`}>
+          {col.map((item, i) => renderItem(item, i * columns + ci))}
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export default function StudioPage() {
   const [s, setS] = useState<StudioContent>(defaultContent.studio);
 
@@ -75,6 +123,10 @@ export default function StudioPage() {
   const imgY     = useTransform(scrollYProgress, [0, 1], ["0%", "18%"]);
   const textY    = useTransform(scrollYProgress, [0, 1], ["0%", "30%"]);
   const textOpac = useTransform(scrollYProgress, [0, 0.6], [1, 0]);
+
+  const spacePhotoCols = useColumnCount({ base: 1, sm: 2, xl: 3 });
+  const workPhotoCols  = useColumnCount({ base: 2, sm: 3, lg: 4 });
+  const ctaPhotoCols   = useColumnCount({ base: 1, sm: 3 });
 
   return (
     <main className="bg-black text-white">
@@ -151,58 +203,41 @@ export default function StudioPage() {
             <span className="text-[10px] uppercase tracking-[0.55em] text-white/35">The Space</span>
           </motion.div>
 
-          <div className="grid grid-cols-1 xl:grid-cols-[55fr_45fr] gap-4 xl:gap-5 mb-4 xl:mb-5">
-            {/* Left tall image */}
-            <motion.div initial={{ opacity: 0, x: -40 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 1, ease: easing }} className="relative rounded-2xl overflow-hidden group" style={{ minHeight: 480 }}>
-              <Image src={s.space.heroImage || "/studio/1776759672085.jpg"} alt="Studio main floor" fill className="object-cover transition-transform duration-700 group-hover:scale-103" sizes="(max-width:1280px) 100vw, 55vw" />
-              <div className="absolute top-4 left-4 w-6 h-6 border-t border-l border-[#d98629]/40 pointer-events-none" />
-              <div className="absolute top-4 right-4 w-6 h-6 border-t border-r border-[#d98629]/40 pointer-events-none" />
-              <div className="absolute bottom-4 left-4 w-6 h-6 border-b border-l border-[#d98629]/40 pointer-events-none" />
-              <div className="absolute bottom-4 right-4 w-6 h-6 border-b border-r border-[#d98629]/40 pointer-events-none" />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
-              <div className="absolute bottom-6 left-6">
-                <span className="text-[9px] uppercase tracking-[0.4em] text-white/50 bg-black/50 backdrop-blur-sm px-3 py-1.5 rounded-full">Main Studio Floor</span>
-              </div>
-            </motion.div>
-
-            {/* Right: headline card + small image */}
-            <motion.div initial={{ opacity: 0, x: 40 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 1, ease: easing, delay: 0.1 }} className="flex flex-col gap-4 xl:gap-5">
-              <div className="bg-[#0a0a0a] border border-white/[0.06] rounded-2xl p-8 xl:p-10 flex flex-col justify-between flex-1">
-                <div>
-                  <h2 className="font-display font-black uppercase leading-[0.9] text-white mb-5" style={{ fontSize: "clamp(2rem, 4vw, 3.5rem)" }}>
-                    {s.space.headingLine1}
-                    <br />
-                    <span style={{ color: "#d98629" }}>{s.space.headingLine2}</span>
-                  </h2>
-                  <p className="text-white/40 text-sm leading-relaxed max-w-sm">{s.space.description}</p>
+          {/* Headline + stats — its own full-width block, never paired side-by-side against a photo, so no photo's height is ever hostage to how long this text runs */}
+          <motion.div initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.8, ease: easing }} className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-8 mb-10 xl:mb-12">
+            <div>
+              <h2 className="font-display font-black uppercase leading-[0.9] text-white mb-5" style={{ fontSize: "clamp(2.2rem, 5vw, 4.5rem)" }}>
+                {s.space.headingLine1}
+                <br />
+                <span style={{ color: "#d98629" }}>{s.space.headingLine2}</span>
+              </h2>
+              <p className="text-white/40 text-sm leading-relaxed max-w-sm">{s.space.description}</p>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 lg:w-1/2">
+              {s.space.stats.map((stat) => (
+                <div key={stat.label} className="border border-white/8 rounded-xl p-4">
+                  <p className="font-display font-black text-2xl text-[#d98629] leading-none mb-1">{stat.value}</p>
+                  <p className="text-white/30 text-[10px] uppercase tracking-[0.3em]">{stat.label}</p>
                 </div>
-                <div className="mt-8 grid grid-cols-2 gap-3">
-                  {s.space.stats.map((stat) => (
-                    <div key={stat.label} className="border border-white/8 rounded-xl p-4">
-                      <p className="font-display font-black text-2xl text-[#d98629] leading-none mb-1">{stat.value}</p>
-                      <p className="text-white/30 text-[10px] uppercase tracking-[0.3em]">{stat.label}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-              <div className="relative rounded-2xl overflow-hidden group" style={{ height: 240 }}>
-                <Image src={s.space.smallImage || "/studio/1776759672394.jpg"} alt="Studio lounge" fill className="object-cover transition-transform duration-700 group-hover:scale-105" style={{ objectPosition: "center 60%" }} sizes="45vw" />
-              </div>
-            </motion.div>
-          </div>
+              ))}
+            </div>
+          </motion.div>
 
-          {/* 3-up bottom row */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 xl:gap-5">
-            {s.space.bottomImages.map((img, i) => (
-              <motion.div key={img.src} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1, duration: 0.7, ease: easing }} className="relative rounded-xl overflow-hidden group" style={{ height: 260 }}>
-                <Image src={img.src} alt={img.label} fill className="object-cover transition-transform duration-700 group-hover:scale-105" sizes="33vw" />
+          {/* Full photo set — one masonry gallery, every shot at its own natural aspect ratio, nothing cropped, no gaps regardless of orientation mix. Admin can add/remove any number of photos here. */}
+          <MasonryGrid
+            items={s.space.photos}
+            columns={spacePhotoCols}
+            gapClassName="gap-4 xl:gap-5"
+            renderItem={(img, i) => (
+              <motion.div key={img.src} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: (i % 6) * 0.08, duration: 0.7, ease: easing }} className="relative rounded-xl overflow-hidden group">
+                <Image src={img.src} alt={img.label} width={0} height={0} sizes="(max-width:640px) 100vw, (max-width:1280px) 50vw, 33vw" className="w-full h-auto block transition-transform duration-700 group-hover:scale-105" />
                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/25 transition-colors duration-500" />
                 <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-400">
                   <span className="text-[9px] uppercase tracking-[0.4em] text-white">{img.label}</span>
                 </div>
               </motion.div>
-            ))}
-          </div>
+            )}
+          />
         </div>
       </section>
 
@@ -225,19 +260,24 @@ export default function StudioPage() {
           </div>
         </div>
 
-        <div className="flex gap-2 xl:gap-3 overflow-x-auto px-6 md:px-12 xl:px-20 pb-4" style={{ scrollbarWidth: "none" }}>
-          {s.work.images.map((img, i) => (
-            <motion.div key={img.src + i} initial={{ opacity: 0, x: 40 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true, margin: "-80px" }} transition={{ delay: i * 0.06, duration: 0.7, ease: easing }} className={`relative flex-none rounded-xl overflow-hidden group ${img.wide ? "w-64 md:w-80" : "w-44 md:w-56"}`} style={{ height: 420 }}>
-              <Image src={img.src} alt={img.alt} fill className="object-cover transition-transform duration-700 group-hover:scale-105" sizes="300px" />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-400" />
-              <div className="absolute bottom-4 left-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-400">
-                <p className="text-[9px] uppercase tracking-[0.35em] text-white/70">{img.alt}</p>
-              </div>
-              <div className="absolute top-3 right-3 text-[9px] font-mono text-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                {String(i + 1).padStart(2, "0")}
-              </div>
-            </motion.div>
-          ))}
+        <div className="px-6 md:px-12 xl:px-20">
+          <MasonryGrid
+            items={s.work.images}
+            columns={workPhotoCols}
+            gapClassName="gap-2 xl:gap-3"
+            renderItem={(img, i) => (
+              <motion.div key={img.src + i} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-80px" }} transition={{ delay: (i % 8) * 0.05, duration: 0.7, ease: easing }} className="relative rounded-xl overflow-hidden group">
+                <Image src={img.src} alt={img.alt} width={0} height={0} sizes="(max-width:640px) 50vw, (max-width:1024px) 33vw, 25vw" className="w-full h-auto block transition-transform duration-700 group-hover:scale-105" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-400" />
+                <div className="absolute bottom-4 left-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-400">
+                  <p className="text-[9px] uppercase tracking-[0.35em] text-white/70">{img.alt}</p>
+                </div>
+                <div className="absolute top-3 right-3 text-[9px] font-mono text-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  {String(i + 1).padStart(2, "0")}
+                </div>
+              </motion.div>
+            )}
+          />
         </div>
 
         <div className="px-6 md:px-12 xl:px-20 mt-10">
@@ -324,21 +364,9 @@ export default function StudioPage() {
       {/* § 7  FINAL CTA */}
       <section className="py-20 xl:py-28 px-6 md:px-12 xl:px-20">
         <div className="w-11/12 xl:w-10/12 mx-auto">
-          <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 xl:gap-5 items-stretch">
-            <motion.div initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 1, ease: easing }} className="grid grid-cols-2 gap-3 xl:gap-4">
-              <div className="col-span-2 relative rounded-2xl overflow-hidden group" style={{ height: 280 }}>
-                <Image src={s.finalCTA.images[0] || "/studio/1776759672291.jpg"} alt="Studio shoot" fill className="object-cover transition-transform duration-700 group-hover:scale-105" style={{ objectPosition: "center top" }} sizes="50vw" />
-                <div className="absolute inset-0" style={{ background: "linear-gradient(135deg,rgba(217,134,41,0.20) 0%,transparent 70%)" }} />
-              </div>
-              <div className="relative rounded-xl overflow-hidden group" style={{ height: 200 }}>
-                <Image src={s.finalCTA.images[1] || "/studio/DSC01860.jpg"} alt="Fashion session" fill className="object-cover transition-transform duration-700 group-hover:scale-105" style={{ objectPosition: "center 15%" }} sizes="25vw" />
-              </div>
-              <div className="relative rounded-xl overflow-hidden group" style={{ height: 200 }}>
-                <Image src={s.finalCTA.images[2] || "/studio/1776759672218.jpg"} alt="Studio setup" fill className="object-cover transition-transform duration-700 group-hover:scale-105" style={{ objectPosition: "center top" }} sizes="25vw" />
-              </div>
-            </motion.div>
-
-            <motion.div initial={{ opacity: 0, x: 30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 1, ease: easing, delay: 0.1 }} className="bg-[#080808] border border-white/[0.06] rounded-2xl p-8 xl:p-12 flex flex-col justify-between">
+          {/* Text card — full width, standalone, not paired against the photos below */}
+          <motion.div initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 1, ease: easing }} className="bg-[#080808] border border-white/[0.06] rounded-2xl p-8 xl:p-12 mb-4 xl:mb-5">
+            <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-8">
               <div>
                 <div className="flex items-center gap-4 mb-8">
                   <div className="w-8 h-px bg-[#d98629]" />
@@ -353,7 +381,7 @@ export default function StudioPage() {
                 </h2>
                 <p className="text-white/40 text-sm leading-relaxed max-w-sm">{s.finalCTA.body}</p>
               </div>
-              <div className="flex flex-col sm:flex-row gap-3 mt-10">
+              <div className="flex flex-col sm:flex-row gap-3 shrink-0">
                 <Link href={s.finalCTA.ctaPrimary.href} className="group flex-1 bg-[#d98629] text-white text-[11px] font-bold uppercase tracking-[0.25em] px-8 py-4 rounded-full hover:bg-white hover:text-black transition-all duration-300 inline-flex items-center justify-center gap-2">
                   {s.finalCTA.ctaPrimary.text}
                   <ArrowRight size={13} className="transition-transform duration-300 group-hover:translate-x-1" />
@@ -362,8 +390,20 @@ export default function StudioPage() {
                   {s.finalCTA.ctaSecondary.text}
                 </Link>
               </div>
-            </motion.div>
-          </div>
+            </div>
+          </motion.div>
+
+          {/* Photo set — masonry, uncropped. Admin can add/remove any number of photos here. */}
+          <MasonryGrid
+            items={s.finalCTA.images}
+            columns={ctaPhotoCols}
+            gapClassName="gap-4 xl:gap-5"
+            renderItem={(src, i) => (
+              <motion.div key={src + i} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: (i % 6) * 0.08, duration: 0.7, ease: easing }} className="relative rounded-xl overflow-hidden group">
+                <Image src={src} alt="Movico Studio" width={0} height={0} sizes="(max-width:640px) 100vw, 33vw" className="w-full h-auto block transition-transform duration-700 group-hover:scale-105" />
+              </motion.div>
+            )}
+          />
         </div>
       </section>
 
