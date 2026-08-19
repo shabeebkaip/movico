@@ -8,7 +8,7 @@ import { MagneticText } from "@/components/ui/morphing-cursor";
 interface ContactCMS {
   hero: { heading: string; label: string };
   info: { email: string; phone: string; location: string; hours: string; sideText: string };
-  social: { instagram: string; linkedin: string; youtube: string };
+  social: { instagram: string; linkedin: string; youtube: string; tiktok: string; snapchat: string; twitter: string; facebook: string };
   formspreeId: string;
 }
 
@@ -21,7 +21,7 @@ const DEFAULT_CMS: ContactCMS = {
     hours: "Sun – Thu  ·  9:00 AM – 6:00 PM AST",
     sideText: "Go beyond typical with Movico. You're not just choosing a production company — you're selecting a partner who understands your brand and has a genuine interest in crafting meaningful, impactful cinematic stories.",
   },
-  social: { instagram: "#", linkedin: "#", youtube: "#" },
+  social: { instagram: "#", linkedin: "#", youtube: "#", tiktok: "#", snapchat: "#", twitter: "#", facebook: "#" },
   formspreeId: "",
 };
 
@@ -352,7 +352,7 @@ export default function ContactPage() {
               </div>
               <div>
                 <p className="text-[10px] uppercase tracking-[0.4em] text-white/30 mb-2">Location</p>
-                <p className="text-white">{cms.info.location}</p>
+                <a href="https://www.google.com/maps?q=24.635657,46.545608" target="_blank" rel="noopener noreferrer" className="text-white hover:text-primary transition-colors duration-300">{cms.info.location}</a>
               </div>
               <div>
                 <p className="text-[10px] uppercase tracking-[0.4em] text-white/30 mb-2">Business Hours</p>
@@ -373,15 +373,27 @@ export default function ContactPage() {
               />
             </div>
 
-            {(cms.social.instagram !== "#" || cms.social.linkedin !== "#" || cms.social.youtube !== "#") && (
+            {Object.values(cms.social).some((v) => v && v !== "#") && (
               <div>
                 <p className="text-[10px] uppercase tracking-[0.4em] text-white/30 mb-4">Follow Us</p>
-                <div className="flex gap-6 text-sm uppercase tracking-[0.2em] text-white/50">
+                <div className="flex flex-wrap gap-6 text-sm uppercase tracking-[0.2em] text-white/50">
                   {cms.social.instagram && cms.social.instagram !== "#" && (
                     <a href={cms.social.instagram} className="hover:text-primary transition-colors duration-300">Instagram</a>
                   )}
+                  {cms.social.tiktok && cms.social.tiktok !== "#" && (
+                    <a href={cms.social.tiktok} className="hover:text-primary transition-colors duration-300">TikTok</a>
+                  )}
+                  {cms.social.snapchat && cms.social.snapchat !== "#" && (
+                    <a href={cms.social.snapchat} className="hover:text-primary transition-colors duration-300">Snapchat</a>
+                  )}
+                  {cms.social.twitter && cms.social.twitter !== "#" && (
+                    <a href={cms.social.twitter} className="hover:text-primary transition-colors duration-300">X</a>
+                  )}
                   {cms.social.linkedin && cms.social.linkedin !== "#" && (
                     <a href={cms.social.linkedin} className="hover:text-primary transition-colors duration-300">LinkedIn</a>
+                  )}
+                  {cms.social.facebook && cms.social.facebook !== "#" && (
+                    <a href={cms.social.facebook} className="hover:text-primary transition-colors duration-300">Facebook</a>
                   )}
                   {cms.social.youtube && cms.social.youtube !== "#" && (
                     <a href={cms.social.youtube} className="hover:text-primary transition-colors duration-300">YouTube</a>

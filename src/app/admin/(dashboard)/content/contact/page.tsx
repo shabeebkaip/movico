@@ -24,7 +24,7 @@ interface ContactCMS {
   contact: {
     hero: { heading: string; label: string };
     info: { email: string; phone: string; location: string; hours: string; sideText: string };
-    social: { instagram: string; linkedin: string; youtube: string };
+    social: { instagram: string; linkedin: string; youtube: string; tiktok: string; snapchat: string; twitter: string; facebook: string };
     formspreeId: string;
   };
 }
@@ -34,7 +34,7 @@ type SectionId = "hero" | "info" | "social" | "form";
 const sectionDefs: { id: SectionId; label: string; description: string; Icon: LucideIcon }[] = [
   { id: "hero",   label: "Hero",            description: "Heading & label",     Icon: Info     },
   { id: "info",   label: "Contact Info",    description: "Email, phone, hours", Icon: Phone    },
-  { id: "social", label: "Social Links",    description: "Instagram, LinkedIn", Icon: Share2   },
+  { id: "social", label: "Social Links",    description: "Instagram, TikTok, Snapchat & more", Icon: Share2 },
   { id: "form",   label: "Form Settings",  description: "Formspree endpoint",  Icon: Settings2 },
 ];
 
@@ -156,6 +156,38 @@ function SocialEditor({ data, set }: { data: ContactCMS["contact"]["social"]; se
           value={data.youtube}
           onChange={(e) => set(["contact", "social", "youtube"], e.target.value)}
           placeholder="https://youtube.com/..."
+        />
+      </Field>
+      <Field label="TikTok URL">
+        <input
+          className={inputCls}
+          value={data.tiktok}
+          onChange={(e) => set(["contact", "social", "tiktok"], e.target.value)}
+          placeholder="https://tiktok.com/@..."
+        />
+      </Field>
+      <Field label="Snapchat URL">
+        <input
+          className={inputCls}
+          value={data.snapchat}
+          onChange={(e) => set(["contact", "social", "snapchat"], e.target.value)}
+          placeholder="https://snapchat.com/add/..."
+        />
+      </Field>
+      <Field label="X (Twitter) URL">
+        <input
+          className={inputCls}
+          value={data.twitter}
+          onChange={(e) => set(["contact", "social", "twitter"], e.target.value)}
+          placeholder="https://x.com/..."
+        />
+      </Field>
+      <Field label="Facebook URL">
+        <input
+          className={inputCls}
+          value={data.facebook}
+          onChange={(e) => set(["contact", "social", "facebook"], e.target.value)}
+          placeholder="https://facebook.com/..."
         />
       </Field>
     </div>

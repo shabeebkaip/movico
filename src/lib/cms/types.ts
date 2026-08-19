@@ -14,11 +14,6 @@ export interface GlobalContent {
   phone: string;
   whatsapp: string;
   address: string;
-  social: {
-    instagram: string;
-    linkedin: string;
-    youtube: string;
-  };
 }
 
 // ─── Hero ─────────────────────────────────────────────────────────────────────
@@ -184,6 +179,10 @@ export interface ContactPageContent {
     instagram: string;
     linkedin: string;
     youtube: string;
+    tiktok: string;
+    snapchat: string;
+    twitter: string;
+    facebook: string;
   };
   formspreeId: string;
 }
@@ -444,11 +443,6 @@ export const defaultContent: CMSContent = {
     phone: '+966 53 666 0125',
     whatsapp: '+966536660125',
     address: 'Wadi Laban, Riyadh, Saudi Arabia',
-    social: {
-      instagram: '#',
-      linkedin: '#',
-      youtube: '#',
-    },
   },
   home: {
     hero: {
@@ -736,6 +730,10 @@ export const defaultContent: CMSContent = {
       instagram: '#',
       linkedin: '#',
       youtube: '#',
+      tiktok: '#',
+      snapchat: '#',
+      twitter: '#',
+      facebook: '#',
     },
     formspreeId: 'movico-contact',
   },
