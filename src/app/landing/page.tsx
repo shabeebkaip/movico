@@ -1,9 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, CheckCircle, Play } from "lucide-react";
+import { ArrowRight, CheckCircle } from "lucide-react";
 import { listServices } from "@/lib/cms/services";
+import { readContent } from "@/lib/cms/store";
 import StartBookingForm from "./StartBookingForm";
+import LandingHero from "./LandingHero";
+import Reveal from "./Reveal";
+import FAQAccordion from "./FAQAccordion";
 import ClientsSection from "@/components/home/Clients";
+import Counter from "@/components/ui/counter";
 
 export const dynamic = "force-dynamic";
 
@@ -22,10 +27,10 @@ export const metadata: Metadata = {
 };
 
 const stats = [
-  { value: "50+", label: "Projects Delivered" },
-  { value: "98%", label: "Client Satisfaction" },
-  { value: "7+", label: "Enterprise Clients" },
-  { value: "5+", label: "Years in KSA" },
+  { end: 50, suffix: "+", label: "Projects Delivered" },
+  { end: 98, suffix: "%", label: "Client Satisfaction" },
+  { end: 7, suffix: "+", label: "Enterprise Clients" },
+  { end: 5, suffix: "+", label: "Years in KSA" },
 ];
 
 const faqs = [
@@ -52,60 +57,29 @@ const faqs = [
 ];
 
 export default async function StartPage() {
-  const services = await listServices();
+  const [services, content] = await Promise.all([listServices(), readContent()]);
+  const { videoUrl, posterUrl } = content.home.hero;
+
   return (
     <main className="min-h-screen bg-black text-white">
-      {/* Hero */}
-      <section className="relative pt-36 pb-20 xl:pt-52 xl:pb-28 px-6 md:px-12 xl:px-20 overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(217,134,41,0.07),transparent_65%)]" />
-        <div className="relative w-11/12 xl:w-10/12 mx-auto text-center">
-          <span className="uppercase tracking-[0.5em] text-[10px] text-primary block mb-6">
-            Free Discovery Call — No Obligation
-          </span>
-          <h1 className="font-display font-black text-5xl md:text-7xl xl:text-[8rem] uppercase leading-[0.9] mb-8">
-            Premium Video
-            <br />
-            Production in
-            <br />
-            <span className="text-primary">Saudi Arabia</span>
-          </h1>
-          <p className="text-white/50 text-base md:text-lg max-w-2xl mx-auto leading-relaxed mb-12">
-            Movico is Riyadh&apos;s leading creative production company — trusted by Nokia, Saudi Aramco, Philips, and more. Tell us about your project and we&apos;ll show you exactly how we can help.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <a
-              href="#booking"
-              className="bg-primary text-white text-xs font-bold uppercase tracking-[0.2em] px-10 py-4 rounded-full hover:bg-white hover:text-black transition-all duration-300 inline-flex items-center justify-center gap-2"
-            >
-              Book a Discovery Call <ArrowRight size={14} />
-            </a>
-            <Link
-              href="/#showreel"
-              className="border border-white/20 text-white text-xs font-bold uppercase tracking-[0.2em] px-10 py-4 rounded-full hover:border-primary hover:text-primary transition-all duration-300 inline-flex items-center justify-center gap-2"
-            >
-              <Play size={12} /> Watch Our Reel
-            </Link>
-          </div>
-        </div>
-      </section>
+      <LandingHero videoUrl={videoUrl} posterUrl={posterUrl} />
 
       <ClientsSection />
 
       {/* Stats */}
       <section className="py-20 xl:py-24 px-6 md:px-12 xl:px-20">
         <div className="w-11/12 xl:w-10/12 mx-auto grid grid-cols-2 xl:grid-cols-4 gap-px bg-white/8">
-          {stats.map((stat) => (
-            <div
-              key={stat.label}
-              className="bg-black py-10 px-8 text-center group hover:bg-white/[0.03] transition-colors duration-300"
-            >
-              <span className="font-display font-black text-5xl xl:text-6xl text-primary block leading-none mb-3">
-                {stat.value}
-              </span>
-              <span className="text-[10px] uppercase tracking-[0.3em] text-white/40">
-                {stat.label}
-              </span>
-            </div>
+          {stats.map((stat, i) => (
+            <Reveal key={stat.label} delay={i * 0.08}>
+              <div className="bg-black py-10 px-8 text-center group hover:bg-white/[0.03] transition-colors duration-300 h-full">
+                <span className="font-display font-black text-5xl xl:text-6xl text-primary block leading-none mb-3">
+                  <Counter end={stat.end} suffix={stat.suffix} duration={1600} />
+                </span>
+                <span className="text-[10px] uppercase tracking-[0.3em] text-white/40">
+                  {stat.label}
+                </span>
+              </div>
+            </Reveal>
           ))}
         </div>
       </section>
@@ -113,7 +87,7 @@ export default async function StartPage() {
       {/* Why Movico */}
       <section className="bg-white/[0.02] border-t border-b border-white/8 py-20 xl:py-32 px-6 md:px-12 xl:px-20">
         <div className="w-11/12 xl:w-10/12 mx-auto">
-          <div className="mb-14 flex flex-col xl:flex-row xl:items-end xl:justify-between gap-6">
+          <Reveal className="mb-14 flex flex-col xl:flex-row xl:items-end xl:justify-between gap-6">
             <div>
               <span className="uppercase tracking-[0.5em] text-[10px] text-white/30 block mb-4">
                 Why Choose Movico
@@ -122,8 +96,8 @@ export default async function StartPage() {
                 What Makes Us <span className="text-primary">Different</span>
               </h2>
             </div>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+          </Reveal>
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
             {[
               {
                 title: "Cinematic Quality, Every Time",
@@ -150,17 +124,19 @@ export default async function StartPage() {
                 body: "No hidden costs, no surprise revisions. We're direct, honest, and built for long-term partnerships.",
               },
             ].map((item, i) => (
-              <div key={i} className="group">
-                <div className="flex items-start gap-3 mb-3">
-                  <CheckCircle size={16} className="text-primary shrink-0 mt-0.5" />
-                  <h3 className="font-display font-black text-lg uppercase text-white group-hover:text-primary transition-colors duration-300">
-                    {item.title}
-                  </h3>
+              <Reveal key={item.title} delay={i * 0.06}>
+                <div className="group h-full rounded-2xl border border-white/8 bg-white/[0.02] p-6 hover:border-primary/30 hover:bg-white/[0.04] hover:shadow-[0_0_40px_rgba(217,134,41,0.08)] transition-all duration-500">
+                  <div className="flex items-start gap-3 mb-3">
+                    <CheckCircle size={16} className="text-primary shrink-0 mt-0.5" />
+                    <h3 className="font-display font-black text-lg uppercase text-white group-hover:text-primary transition-colors duration-300">
+                      {item.title}
+                    </h3>
+                  </div>
+                  <p className="text-white/40 text-sm leading-relaxed pl-7">
+                    {item.body}
+                  </p>
                 </div>
-                <p className="text-white/40 text-sm leading-relaxed pl-7">
-                  {item.body}
-                </p>
-              </div>
+              </Reveal>
             ))}
           </div>
         </div>
@@ -169,34 +145,35 @@ export default async function StartPage() {
       {/* Services Overview */}
       <section className="py-20 xl:py-32 px-6 md:px-12 xl:px-20">
         <div className="w-11/12 xl:w-10/12 mx-auto">
-          <div className="mb-12">
+          <Reveal className="mb-12">
             <span className="uppercase tracking-[0.5em] text-[10px] text-white/30 block mb-4">
               Our Services
             </span>
             <h2 className="font-display font-black text-4xl md:text-5xl xl:text-6xl uppercase leading-tight text-white">
               Everything You <span className="text-primary">Need</span>
             </h2>
-          </div>
+          </Reveal>
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-            {services.map((service) => (
-              <Link
-                key={service.slug}
-                href={`/services/${service.slug}`}
-                className="group border border-white/8 p-6 hover:border-primary/40 hover:bg-white/[0.02] transition-all duration-300 rounded-sm"
-              >
-                <span className="text-primary font-display font-black text-xs tracking-widest block mb-3">
-                  {service.number}
-                </span>
-                <h3 className="font-display font-black text-xl uppercase text-white group-hover:text-primary transition-colors duration-300 mb-2">
-                  {service.title}
-                </h3>
-                <p className="text-white/35 text-xs leading-relaxed mb-4">
-                  {service.shortDescription}
-                </p>
-                <span className="text-primary text-xs uppercase tracking-[0.2em] inline-flex items-center gap-1 group-hover:gap-2 transition-all duration-300">
-                  Learn More <ArrowRight size={10} />
-                </span>
-              </Link>
+            {services.map((service, i) => (
+              <Reveal key={service.slug} delay={i * 0.05}>
+                <Link
+                  href={`/services/${service.slug}`}
+                  className="group block h-full rounded-2xl border border-white/8 bg-white/[0.02] p-6 hover:-translate-y-1 hover:border-primary/40 hover:bg-white/[0.04] hover:shadow-[0_0_40px_rgba(217,134,41,0.1)] transition-all duration-300"
+                >
+                  <span className="text-primary font-display font-black text-xs tracking-widest block mb-3">
+                    {service.number}
+                  </span>
+                  <h3 className="font-display font-black text-xl uppercase text-white group-hover:text-primary transition-colors duration-300 mb-2">
+                    {service.title}
+                  </h3>
+                  <p className="text-white/35 text-xs leading-relaxed mb-4">
+                    {service.shortDescription}
+                  </p>
+                  <span className="text-primary text-xs uppercase tracking-[0.2em] inline-flex items-center gap-1 group-hover:gap-2 transition-all duration-300">
+                    Learn More <ArrowRight size={10} />
+                  </span>
+                </Link>
+              </Reveal>
             ))}
           </div>
         </div>
@@ -208,7 +185,7 @@ export default async function StartPage() {
         className="bg-white/[0.02] border-t border-white/8 py-20 xl:py-32 px-6 md:px-12 xl:px-20"
       >
         <div className="w-11/12 xl:w-10/12 mx-auto grid grid-cols-1 xl:grid-cols-2 gap-16 xl:gap-24 items-start">
-          <div>
+          <Reveal>
             <span className="uppercase tracking-[0.5em] text-[10px] text-white/30 block mb-6">
               Book a Call
             </span>
@@ -233,34 +210,27 @@ export default async function StartPage() {
                 </div>
               ))}
             </div>
-          </div>
-          <StartBookingForm services={services.map((s) => ({ slug: s.slug, title: s.title }))} />
+          </Reveal>
+          <Reveal delay={0.15}>
+            <StartBookingForm services={services.map((s) => ({ slug: s.slug, title: s.title }))} />
+          </Reveal>
         </div>
       </section>
 
       {/* FAQ */}
       <section className="py-20 xl:py-32 px-6 md:px-12 xl:px-20">
         <div className="w-11/12 xl:w-10/12 mx-auto">
-          <div className="mb-12">
+          <Reveal className="mb-12">
             <span className="uppercase tracking-[0.5em] text-[10px] text-white/30 block mb-4">
               FAQ
             </span>
             <h2 className="font-display font-black text-4xl md:text-5xl uppercase leading-tight text-white">
               Common <span className="text-primary">Questions</span>
             </h2>
-          </div>
-          <div className="divide-y divide-white/8">
-            {faqs.map((faq, i) => (
-              <div key={i} className="py-8">
-                <h3 className="font-display font-black text-lg xl:text-xl uppercase text-white mb-3">
-                  {faq.q}
-                </h3>
-                <p className="text-white/45 text-sm leading-relaxed max-w-2xl">
-                  {faq.a}
-                </p>
-              </div>
-            ))}
-          </div>
+          </Reveal>
+          <Reveal delay={0.1}>
+            <FAQAccordion faqs={faqs} />
+          </Reveal>
         </div>
       </section>
     </main>

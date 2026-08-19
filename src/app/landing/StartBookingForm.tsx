@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { motion } from "framer-motion";
 import { ArrowRight, CheckCircle } from "lucide-react";
 
 export default function StartBookingForm({
@@ -30,15 +31,26 @@ export default function StartBookingForm({
 
   if (submitted) {
     return (
-      <div className="flex flex-col items-center justify-center py-20 text-center">
-        <CheckCircle size={48} className="text-primary mb-6" />
+      <motion.div
+        initial={{ opacity: 0, scale: 0.94 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ type: "spring", damping: 16, stiffness: 200 }}
+        className="flex flex-col items-center justify-center py-20 text-center"
+      >
+        <motion.div
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          transition={{ type: "spring", damping: 12, stiffness: 220, delay: 0.1 }}
+        >
+          <CheckCircle size={48} className="text-primary mb-6" />
+        </motion.div>
         <h3 className="font-display font-black text-2xl uppercase text-white mb-3">
           Request Received
         </h3>
         <p className="text-white/40 text-sm leading-relaxed max-w-xs">
           We&apos;ll be in touch within 24 hours to schedule your discovery call.
         </p>
-      </div>
+      </motion.div>
     );
   }
 
@@ -115,7 +127,7 @@ export default function StartBookingForm({
       <button
         type="submit"
         disabled={loading}
-        className="w-full bg-primary text-white text-xs font-bold uppercase tracking-[0.25em] py-4 rounded-full hover:bg-white hover:text-black transition-all duration-300 flex items-center justify-center gap-2 disabled:opacity-60"
+        className="w-full bg-primary text-white text-xs font-bold uppercase tracking-[0.25em] py-4 rounded-full hover:bg-white hover:text-black active:scale-[0.98] transition-all duration-300 flex items-center justify-center gap-2 disabled:opacity-60"
       >
         {loading ? "Sending..." : <>Book Discovery Call <ArrowRight size={14} /></>}
       </button>
