@@ -9,7 +9,6 @@ import {
   ChevronRight,
   Film,
   Globe,
-  Info,
   Phone,
   Users,
   FolderOpen,
@@ -33,7 +32,6 @@ const navSections: { title: string; items: NavItem[] }[] = [
     title: "Pages",
     items: [
       { label: "Home",     href: "/admin/content",          icon: Globe,        exact: true },
-      { label: "About",    href: "/admin/content/about",    icon: Info },
       { label: "Contact",  href: "/admin/content/contact",  icon: Phone },
       { label: "Clients",  href: "/admin/content/clients",  icon: Users },
       { label: "Projects", href: "/admin/content/projects", icon: FolderOpen },
