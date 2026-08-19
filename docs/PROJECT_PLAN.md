@@ -1,256 +1,274 @@
-# PROJECT PLAN — Movico Homepage Performance Remediation
+# PROJECT PLAN — Movico Responsive / Mobile Layout Fixes
 
-_Last updated: 2026-07-29 · Owner: project-manager · Status: READY TO BUILD (all 4 open questions resolved — start at T1.1)_
+_Last updated: 2026-08-18 · Owner: project-manager · Status: **READY TO BUILD** — D1 resolved (Hybrid "More" dropdown). M1 starts with a ui-ux-engineer DESIGN_SPEC gate (T1.0), then implementation. M2/M3 unblocked and parallelizable._
 
-_Supersedes the completed "Showreel Video Migration: Google Drive → Cloudinary" plan (shipped 2026-07; recorded in project memory). That migration fixed **broken** video; this plan fixes **slow** video._
+_Supersedes the completed "Homepage Performance Remediation" plan (shipped; recorded in project memory / git history). That plan fixed **slow**; this plan fixes **broken layout on tablets and small screens**._
 
 ---
 
 ## Diagnosis (plain language)
 
-The Movico homepage is slow because it ships **27.4 MB** to the browser on first
-load, and **~22.6 MB of that (83%) is autoplaying background video**. Up to
-**five** large `.mp4` files begin downloading and playing at the same moment the
-page opens — regardless of whether the user has scrolled anywhere near them.
+A client sent a phone/tablet screenshot of the site header looking broken: the
+navigation links overflow the screen, the "Start a Project" button is cut off
+the right edge, and there is no hamburger menu. We reproduced this in a real
+browser by resizing the viewport across common device widths against the local
+dev server.
 
-This is **not** a server or hosting problem. The server responds in 170ms
-(healthy). The bottleneck is entirely browser-side: too many bytes to download,
-plus too much main-thread work (2.45s of JavaScript execution) competing for the
-CPU while those videos decode. That contention is why mobile LCP (time for the
-biggest visible element to appear) is a severe **7.0s** even though the LCP
-element is just the H1 headline text — text that should render almost instantly
-is being starved by everything else loading at once.
+**Root cause (the header):** the header shows the full desktop menu — logo + 7
+text links (Home / Work / Showreel / Services / Studio / Blog / Contact) + a
+"Start a Project" pill button — starting at **768px** wide (Tailwind's `md:`
+breakpoint). Below 768px it correctly shows a hamburger menu. The problem is
+that between roughly **768px and ~1200px** all those items do **not** fit side
+by side, so the button gets clipped off the screen and the page grows a
+horizontal scrollbar. That 768–1200px band covers essentially **every tablet in
+portrait, many tablets in landscape, and some laptop windows** — which is what
+the client saw.
 
-Layout stability is already perfect (CLS = 0), so no work is scoped there.
+This is a real design tradeoff (7 nav items is a lot to fit), not a one-line
+class change — resolved as **D1 = Hybrid "More" dropdown** below.
 
-### Measured baseline (Lighthouse, production homepage — ground truth)
+### Reproduced viewport matrix (homepage `/`)
 
-| Metric | Desktop | Mobile |
+| Width | Device class | Result |
 |---|---|---|
-| **Performance score** | 52 | 54 |
-| Accessibility | 94 | 89 |
-| Best Practices | 93 | 93 |
-| SEO | 92 | 92 |
-| FCP | 1.4s | 3.2s |
-| **LCP** | 2.3s | **7.0s (severe)** |
-| TBT | 530ms | 350ms |
-| CLS | 0 | 0 |
-| Speed Index | 7.4s | 8.7s |
-| TTI | 3.4s | 10.4s |
+| 375px | iPhone SE | OK — hamburger shown correctly |
+| **768px** | iPad Mini portrait | **BROKEN — "Start a Project" clipped off right edge** (matches client screenshot) |
+| **900px** | small tablet landscape | **BROKEN — nav touches edge, horizontal scrollbar appears** |
+| **1024px** | iPad landscape | **BROKEN — Contact link collides with button, button text wraps + clips** |
+| 1280px | laptop | OK — fits with room to spare |
 
-### Where the 27.4 MB goes
+The same width matrix — **320, 375, 414, 768, 900, 1024, 1280** — is the
+required re-test matrix for QA and developers on every milestone below.
 
-| Asset | Size | Where |
-|---|---|---|
-| video `…bacb7.mp4` | 7,001 KB | Hero / ShowReel |
-| video `…bacb5.mp4` | 5,282 KB | WorkShowcase |
-| video `…bacb8.mp4` | 5,203 KB | WorkShowcase |
-| video `…bacb3.mp4` | 5,140 KB | WorkShowcase |
-| video `…bacb8.mp4` (2nd transform) | 2,162 KB | duplicate load |
-| **Video subtotal** | **~22.6 MB** | Hero, ShowReel, 3× WorkShowcase cards, CTA bg |
-| 68 client logos (PNG / base64) | ~4.4 MB (3.15 MB wasted) | Clients / ClientLogo |
-| Unused JS | ~90 KB | Next.js chunks |
-| Legacy-transpiled JS | ~14 KB | build output |
-
-**Affected files:** `src/components/home/HeroSection.tsx`,
-`src/components/home/ShowReel.tsx`, `src/components/home/WorkShowcase.tsx`,
-`src/components/home/CTASection.tsx`, `src/components/home/Clients.tsx`
-(+ `ClientLogo`), `src/lib/cloudinary.ts`.
-
----
-
-## Human decisions (resolved 2026-07-29)
-
-All four open questions are answered; work is unblocked.
-
-- **D1 — Below-the-fold video behavior:** **Autoplay on scroll-into-view.** Same
-  visual feel as today, just deferred until each video is actually in the
-  viewport. No hover/click gating. Locks T1.1.
-- **D2 — CTA background video:** **Replace with a static image.** It sits at
-  `opacity-10` (barely visible); a still frame looks identical to visitors and
-  removes the video request entirely. Locks T2.2.
-- **D3 — Targets:** **Confirmed as-is** — Performance ≥ 80 on both presets,
-  initial payload < 6 MB, mobile LCP ≤ 2.5s. No reprioritization; milestone order
-  stands.
-- **D4 — GSAP / Framer Motion consolidation:** **Out of scope for this effort.**
-  Both libraries stay. Flagged as a possible separate future investigation only
-  (see "Future / not scheduled" below) — no work scheduled against it here.
+**Affected files:** `src/components/Header.tsx`,
+`src/components/WhatsAppFloat.tsx`, `src/components/home/HeroSection.tsx`.
 
 ---
 
 ## Objective
 
-Cut the homepage's initial-load payload from 27.4 MB to **under 6 MB** and raise
-the Lighthouse Performance score from ~52/54 into the **80s on both desktop and
-mobile**, without changing the site's visual identity (hero video and showreel
-stay; below-the-fold videos load and autoplay as they scroll into view). We're
-done when a fresh Lighthouse run on the production homepage shows Performance ≥ 80
-on both presets and total transferred bytes on first load < 6 MB.
+Make the site header and above-the-fold homepage layout render correctly and
+without clipping or horizontal scroll across all common device widths (320px
+through desktop). We are done when, on the 7-width test matrix, the header fits
+with no clipping or horizontal scrollbar at every width, the mobile menu opens
+cleanly, the WhatsApp button never overlaps a control, and the hero headline
+never clips.
 
 ## Users & success criteria
 
 **Users:** Prospective clients (brands/agencies in Saudi Arabia) evaluating
-Movico as a video production studio — mostly on mobile, often on variable
-networks. A slow, heavy homepage directly undermines a video studio's core
-credibility.
+Movico as a video/photo studio — **mostly on mobile and tablet**. A broken
+header on the first screen directly undermines a visual studio's credibility.
 
-**Acceptance criteria (measurable):**
-1. Lighthouse Performance ≥ 80 on **both** desktop and mobile presets (from 52 / 54).
-2. Total homepage payload on initial load **< 6 MB** (from 27.4 MB).
-3. Mobile **LCP ≤ 2.5s** (from 7.0s); desktop LCP ≤ 2.0s (from 2.3s).
-4. Mobile **TTI ≤ 5s** (from 10.4s).
-5. No visual/functional regression: hero and showreel still play; Accessibility,
-   Best Practices and SEO stay at or above current values (94 / 93 / 92 desktop).
+**Acceptance criteria (measurable, re-tested at 320/375/414/768/900/1024/1280):**
+1. At **every** width in the matrix, the header fits inside the viewport with no
+   clipped text and **no horizontal scrollbar** on the page.
+2. There is a clear, working navigation at every width — either the full nav (if
+   it fits), the hybrid inline+"More" nav (tablet band), or a hamburger menu
+   (mobile); no "squeezed desktop nav" state.
+3. The mobile menu overlay shows **all** items fully, including the first
+   ("Home"), with none hidden behind the header bar.
+4. The WhatsApp floating button never visually overlaps the hero CTA text or the
+   open mobile-menu button/CTA at any width.
+5. The hero headline text is fully visible (no clipped letters) down to 320px.
 
 ## Scope
 
-**In scope**
-- Deferring below-the-fold videos so they load and autoplay only on scroll-into-view.
-- Right-sizing video bitrate/resolution for decorative vs. hero use.
-- Replacing the CTA background video with a static image.
-- Converting and resizing the 68 client logos to modern formats at display size.
-- Trimming unused / legacy-transpiled JavaScript.
-- Re-measuring to confirm the LCP gap closes once contention is removed.
+**In scope (this pass)**
+- Header responsive behavior across 768–1200px, via a hybrid inline + "More"
+  dropdown nav (M1).
+- WhatsApp float overlap + mobile-menu first-item clipping (M2).
+- Hero headline overflow at the smallest widths (M3).
 
 **Out of scope (explicit — do not let these creep in)**
-- Any redesign or layout change to the homepage.
-- CLS / layout-shift work (already 0).
-- Server / hosting / CDN changes (TTFB is already healthy at 170ms).
-- Performance work on non-homepage routes (about, services, contact, jobs,
-  studio) — a separate effort if desired later.
-- Any migration off GSAP or off Framer Motion (D4 — left as-is; see "Future").
-- Re-encoding or re-hosting the showreel library beyond what the homepage needs.
+- Full-site responsive audit of non-header/non-hero areas (services grid,
+  footer, studio page, contact form, blog, project pages, admin/CMS). This pass
+  only audited the homepage header + hero. Captured as **M4 (placeholder)** —
+  needs its own audit and scoping before any work.
+- Any visual redesign, re-theming, or nav information-architecture change beyond
+  the hybrid grouping D1 selects.
+- Performance work (covered by the prior, completed plan).
+- Desktop (≥1280px) layout, which already renders correctly.
 
 ## Architecture summary
 
-No stack change. Remains **Next.js (App Router) on Vercel**, MongoDB for CMS
-content, **Cloudinary** for video/image hosting. Video sizing is done via
-Cloudinary URL transforms (the hero already applies `q_auto,f_auto,w_1920`), so
-bitrate/resolution reductions are **URL-parameter changes, not re-uploads**.
-Deferring below-fold videos uses the browser-native `IntersectionObserver` (no
-new dependency). The hero `<video>` already uses `preload="metadata"` + a
-`poster`, so the fix is to stop *below-the-fold* videos from fetching eagerly.
-**No new dependencies expected.**
+No stack change. **Next.js (App Router) + Tailwind CSS + Framer Motion**, as
+today. Every fix here is a Tailwind responsive-class / layout adjustment plus one
+small "More" dropdown in existing client components — **no new dependencies, no
+config changes.** The one genuine decision (which responsive strategy for the
+header) is resolved as D1 = Hybrid.
+
+---
+
+## Human decisions (resolved 2026-08-18)
+
+### D1 — Header nav strategy: **RESOLVED → Option C, Hybrid "More" dropdown**
+
+The human selected the **hybrid** approach over raising the breakpoint (A) or
+squeezing all 7 items to fit (B). In the tablet band, the header shows the
+highest-priority links inline and collapses the rest into a "More" dropdown, so
+the nav stays full-featured without clipping. Full desktop nav still shows at the
+widest widths; the hamburger menu still handles mobile.
+
+**M1 is unblocked.** Implementation is gated on a DESIGN_SPEC (T1.0) first, per
+the standing workflow — see M1 breakdown.
+
+---
 
 ## Milestones
 
-Ordered by return-on-effort. Milestone 1 alone should recover the majority of the
-payload and is independently shippable.
-
-- **M1 — Stop concurrent video downloads (the 22.6 MB problem).** Demo: reload
-  with Network tab open — only the hero video downloads at first paint; other
-  videos load and autoplay as they scroll into view.
-- **M2 — Right-size video weight + replace CTA video.** Demo: hero and showreel
-  look identical but each file is materially smaller; CTA shows a static image
-  with no video request.
-- **M3 — Fix client-logo image weight.** Demo: 68 logos render identically but
-  total logo payload drops from ~4.4 MB to well under 1 MB.
-- **M4 — JavaScript trim + LCP verification.** Demo: fresh Lighthouse showing
-  Performance ≥ 80 both presets, payload < 6 MB, mobile LCP ≤ 2.5s.
+- **M1 — Header responsive fix via hybrid inline + "More" nav (768–1200px range).**
+  Demo: resize through the full matrix — mobile shows the hamburger, the tablet
+  band shows key links inline with a working "More" dropdown holding the rest,
+  desktop shows the full nav; no clipping, no horizontal scrollbar at any width.
+- **M2 — WhatsApp overlap + mobile-menu first-item clip.** Demo: open the mobile
+  menu at 375px — all items visible, WhatsApp button not covering the CTA; on the
+  hero at 320–414px the WhatsApp button doesn't sit on the "Watch Reel" text.
+- **M3 — Hero headline overflow ≤320px.** Demo: at 320px the cycling headline
+  ("...PHOTOGRAPHY") is fully visible with no clipped letters and no page scroll.
+- **M4 — Full-site responsive audit (placeholder, NOT scoped).** Out of scope for
+  this pass; listed so it isn't forgotten. Needs its own audit + plan.
 
 ---
 
 ## Task breakdown
 
-### M1 — Stop concurrent video downloads
+### M1 — Header responsive fix (hybrid inline + "More" dropdown)
 
-**T1.1 — Defer below-the-fold videos: load + autoplay on scroll-into-view (D1)** _[frontend-developer]_
-Applies to ShowReel and the 3 WorkShowcase video cards (CTA background is handled
-in T2.2 — it becomes a static image, so it drops out of the lazy-load set).
-Behavior is locked to **scroll-into-view autoplay** (D1) — no hover/click gating:
-each video's `src` must not be set / must not begin fetching until it is within
-~200px of the viewport, and it should autoplay (muted, loop, playsInline) once
-in view, preserving today's look. Only the hero loads eagerly. Use the
-browser-native `IntersectionObserver`.
-- Acceptance: on a cold load with Network tab open, exactly **one** video (hero)
-  is requested at first paint; scrolling each section into view triggers its
-  video request and it autoplays; total bytes transferred *before any scrolling*
-  drop from ~27.4 MB to **< 9 MB**.
-- Depends on: none — **unblocked, this is the starting task.**
+**T1.0 — DESIGN_SPEC for the hybrid nav (GATE — before any code)** _[ui-ux-engineer]_
+Per the standing workflow, no user-facing UI is implemented before a design spec
+exists. Produce **`docs/DESIGN_SPEC.md`** covering the hybrid header nav:
+- **Link grouping** — which links are always-visible inline in the tablet band
+  (768–~1200px) vs. which live under "More". _PM recommendation to validate or
+  override (reasoning: highest-traffic / conversion-critical links stay inline):_
+  - **Inline:** **Home, Work, Services, Studio** — Work is the portfolio proof a
+    studio sells on; Services is the offering; Studio is a distinct bookable
+    revenue line. (Home may collapse to the logo click if space is tight — spec
+    to decide.)
+  - **Under "More":** **Showreel, Blog, Contact** — Showreel is a subset of Work;
+    Blog is lower-funnel content; Contact is already covered by the "Start a
+    Project" CTA button, so it's redundant inline.
+  - The "Start a Project" CTA button stays visible at all tablet+ widths.
+- **Breakpoint map** — what shows at each width: mobile hamburger (<768px, or
+  higher if the spec prefers), hybrid inline+"More" (tablet band), full nav
+  (≥ the width where all 7 fit, ~1280px). Spec must state the exact Tailwind
+  breakpoints so there is never a squeezed/partial state.
+- **"More" dropdown styling + behavior spec:**
+  - Trigger: a "More" button with a caret, matching the existing nav link style
+    (`text-xs uppercase tracking-[0.25em]`).
+  - Open on **click/tap** (primary); hover-open optional on pointer devices but
+    click must always work (touch has no hover).
+  - Closes on: outside click, `Escape`, selecting an item, and route change.
+  - **Keyboard accessible:** focusable trigger, `aria-expanded`/`aria-haspopup`,
+    arrow-key movement through items, `Escape` to close and return focus to the
+    trigger. Focus-visible states specified.
+  - Panel styling: matches the header's glassy pill aesthetic
+    (`bg-black/85 backdrop-blur-xl border-white/10 rounded`), positioned below
+    the trigger, above page content (z above header contents), does not cause
+    page horizontal scroll.
+  - Spacing/gap values at **768 / 900 / 1024** so the inline set + "More" + CTA
+    provably fit at each (this is the exact band that breaks today).
+- Acceptance: `docs/DESIGN_SPEC.md` exists and specifies grouping, breakpoint
+  map, dropdown open/close/keyboard behavior, and per-width spacing; PM signs off
+  that it resolves the 768–1200px break on paper before code starts.
+- Depends on: D1 (resolved).
 
-**T1.2 — Confirm hero video is non-blocking** _[frontend-developer]_
-Hero already uses `preload="metadata"` + `poster`. Verify the poster paints at
-FCP and the video is not render-blocking; keep hero eager but non-blocking.
-- Acceptance: hero poster paints at FCP, video begins after; no hero regression.
-- Depends on: none (parallel with T1.1).
+**T1.1 — Implement the hybrid header nav** _[frontend-developer]_
+Implement T1.0's spec in `src/components/Header.tsx`. Today's breakpoints move
+together (never a partial desktop nav): desktop nav `hidden md:flex` (L75), CTA
+`hidden md:block` (L99), hamburger `md:hidden` (L112). Add the inline+"More"
+tablet-band nav and the dropdown per spec. Prefer native/existing patterns —
+Framer Motion is already available for the panel animation; **no new dependency**
+for the dropdown (a small click-outside + Escape handler suffices). Ensure the
+page cannot grow a horizontal scrollbar (header is `w-[94%] max-w-6xl` centered;
+the dropdown panel must not push page width).
+- Acceptance: at **320/375/414/768/900/1024/1280** — header fits inside the
+  viewport, no clipped text, **no horizontal scrollbar** at any width; the
+  correct nav mode shows per the spec's breakpoint map (hamburger / hybrid /
+  full) with no squeezed state; the "More" dropdown opens on click, closes on
+  outside-click + Escape + item-select + route change, and is keyboard operable.
+- Depends on: **T1.0 (DESIGN_SPEC signed off).**
 
-**Quality gate M1:** frontend self-test (build, lint, Network-tab check) →
-[qa-engineer] verifies request count + pre-scroll payload on a deployed preview →
-[code-reviewer] approves diff. All three mandatory.
+**Quality gate M1:** frontend self-test (build, lint, resize through all 7 widths,
+keyboard-test the dropdown) → [qa-engineer] re-tests the full matrix on a deployed
+preview — confirms no clip / no horizontal scroll and verifies dropdown
+open/close/keyboard behavior against the spec → [code-reviewer] approves the diff.
+All three mandatory.
 
-### M2 — Right-size video weight + replace CTA video
+### M2 — WhatsApp overlap + mobile-menu first-item clip
 
-**T2.1 — Reduce resolution/bitrate for decorative & secondary videos** _[frontend-developer]_
-Via Cloudinary transforms only (no re-upload). Hero keeps near-full quality;
-ShowReel and WorkShowcase cards get lower width/quality transforms matched to
-their rendered size (cards render far smaller than 1920px). Extend/reuse helpers
-in `src/lib/cloudinary.ts`. Remove the duplicate transform of `…bacb8.mp4`
-(loaded twice, 2.16 MB wasted) if it is the same asset.
-- Acceptance: each decorative video's transferred size drops ≥ 50% vs. baseline
-  with no visible quality loss at its rendered size; combined homepage video
-  payload (if all sections were loaded) drops from ~22.6 MB to **< 8 MB**.
-- Depends on: M1.
+**T2.1 — Fix mobile-menu overlay clipping its first item** _[frontend-developer]_
+In `src/components/Header.tsx`, the fullscreen overlay is `fixed inset-0 ...
+flex flex-col justify-center` (L127). Its vertical centering ignores the fixed
+header bar sitting on top, so "Home" (first link) is partially hidden behind it.
+Add top padding / offset so all items — including "Home" — are fully visible and
+tappable. Account for the admin-bar offset case (`top-12` vs `top-3`, L41).
+- Acceptance: at 375px (and across the matrix), opening the menu shows all 7
+  links + the "Start a Project" button fully; the first item is not clipped by
+  the header bar; menu is scrollable if content exceeds height on the shortest
+  viewport.
+- Depends on: none (independent of D1, but touches the same file — sequence after
+  T1.1 or coordinate to avoid conflicts).
 
-**T2.2 — Replace CTA background video with a static image (D2)** _[frontend-developer]_
-Decision locked: the CTA background (`opacity-10`, barely visible) is replaced
-with a **static poster image** — no compressed-video fallback. Use a Cloudinary
-still frame of the current clip (e.g. an `so_auto` frame extract) or an existing
-poster asset so it looks identical.
-- Acceptance: CTA renders a static image; the CTA video request **disappears
-  entirely** from the network trace; CTA section looks unchanged to a visitor.
-- Depends on: none (can run parallel with T2.1; independent of M1).
+**T2.2 — Fix WhatsApp float overlap** _[frontend-developer]_
+`src/components/WhatsAppFloat.tsx` is `fixed bottom-6 right-6 z-50` — same z as
+the header and **above** the z-40 mobile overlay, and it sits over the hero
+"Watch Reel" CTA at narrow widths. Coordinate stacking + position: the WhatsApp
+button must not cover the open mobile menu's CTA, nor the hero "Watch Reel"
+link/text at 320–414px. Preferred approach (confirm during self-test): hide the
+WhatsApp button while the mobile menu is open, and/or adjust position/z so it
+never overlaps an interactive control. No new dependency.
+- Acceptance: at 320/375/414 — WhatsApp button does not overlap the hero
+  "Watch Reel" text; with the mobile menu open, it does not overlap the menu's
+  "Start a Project" button; on desktop widths the button is unchanged.
+- Depends on: coordinates with T2.1 (menu-open state may drive hiding logic).
 
-**Quality gate M2:** frontend self-test → [qa-engineer] confirms per-video size
-cuts + visual parity, the CTA video request is gone, and every touched video
-still plays (see Risk 4) → [code-reviewer] approves. Mandatory.
+**Quality gate M2:** frontend self-test → [qa-engineer] verifies both overlaps
+gone and all menu items visible on a deployed preview across the matrix →
+[code-reviewer] approves. Mandatory.
 
-### M3 — Fix client-logo image weight
+### M3 — Hero headline overflow ≤320px
 
-**T3.1 — Convert & resize the 68 client logos** _[frontend-developer]_
-Serve logos as WebP/AVIF, resized server-side to actual display dimensions
-(~44–56px at appropriate DPR) instead of CSS-scaling full-size PNGs. Kill the
-inline base64 data-URI logos (up to 179 KB each). Prefer `next/image` or
-Cloudinary transforms — no new dependency.
-- Acceptance: Lighthouse `modern-image-formats` reports **0 KB wasted** (from
-  3.15 MB) and `uses-responsive-images` passes; total logo payload **< 1 MB**
-  (from ~4.4 MB); logos look identical at display size.
-- Depends on: none (parallel with M1/M2).
+**T3.1 — Stop the hero headline clipping at small widths** _[frontend-developer]_
+In `src/components/home/HeroSection.tsx`, the headline uses
+`text-[clamp(2.2rem,8vw,7rem)]` (L81/89/95) with only `px-6` (24px) side padding.
+At 320px the clamp floor (2.2rem ≈ 35px) can't shrink further, so long words
+("PHOTOGRAPHY") run past the edge; the section's `overflow-hidden` (L48) then
+clips the last letters. Lower the clamp minimum and/or reduce padding at the
+smallest widths so the longest headline word fits within 320px without clipping,
+while keeping the desktop size unchanged.
+- Acceptance: at 320px (and 375/414) the full cycling headline is visible with no
+  clipped letters and no horizontal page scroll; at 1280px the headline size is
+  visually unchanged from today.
+- Depends on: none (independent of D1).
 
-**Quality gate M3:** self-test → [qa-engineer] re-runs the two image audits and
-spot-checks logo rendering → [code-reviewer] approves. Mandatory.
+**Quality gate M3:** frontend self-test → [qa-engineer] confirms full headline
+visibility at 320/375/414 and no desktop regression → [code-reviewer] approves.
+Mandatory.
 
-### M4 — JavaScript trim + LCP verification
+### M4 — Full-site responsive audit (placeholder — NOT scoped)
 
-**T4.1 — Clear legacy-transpiled and unused JavaScript** _[frontend-developer / devops-engineer]_
-Fix `legacy-javascript` (14 KB) by confirming the build targets modern browsers
-(browserslist / Next config). Investigate ~90 KB unused JS — worst offender
-`ef7561e1ac5c1423.js` (39 KB unused of 74 KB) — identify what pulls it in and
-code-split / defer if safe.
-- Acceptance: `legacy-javascript` → 0 KB; unused-JS reduced by ≥ 50 KB with no
-  functional regression.
-- Depends on: none.
+Not started, not estimated. This pass only audited the homepage header + hero.
+Before any work, a scoping task is required:
 
-**T4.2 — Re-measure and confirm the LCP gap closed** _[qa-engineer]_
-After M1–M3 land, run fresh Lighthouse (both presets) on production. Confirm the
-H1 LCP is no longer starved by video/animation contention. If mobile LCP is still
-> 2.5s, escalate the specific remaining blocker (candidates: animation-library
-hydration, remaining eager assets) as a scoped follow-up — do not guess.
-- Acceptance: all five top-level criteria met (Perf ≥ 80 both presets, payload
-  < 6 MB, mobile LCP ≤ 2.5s, mobile TTI ≤ 5s, no score regression); numbers
-  recorded in this document.
-- Depends on: M1, M2, M3.
+**T4.0 — Audit remaining pages/components across the matrix** _[qa-engineer / ui-ux-engineer]_
+Walk services grid, footer, studio page, contact form, blog, project detail
+pages (and the CMS/admin if client-facing) across 320–1280px; log each break with
+a screenshot and width. Output feeds a future M4 task breakdown.
+- Acceptance: a written defect list with per-issue width + screenshot; **no code
+  changes in this task** — it produces scope, not fixes.
+- Depends on: M1–M3 shipped (so the fixed patterns can be reused elsewhere).
 
-**Quality gate M4 (final):** developer self-test → [qa-engineer] verifies all
-acceptance criteria against a live Lighthouse run → [code-reviewer] approves the
-cumulative diff. Project is DONE only when all three pass.
+---
 
 ## Quality gates (every milestone, no waivers)
 
-1. **Developer self-test** — build passes, lint passes, runtime verified in
-   browser (Network tab / visual check).
-2. **[qa-engineer] verification** — independently checks acceptance criteria
-   (request counts, payload sizes, Lighthouse audits) on a **deployed preview**,
-   not just localhost. Any Critical/Major finding returns the task to the developer.
+1. **Developer self-test** — build passes, lint passes, and the developer resizes
+   through **all 7 widths** (320/375/414/768/900/1024/1280) in a real browser and
+   confirms the milestone's acceptance criteria.
+2. **[qa-engineer] verification** — independently re-tests the same 7-width matrix
+   on a **deployed preview** (not just localhost). Any Critical/Major finding
+   returns the task to the developer, who fixes, then QA re-verifies.
 3. **[code-reviewer] approval** — reviews the diff; only APPROVE (or APPROVE WITH
    NITS) closes the task.
 
@@ -258,20 +276,14 @@ cumulative diff. Project is DONE only when all three pass.
 
 | # | Risk | Likelihood | Impact | Mitigation |
 |---|------|-----------|--------|------------|
-| 1 | Scroll-into-view autoplay feels late/janky if the observer margin is too tight (video not ready when it enters view) | Low | Medium | ~200px root margin so the fetch starts before the section is fully visible; QA checks perceived smoothness on mobile |
-| 2 | Payload cuts land but mobile LCP stays > 2.5s due to animation-library hydration | Medium | High | T4.2 explicitly re-measures and isolates the residual blocker rather than assuming M1–M3 suffice |
-| 3 | GSAP **and** Framer Motion both load, used across 67 files (D4: left as-is) — remains a latent JS-weight cost | Medium | Medium | Out of scope by decision; noted under "Future / not scheduled" if a later effort wants it |
-| 4 | Aggressive video compression / a bad Cloudinary transform degrades or breaks a video (recent history: a dead Cloudinary account) | Low | High | Tune per-video transform to rendered size; QA verifies visual parity **and** that every touched video actually plays on the deployed preview |
-
-## Future / not scheduled (informational only — no work here)
-
-- **Animation-library consolidation (D4).** GSAP and Framer Motion both ship to
-  the client across 67 files. Dropping one could trim client JS, but it is a
-  large, regression-prone refactor. If a future effort wants it, scope it as its
-  own project with its own QA pass — not folded into this performance work.
+| 1 | Hybrid nav is the most work of the three options — a new dropdown adds click-outside, keyboard, and z-index surface area that can introduce its own bugs | Medium | Medium | T1.0 DESIGN_SPEC pins behavior before code; QA explicitly keyboard-tests + outside-click-tests the dropdown; no new dependency (small native handler) |
+| 2 | Even with the inline set trimmed, the tablet band (768px) is tight — inline links + "More" + CTA may still not fit at 768px | Medium | High | T1.0 must specify per-width spacing at 768/900/1024 and prove fit on paper; if 768px still won't fit, spec drops one more link into "More" or lowers the hybrid breakpoint |
+| 3 | The three fixes all touch overlapping fixed/z-index elements (header, dropdown, overlay, WhatsApp) and cause new stacking bugs | Medium | Medium | Sequence T1.1 → T2.1 → T2.2 (same file / same stacking context); QA re-tests dropdown-open, menu-open, and hero together, not in isolation |
+| 4 | Lowering the hero headline clamp shrinks it too much and hurts the desktop look | Low | Medium | T3.1 acceptance pins the 1280px size as unchanged; only the small-width floor changes |
+| 5 | M4 (rest of site) turns out to have many more breaks than expected, surprising the client on timeline | Medium | Medium | M4 is an explicit audit-first placeholder; no promise of scope until T4.0 produces the defect list |
 
 ---
 
-**NEXT ACTION:** Start **T1.1** — defer below-the-fold videos to load + autoplay on scroll-into-view (D1) → [frontend-developer]. T2.2 (CTA static image), T3.1 (client logos), and T4.1 (JS trim) have no dependency on T1.1 and can be picked up in parallel if a second developer is available.
+**NEXT ACTION:** Start **T1.0** — ui-ux-engineer produces `docs/DESIGN_SPEC.md` for the hybrid nav (link grouping, breakpoint map, "More" dropdown open/close/keyboard spec, per-width spacing at 768/900/1024) → [ui-ux-engineer]. No frontend code (T1.1) until the spec is signed off. M2 (T2.1/T2.2) and M3 (T3.1) do not depend on D1 and can proceed in parallel.
 
-**YOUR DECISION NEEDED:** none — all four open questions resolved (see "Human decisions"). Next human touchpoint is the M1 milestone summary after the quality gates pass.
+**YOUR DECISION NEEDED:** none — D1 resolved (Hybrid "More" dropdown). Next human touchpoint is the M1 milestone summary after the quality gates pass. (The DESIGN_SPEC's exact inline-vs-"More" link grouping is a design call the ui-ux-engineer will make against the PM recommendation above; flagged here only so you can veto the grouping if you feel strongly about a specific link.)

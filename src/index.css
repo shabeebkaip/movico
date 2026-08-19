@@ -343,3 +343,9 @@ iframe[src*="gptengineer"] {
   width: 0 !important;
   height: 0 !important;
 }
+
+/* Hide the WhatsApp float while the mobile nav overlay is open so it never
+   covers the overlay's "Start a Project" button (see Header.tsx). */
+body.mobile-menu-open .whatsapp-float {
+  display: none;
+}

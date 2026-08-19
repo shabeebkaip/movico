@@ -14,6 +14,10 @@
 /coverage
 /test-results/
 /playwright-report/
+/.playwright-mcp/
+
+# docs (planning/spec working files, not shipped)
+/docs/
 
 # next.js
 /.next/

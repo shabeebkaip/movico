@@ -78,7 +78,7 @@ export function HeroSection({ content = D }: { content?: HeroContent }) {
           <div className="overflow-hidden mb-1">
             <h1
               ref={line1Ref}
-              className="font-display font-black text-white text-[clamp(2.2rem,8vw,7rem)] leading-[0.9] uppercase"
+              className="font-display font-black text-white text-[clamp(1.7rem,9vw,7rem)] sm:text-[clamp(2.2rem,8vw,7rem)] leading-[0.9] uppercase"
             >
               {content.headlineLine1}
             </h1>
@@ -86,13 +86,13 @@ export function HeroSection({ content = D }: { content?: HeroContent }) {
           <div className="overflow-hidden mb-10">
             <div
               ref={line2Ref}
-              className="font-display font-black text-primary text-[clamp(2.2rem,8vw,7rem)] leading-[0.85] uppercase"
+              className="font-display font-black text-primary text-[clamp(1.7rem,9vw,7rem)] sm:text-[clamp(2.2rem,8vw,7rem)] leading-[0.85] uppercase"
             >
               <div className="flex items-baseline gap-0">
                 <AnimatedTextCycle
                   words={content.cyclePhrases}
                   interval={3000}
-                  className="text-[clamp(2.2rem,8vw,7rem)] leading-[0.85]"
+                  className="text-[clamp(1.7rem,9vw,7rem)] sm:text-[clamp(2.2rem,8vw,7rem)] leading-[0.85]"
                 />
               </div>
             </div>

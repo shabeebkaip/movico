@@ -8,8 +8,8 @@ import { WhatsAppFloat } from "@/components/WhatsAppFloat";
 import Footer from "@/components/Footer";
 import CinematicAtmosphere from "@/components/CinematicAtmosphere";
 import { ScrollRestoration } from "@/components/ScrollRestoration";
-import { readDesign, readSeo } from "@/lib/cms/store";
-import { defaultDesign } from "@/lib/cms/types";
+import { readContent, readDesign, readSeo } from "@/lib/cms/store";
+import { defaultContent, defaultDesign } from "@/lib/cms/types";
 import { CMSProvider } from "@/components/cms/CMSContext";
 import { CMSAdminBarGate } from "@/components/cms/CMSAdminBarGate";
 import { JsonLd } from "@/components/seo/JsonLd";
@@ -42,9 +42,9 @@ export default async function RootLayout({
   const pathname = headersList.get("x-pathname") ?? "";
   const isAdmin = pathname.startsWith("/admin");
 
-  const [design, seo, hasAdminCookie] = isAdmin
-    ? [defaultDesign, null, false]
-    : await Promise.all([readDesign(), readSeo(), hasAdminSession()]);
+  const [design, seo, content, hasAdminCookie] = isAdmin
+    ? [defaultDesign, null, defaultContent, false]
+    : await Promise.all([readDesign(), readSeo(), readContent(), hasAdminSession()]);
 
   const cssVars = {
     "--color-primary": design.colors.primary,
@@ -125,7 +125,7 @@ export default async function RootLayout({
             {!isAdmin && <Header />}
             {children}
             {!isAdmin && <Footer />}
-            {!isAdmin && <WhatsAppFloat />}
+            {!isAdmin && <WhatsAppFloat whatsapp={content.global.whatsapp} />}
           </CMSProvider>
         </Providers>
       </body>

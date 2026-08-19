@@ -45,12 +45,11 @@ export default function AnimatedTextCycle({
       <AnimatePresence mode="wait" initial={false}>
         <motion.span
           key={currentIndex}
-          className={`inline-block font-black ${className}`}
+          className={`inline-block font-black whitespace-normal sm:whitespace-nowrap ${className}`}
           variants={variants}
           initial="hidden"
           animate="visible"
           exit="exit"
-          style={{ whiteSpace: "nowrap" }}
         >
           {words[currentIndex]}
         </motion.span>
