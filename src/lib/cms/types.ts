@@ -25,7 +25,10 @@ export interface HeroContent {
   subtitle: string;
   ctaPrimary: CTALink;
   ctaSecondary: CTALink;
-  videoUrl: string;
+  videoUrl: string; // primary — Bunny CDN
+  videoUrlBackup?: string; // Cloudinary backup copy of videoUrl
+  videoUrlMobile?: string; // portrait video for portrait-orientation devices; falls back to videoUrl
+  videoUrlMobileBackup?: string; // Cloudinary backup copy of videoUrlMobile
   posterUrl: string;
 }
 
@@ -453,6 +456,10 @@ export const defaultContent: CMSContent = {
       ctaSecondary: { text: 'Watch Reel', href: '#showreel' },
       videoUrl:
         'https://vz-77191ad4-50a.b-cdn.net/34d823c8-1925-46b4-aeb8-f33c6eba6739/play_1080p.mp4',
+      videoUrlMobile:
+        'https://vz-77191ad4-50a.b-cdn.net/8b8225cb-4ac5-4f7b-84c2-7e79377ff688/play_1080p.mp4',
+      videoUrlMobileBackup:
+        'https://res.cloudinary.com/xzwm4mjt/video/upload/v1787556189/movico/videos/j8ycorzgys3qzpldbhzy.mp4',
       posterUrl:
         'https://vz-77191ad4-50a.b-cdn.net/34d823c8-1925-46b4-aeb8-f33c6eba6739/thumbnail.jpg',
     },

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import Link from "next/link";
 import { ArrowDown } from "lucide-react";
@@ -18,6 +18,32 @@ export function HeroSection({ content = D }: { content?: HeroContent }) {
   const ctaRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const labelRef = useRef<HTMLParagraphElement>(null);
+
+  // Use portrait video on portrait-orientation devices when one is provided.
+  const mobileUrl = content.videoUrlMobile;
+  const [isPortrait, setIsPortrait] = useState(false);
+  useEffect(() => {
+    if (!mobileUrl) return;
+    const mq = window.matchMedia("(orientation: portrait)");
+    const onChange = () => setIsPortrait(mq.matches);
+    onChange();
+    mq.addEventListener("change", onChange);
+    return () => mq.removeEventListener("change", onChange);
+  }, [mobileUrl]);
+
+  const activeVideoUrl = isPortrait && mobileUrl ? mobileUrl : content.videoUrl;
+  const activeBackupUrl = isPortrait && mobileUrl ? content.videoUrlMobileBackup : content.videoUrlBackup;
+
+  // Bunny is primary; if it fails to load (outage, bad URL), fall back to
+  // the Cloudinary backup copy uploaded alongside it.
+  const handleVideoError = (e: React.SyntheticEvent<HTMLVideoElement>) => {
+    const video = e.currentTarget;
+    if (activeBackupUrl && video.src !== activeBackupUrl) {
+      video.src = activeBackupUrl;
+      video.load();
+      video.play().catch(() => {});
+    }
+  };
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -49,15 +75,17 @@ export function HeroSection({ content = D }: { content?: HeroContent }) {
     >
       {/* Full-screen background video */}
       <video
+        key={activeVideoUrl}
         autoPlay
         loop
         muted
         playsInline
         preload="metadata"
         poster={content.posterUrl}
+        onError={handleVideoError}
         className="absolute inset-0 w-full h-full object-cover scale-105"
       >
-        <source src={content.videoUrl} type="video/mp4" />
+        <source src={activeVideoUrl} type="video/mp4" />
       </video>
 
       {/* Multi-layer overlay */}

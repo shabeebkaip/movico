@@ -40,6 +40,9 @@ interface HeroContent {
   ctaPrimary: { text: string; href: string };
   ctaSecondary: { text: string; href: string };
   videoUrl: string;
+  videoUrlBackup?: string;
+  videoUrlMobile?: string;
+  videoUrlMobileBackup?: string;
   posterUrl: string;
 }
 interface AboutContent {
@@ -386,12 +389,36 @@ function HeroEditor({
       <CloudinaryUploader
         resourceType="video"
         folder="movico/videos"
-        label="Hero Video"
+        label="Hero Video (uploads to Bunny, auto-backed up to Cloudinary)"
         currentUrl={data.videoUrl}
-        onUpload={({ url }) => update("home.hero.videoUrl", url)}
+        onUpload={({ url, cloudinaryVideoUrl }) => {
+          update("home.hero.videoUrl", url);
+          if (cloudinaryVideoUrl) update("home.hero.videoUrlBackup", cloudinaryVideoUrl);
+        }}
       />
       {data.videoUrl && (
         <p className="text-[10px] text-slate-400 font-mono truncate mt-1" title={data.videoUrl}>{data.videoUrl}</p>
+      )}
+      {data.videoUrlBackup && (
+        <p className="text-[10px] text-slate-500 font-mono truncate" title={data.videoUrlBackup}>backup: {data.videoUrlBackup}</p>
+      )}
+      <div className={dividerCls} />
+      <CloudinaryUploader
+        resourceType="video"
+        folder="movico/videos"
+        label="Hero Video — Mobile (portrait, uploads to Bunny, auto-backed up to Cloudinary)"
+        currentUrl={data.videoUrlMobile}
+        onUpload={({ url, cloudinaryVideoUrl }) => {
+          update("home.hero.videoUrlMobile", url);
+          if (cloudinaryVideoUrl) update("home.hero.videoUrlMobileBackup", cloudinaryVideoUrl);
+        }}
+      />
+      <p className="text-[10px] text-slate-500 mt-1">Shown on portrait-orientation devices. Leave empty to use the main video everywhere.</p>
+      {data.videoUrlMobile && (
+        <p className="text-[10px] text-slate-400 font-mono truncate mt-1" title={data.videoUrlMobile}>{data.videoUrlMobile}</p>
+      )}
+      {data.videoUrlMobileBackup && (
+        <p className="text-[10px] text-slate-500 font-mono truncate" title={data.videoUrlMobileBackup}>backup: {data.videoUrlMobileBackup}</p>
       )}
       <div className={dividerCls} />
       <CloudinaryUploader
